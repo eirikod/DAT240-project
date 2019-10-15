@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<form action="showImage" method="GET">
+    <select  id="dropOperator" name="selectedlabel">
+    <option value="0">Select a label </option>
+    <option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
+    </select>
+    <input type="submit">
+</form>
+
+ <div th:each="image,iter : ${listimages}" class="alpha-mask">
+       <img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
+  </div>
+
+<!--   <div th:each="image,iter : ${listimages}" class="alpha-mask">
+  <span id="myvar" th:text="${iter.index}"></span>
+<button type="button" onmouseover="document.getElementById('${iter.index}').style.filter = 'contrast(200%)'" onmouseout="document.getElementById('${iter.index}').style.filter = 'contrast(100%)'">segment <span id="myvar" th:text="${iter.index}"></span></button><br>
+</div> -->
+ 
+</body>
