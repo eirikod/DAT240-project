@@ -20,6 +20,9 @@ import no.uis.players.Player.PlayerType;
 
 @Controller
 public class ImageController {
+	
+	final static int HIGHER_SCORE = 100;
+	
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
 	private Resource[] resources;
@@ -29,19 +32,45 @@ public class ImageController {
 			"src/main/resources/static/label/image_mapping.csv");
 
 	
-	@GetMapping("/showImage")
+	@RequestMapping("/showImage")
 	public String showImage(Model model,
-			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name) {
+			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name,
+			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) {
+		System.out.println(id);
 		String[] files = labelReader.getImageFiles(name);
 		String image_folder_name = getImageFolder(files);
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
+		model.addAttribute("selectedlabel", name);
 		model.addAttribute("listlabels", imageLabels);
+		model.addAttribute("highestscore", HIGHER_SCORE);
 		ArrayList<String> images = new ArrayList<String>();
 		for (int i = 0; i < 49; ++i) {
 			images.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
 		}
 		model.addAttribute("listimages", images);
 		return "welcome"; // view
+	}
+	
+	
+//	@GetMapping("/showImage")
+//	public String showImage(Model model,
+//			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name) {
+//		String[] files = labelReader.getImageFiles(name);
+//		String image_folder_name = getImageFolder(files);
+//		ArrayList<String> imageLabels = getAllLabels(labelReader);
+//		model.addAttribute("listlabels", imageLabels);
+//		ArrayList<String> images = new ArrayList<String>();
+//		for (int i = 0; i < 49; ++i) {
+//			images.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
+//		}
+//		model.addAttribute("listimages", images);
+//		return "welcome"; // view
+//	}
+	
+	@GetMapping("/game")
+	public String game(Model model, @RequestParam(value = "id", required = true, defaultValue = "-1") String name) {
+		System.out.println(name);
+		return "welcome";//View
 	}
 
 	@GetMapping("/labels")
