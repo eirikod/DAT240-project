@@ -117,7 +117,6 @@ public class PartyManager {
      */
     private void queueUpGuesser(DummyPlayer guesser) {
         guesserQueue.add(guesser);
-        // guesser.setPlayerStatus(DummyPlayer.PlayerStatus.WAITING);
         System.out.println("We queued a guesser named " + guesser.getUsername() + "! Queue count: " + guesserQueue.size());
     }
 
@@ -128,7 +127,6 @@ public class PartyManager {
      */
     private void queueUpProposer(DummyPlayer proposer) {
         proposerQueue.add(proposer);
-        // proposer.setPlayerStatus(DummyPlayer.PlayerStatus.WAITING);
         System.out.println("We queued a proposer named " + proposer.getUsername() + "! Queue count: " + proposerQueue.size());
     }
 

@@ -5,6 +5,7 @@ package no.uis.backend_pseudo_game.dummy;
  * to connecting real users to the game.
  */
 // TODO: Add more documentation
+// TODO: Create event handling (such as onFinishedGame, etc.)
 public class DummyPlayer {
     private Long id;
     private String username;
