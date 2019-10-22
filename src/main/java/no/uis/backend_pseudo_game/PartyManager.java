@@ -167,7 +167,10 @@ public class PartyManager {
         AtomicInteger testIndex = new AtomicInteger();
 
         TickExecution playerQueueing = new TickExecution(2000L,
-                () -> partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]));
+                () -> {
+                    if (testIndex.get() < players.length)
+                        partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]);
+                });
 
         TickExecution partyUpdater = new TickExecution(100L, partyManager::update);
 
