@@ -1,6 +1,7 @@
 package no.uis.backend_pseudo_game;
 
 import no.uis.backend_pseudo_game.dummy.DummyPlayer;
+import no.uis.backend_pseudo_game.tools.TickExecution;
 
 import static no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType.*;
 
@@ -8,6 +9,7 @@ import static no.uis.backend_pseudo_game.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -18,27 +20,93 @@ public class PartyManager {
     private ArrayDeque<DummyPlayer> guesserQueue = new ArrayDeque<>();
     private ArrayList<Party> parties = new ArrayList<>();
 
-    public Party createParty() {
+    private Party currentOpenParty;
+    private DummyPlayer currentlyWaitingProposer;
+    private DummyPlayer currentlyWaitingGuesser;
+
+    /**
+     * Creates a new party and pushes them into the array list where we update them in the future.
+     *
+     * @return Party
+     */
+    private Party createParty() {
         Party party = new Party();
         parties.add(party);
         return party;
     }
 
     /**
+     * Checks if the given type of player is waiting to be put into a party
+     *
+     * @param type PlayerType
+     * @return boolean
+     */
+    private boolean isPlayerWaitingForParty(DummyPlayer.PlayerType type) {
+        switch (type) {
+            case PROPOSER:
+                return currentlyWaitingProposer != null;
+            case GUESSER:
+                return currentlyWaitingGuesser != null;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Checks if there is an open party available
+     *
+     * @return boolean
+     */
+    private boolean isThereAnOpenParty() {
+        return currentOpenParty != null;
+    }
+
+    /**
      * Method used to update the game sequentially. Party management core logic occurs here
      */
     public void update() {
-        // TODO: Pop the queue and create parties if two players are ready
+        if (!areBothQueuesEmpty()) {
+            if (!isThereAnOpenParty()) {
+                currentOpenParty = createParty();
+                System.out.println("Party opened! Parties created: " + parties.size());
+            }
+            // If both player types are waiting, add them to the newly created party
+            if (isPlayerWaitingForParty(GUESSER) && isPlayerWaitingForParty(PROPOSER)) {
+                currentOpenParty.setGuesser(currentlyWaitingGuesser);
+                currentOpenParty.setProposer(currentlyWaitingProposer);
+                currentlyWaitingGuesser = null; // Guesser no longer waiting
+                currentlyWaitingProposer = null; // Proposer no longer waiting
+                currentOpenParty.setStatus(READY_TO_PLAY);
+                currentOpenParty = null; // Party is now closed
+                System.out.println("Both users put into party. Next!");
+            } else {
+                // If one or the other waiting player is non-existent, take them
+                // out of the queue and set them if the queues are not empty.
+                if (isQueueNotEmpty(GUESSER)) {
+                    currentlyWaitingGuesser = guesserQueue.pop();
+                    System.out.println("The guesser " + currentlyWaitingGuesser.getUsername() + " has waited long enough!");
+                }
+
+                if (isQueueNotEmpty(PROPOSER)) {
+                    currentlyWaitingProposer = proposerQueue.pop();
+                    System.out.println("The proposer " + currentlyWaitingProposer.getUsername() + " has waited long enough!");
+                }
+            }
+        }
     }
 
-    public boolean isQueueEmpty(DummyPlayer.PlayerType type) {
+    private boolean areBothQueuesEmpty() {
+        return proposerQueue.size() == 0 && guesserQueue.size() == 0;
+    }
+
+    private boolean isQueueNotEmpty(DummyPlayer.PlayerType type) {
         switch (type) {
             case PROPOSER:
                 return proposerQueue.size() > 0;
             case GUESSER:
                 return guesserQueue.size() > 0;
             default:
-                return false;
+                return true;
         }
     }
 
@@ -50,7 +118,7 @@ public class PartyManager {
     private void queueUpGuesser(DummyPlayer guesser) {
         guesserQueue.add(guesser);
         // guesser.setPlayerStatus(DummyPlayer.PlayerStatus.WAITING);
-        System.out.println("We queued a guesser! " + guesser.getUsername() + " Queue count: " + guesserQueue.size());
+        System.out.println("We queued a guesser named " + guesser.getUsername() + "! Queue count: " + guesserQueue.size());
     }
 
     /**
@@ -83,7 +151,27 @@ public class PartyManager {
 
     public static void main(String[] args) {
         PartyManager partyManager = new PartyManager();
-        partyManager.queueUpPlayer(new DummyPlayer("alan", GUESSER));
+        DummyPlayer[] players = new DummyPlayer[11];
 
+
+        for (int i = 0; i < players.length; i++) {
+            DummyPlayer player;
+            if (i % 2 == 0) {
+                player = new DummyPlayer("username_" + i, GUESSER);
+            } else {
+                player = new DummyPlayer("username_" + i, PROPOSER);
+            }
+            players[i] = player;
+        }
+
+        AtomicInteger testIndex = new AtomicInteger();
+
+        TickExecution playerQueueing = new TickExecution(2000L,
+                () -> partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]));
+
+        TickExecution partyUpdater = new TickExecution(100L, partyManager::update);
+
+        playerQueueing.execute();
+        partyUpdater.execute();
     }
 }
