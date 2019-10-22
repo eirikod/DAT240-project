@@ -17,6 +17,20 @@ public class Party {
         FINISHED_GAME,
     }
 
+    /**
+     * Method called when the party state has been changed to READY_TO_PLAY
+     */
+    public void onReady() {
+
+    }
+
+    /**
+     * Method called when the party state has been changed to FINISHED_GAME
+     */
+    public void onFinished() {
+
+    }
+
     public Party() {
         this.currentStatus = PartyStatus.WAITING_FOR_PLAYERS;
     }

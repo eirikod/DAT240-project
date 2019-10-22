@@ -77,6 +77,7 @@ public class PartyManager {
                 currentlyWaitingGuesser = null; // Guesser no longer waiting
                 currentlyWaitingProposer = null; // Proposer no longer waiting
                 currentOpenParty.setStatus(READY_TO_PLAY);
+                currentOpenParty.onReady();
                 currentOpenParty = null; // Party is now closed
                 System.out.println("Both users put into party. Next!");
             } else {
@@ -152,7 +153,6 @@ public class PartyManager {
     public static void main(String[] args) {
         PartyManager partyManager = new PartyManager();
         DummyPlayer[] players = new DummyPlayer[11];
-
 
         for (int i = 0; i < players.length; i++) {
             DummyPlayer player;
