@@ -20,7 +20,7 @@ public class DummyPlayer {
         WAITING, PLAYING, FINISHED
     }
 
-    protected DummyPlayer() {
+    public DummyPlayer() {
         // Creating a random ID for the player internally.
         // TODO: Remove this on release if we intend to generate IDs from Spring Boot
         this.id = (long)(Math.random() * Long.MAX_VALUE);
@@ -28,7 +28,6 @@ public class DummyPlayer {
     }
 
     public DummyPlayer(String username, PlayerType pType) {
-        this(); // TODO: Remove if unnecessary
         this.setUsername(username);
         this.setPlayerType(pType);
         this.setPlayerStatus(PlayerStatus.WAITING);

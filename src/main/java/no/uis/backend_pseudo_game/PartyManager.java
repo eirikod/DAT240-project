@@ -31,6 +31,17 @@ public class PartyManager {
         // TODO: Pop the queue and create parties if two players are ready
     }
 
+    public boolean isQueueEmpty(DummyPlayer.PlayerType type) {
+        switch (type) {
+            case PROPOSER:
+                return proposerQueue.size() > 0;
+            case GUESSER:
+                return guesserQueue.size() > 0;
+            default:
+                return false;
+        }
+    }
+
     /**
      * Adds a player to the guesser queue if given PlayerType is GUESSER
      *
