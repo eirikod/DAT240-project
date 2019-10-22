@@ -70,14 +70,13 @@ public class PartyManager {
                 currentOpenParty = createParty();
                 System.out.println("Party opened! Parties created: " + parties.size());
             }
-            // If both player types are waiting, add them to the newly created party
+            // If both types of player are waiting, add them to the newly created party
             if (isPlayerWaitingForParty(GUESSER) && isPlayerWaitingForParty(PROPOSER)) {
                 currentOpenParty.setGuesser(currentlyWaitingGuesser);
                 currentOpenParty.setProposer(currentlyWaitingProposer);
                 currentlyWaitingGuesser = null; // Guesser no longer waiting
                 currentlyWaitingProposer = null; // Proposer no longer waiting
                 currentOpenParty.setStatus(READY_TO_PLAY);
-                currentOpenParty.onReady();
                 currentOpenParty = null; // Party is now closed
                 System.out.println("Both users put into party. Next!");
             } else {

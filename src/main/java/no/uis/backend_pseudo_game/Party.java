@@ -49,5 +49,9 @@ public class Party {
 
     public void setStatus(PartyStatus status) {
         currentStatus = status;
+        switch (status) {
+            case READY_TO_PLAY: onReady();
+            case FINISHED_GAME: onFinished();
+        }
     }
 }
