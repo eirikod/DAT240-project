@@ -32,3 +32,4 @@ public class Party {
         return currentStatus;
     }
 }
+

@@ -32,6 +32,9 @@ public class ImageController {
 	@GetMapping("/showImage")
 	public String showImage(Model model,
 			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name) {
+		for (Resource r : resources) {
+			System.out.println(r);
+		}
 		String[] files = labelReader.getImageFiles(name);
 		String image_folder_name = getImageFolder(files);
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
@@ -56,7 +59,6 @@ public class ImageController {
 		for (String file : files) {
 			String folder_name = file + "_scattered";
 			for (Resource r : resources) {
-
 				if (folder_name.equals(r.getFilename())) {
 					image_folder_name = folder_name;
 					break;
