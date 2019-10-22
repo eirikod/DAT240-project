@@ -32,7 +32,7 @@ public class ImageController {
 			"src/main/resources/static/label/image_mapping.csv");
 
 	
-	@RequestMapping("/showImage")
+	@RequestMapping("/proposer")
 	public String showImage(Model model,
 			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name, //name of the image
 			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) //image chosed by the proposer 
@@ -49,7 +49,7 @@ public class ImageController {
 			images.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
 		}
 		model.addAttribute("listimages", images);
-		return "welcome"; // view
+		return "proposer"; // view
 	}
 	
 	@RequestMapping("/guesser")
@@ -84,14 +84,14 @@ public class ImageController {
 	@GetMapping("/game")
 	public String game(Model model, @RequestParam(value = "id", required = true, defaultValue = "-1") String name) {
 		System.out.println(name);
-		return "welcome";//View
+		return "proposer";//View
 	}
 
-	@GetMapping("/labels")
+	@GetMapping("/proposerImageSelection")
 	public String showLabels(Model model) {
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
 		model.addAttribute("listlabels", imageLabels);
-		return "welcome"; // view
+		return "proposer"; // view
 	}
 
 	private String getImageFolder(String[] files) {
@@ -128,13 +128,13 @@ public class ImageController {
 //		return "user";
 //	}
 	
-	@RequestMapping("/user")
+	@RequestMapping("/welcomePage")
 	public String newEntry(Model model, 
 			@RequestParam(value = "userName", required = false, defaultValue = "") String user_name,
 			@RequestParam(value = "passwordName", required = false, defaultValue = "") String password_user) {
 		model.addAttribute("obj", user_name);
 		System.out.println(user_name);
-		return "user";
+		return "welcomePage";
 	}
 
 }

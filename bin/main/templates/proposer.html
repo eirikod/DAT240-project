@@ -14,7 +14,7 @@
 	
 	<div class="row">
 		<div class="col-sm">
-			<form action="showImage" method="GET">
+			<form action="proposer" method="GET">
 			    <select  id="dropOperator" name="selectedlabel">
 			    <option value="0">Select a label </option>
 			    <option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
@@ -42,7 +42,7 @@
 			<div class="row">
 				<!-- temp0.style = "display: block; background-color: pink; opacity: 0.5" -->
 				<div th:each="image,iter : ${listimages}" class="alpha-mask">
-				 		<form action="showImage" method="POST">
+				 		<form action="/proposer" method="POST">
 				 			<input name="id" th:value="${iter.index}" type="hidden" />
 				 			<input name="selectedlabel" th:value="${selectedlabel}" type="hidden" />
 					 		<input class="myButton" th:value="${iter.index}" type="submit">
