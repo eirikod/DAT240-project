@@ -61,14 +61,17 @@
 	<script type="text/javascript">
 		document.addEventListener("mouseover", ({ target }) => {
 			console.log(target)
-			if (target.className === "myButton") {				
-				var element = document.getElementById(target.children[0].innerText).parentElement
+			if (target.className === "myButton") {	
+				console.log(target)
+				var element = document.getElementById(target.value).parentElement
+// 				var element = document.getElementById(target.children[0].innerText).parentElement
 				element.className = "beta-mask"
 			}
 		})
 		document.addEventListener("mouseout", ({ target }) => {
 			if (target.className === "myButton") {
-				var element = document.getElementById(target.children[0].innerText).parentElement
+// 				var element = document.getElementById(target.children[0].innerText).parentElement
+				var element = document.getElementById(target.value).parentElement
 				element.className = "alpha-mask"			
 			}
 		})

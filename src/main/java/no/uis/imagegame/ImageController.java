@@ -34,10 +34,11 @@ public class ImageController {
 	
 	@RequestMapping("/showImage")
 	public String showImage(Model model,
-			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name,
-			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) {
-		System.out.println(id);
+			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name, //name of the image
+			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) //image chosed by the proposer 
+	{
 		String[] files = labelReader.getImageFiles(name);
+		System.out.println(id);
 		String image_folder_name = getImageFolder(files);
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
 		model.addAttribute("selectedlabel", name);
@@ -51,6 +52,19 @@ public class ImageController {
 		return "welcome"; // view
 	}
 	
+	@RequestMapping("/guesser")
+	public String showImage(Model model,
+			@RequestParam(value = "submettedGuess", required = false, defaultValue = "") String guess) {
+		System.out.println(guess);
+		ArrayList<String> images = new ArrayList<String>();
+		String[] files = labelReader.getImageFiles("cinema");
+		String image_folder_name = getImageFolder(files);
+		images.add("images/scattered_images/" + image_folder_name + "/" + 25 + ".png");
+		images.add("images/scattered_images/" + image_folder_name + "/" + 24 + ".png");
+		images.add("images/scattered_images/" + image_folder_name + "/" + 23 + ".png");
+		model.addAttribute("listimagesproposed", images);
+		return "guesser";//view
+	}
 	
 //	@GetMapping("/showImage")
 //	public String showImage(Model model,
@@ -106,10 +120,20 @@ public class ImageController {
 		return labels;
 	}
 
+//	@RequestMapping("/user")
+//	public String newEntry(Model model, 
+//			@requestParam(User user) {
+//		model.addAttribute("obj", user);
+//		System.out.println(user.getName());
+//		return "user";
+//	}
+	
 	@RequestMapping("/user")
-	public String newEntry(Model model, User user) {
-		model.addAttribute("obj", user);
-		System.out.println(user.getName());
+	public String newEntry(Model model, 
+			@RequestParam(value = "userName", required = false, defaultValue = "") String user_name,
+			@RequestParam(value = "passwordName", required = false, defaultValue = "") String password_user) {
+		model.addAttribute("obj", user_name);
+		System.out.println(user_name);
 		return "user";
 	}
 
