@@ -3,7 +3,8 @@ package no.uis.backend_pseudo_game;
 import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 
 /**
- * Holds the game state data of the guesser and proposer
+ * Holds the game state data of the guesser and proposer.
+ *
  * @author Alan Rostem
  */
 public class Party {
@@ -15,6 +16,7 @@ public class Party {
 
     /**
      * Party status enumerate class
+     *
      * @author Alan Rostem
      */
     public enum PartyStatus {
@@ -25,7 +27,17 @@ public class Party {
     }
 
     /**
-     * Method called when the party state has been changed to READY_TO_PLAY
+     * Initializes a party with status WAITING_FOR_PLAYERS.
+     *
+     * @author Alan Rostem
+     */
+    public Party() {
+        this.currentStatus = PartyStatus.WAITING_FOR_PLAYERS;
+    }
+
+    /**
+     * Method called when the party state has been changed to READY_TO_PLAY.
+     *
      * @author Alan Rostem
      */
     public void onReady() {
@@ -33,19 +45,17 @@ public class Party {
     }
 
     /**
-     * Method called when the party state has been changed to FINISHED_GAME
+     * Method called when the party state has been changed to FINISHED_GAME.
+     *
      * @author Alan Rostem
      */
     public void onFinished() {
 
     }
 
-    public Party() {
-        this.currentStatus = PartyStatus.WAITING_FOR_PLAYERS;
-    }
-
     /**
-     * Sets a proposer to the party
+     * Sets a proposer to the party.
+     *
      * @param proposer Player
      * @author Alan Rostem
      */
@@ -54,7 +64,8 @@ public class Party {
     }
 
     /**
-     * Sets a guesser to the party
+     * Sets a guesser to the party.
+     *
      * @param guesser Player
      * @author Alan Rostem
      */
@@ -63,7 +74,8 @@ public class Party {
     }
 
     /**
-     * Retrieve the current state of the party
+     * Retrieve the current state of the party.
+     *
      * @return Party.PartyStatus
      * @author Alan Rostem
      */
@@ -73,14 +85,19 @@ public class Party {
 
     /**
      * Set the current state of the party. Respective event methods are called upon setting.
+     *
      * @param status Party.PartyStatus
      * @author Alan Rostem
      */
     public void setStatus(PartyStatus status) {
         currentStatus = status;
         switch (status) {
-            case READY_TO_PLAY: onReady(); break;
-            case FINISHED_GAME: onFinished(); break;
+            case READY_TO_PLAY:
+                onReady();
+                break;
+            case FINISHED_GAME:
+                onFinished();
+                break;
         }
     }
 }

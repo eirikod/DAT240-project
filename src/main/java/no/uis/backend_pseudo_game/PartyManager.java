@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Singleton class that manages what party a player goes into depending on the role they select
+ *
  * @author Alan Rostem
  */
 public class PartyManager {
@@ -67,6 +68,7 @@ public class PartyManager {
 
     /**
      * Method used to update the game sequentially. Party management core logic occurs here
+     *
      * @author Alan Rostem
      */
     public void update() {
@@ -102,6 +104,7 @@ public class PartyManager {
 
     /**
      * Check if both respective player queues are empty
+     *
      * @return boolean
      * @author Alan Rostem
      */
@@ -146,8 +149,8 @@ public class PartyManager {
      * Queues up a player for a party. The player is added into a queue respective to its PlayerType
      *
      * @param player Either a proposer or guesser depending on the PlayerType
-     * @see no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType
      * @author Alan Rostem
+     * @see no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType
      */
     public void queueUpPlayer(DummyPlayer player) {
         switch (player.getPlayerType()) {
@@ -177,9 +180,9 @@ public class PartyManager {
         AtomicInteger testIndex = new AtomicInteger();
 
         TickExecution playerQueueing = new TickExecution(2000L, () -> {
-                    if (testIndex.get() < players.length)
-                        partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]);
-                });
+            if (testIndex.get() < players.length)
+                partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]);
+        });
 
         TickExecution partyUpdater = new TickExecution(100L, partyManager::update);
 

@@ -1,7 +1,7 @@
 package no.uis.backend_pseudo_game.tools;
 
 /**
- * Simple structural class that executes some code every x milliseconds
+ * Simple structural class that executes some code every x milliseconds.
  * @author Alan Rostem
  */
 public class TickExecution {
