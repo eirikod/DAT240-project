@@ -22,6 +22,7 @@ import no.uis.players.Player.PlayerType;
 @Controller
 public class ImageController {
 	
+	//Static parameters
 	final static int HIGHER_SCORE = 100;
 	final static String CONST_PLAY_MODE = "listPlayMode";
 	final static String CONST_PLAYER_MODE = "listPlayerMode";
@@ -35,11 +36,11 @@ public class ImageController {
 	ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
 			"src/main/resources/static/label/image_mapping.csv");
 
-	
+	//Proposer controller example
 	@RequestMapping("/proposer")
 	public String showImage(Model model,
 			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name, //name of the image
-			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) //image chosed by the proposer 
+			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) //image chose by the proposer 
 	{
 		String[] files = labelReader.getImageFiles(name);
 		System.out.println(id);
@@ -56,6 +57,7 @@ public class ImageController {
 		return "proposer"; // view
 	}
 	
+	//Guesser controller example
 	@RequestMapping("/guesser")
 	public String showImage(Model model,
 			@RequestParam(value = "submettedGuess", required = false, defaultValue = "") String guess) {
@@ -69,28 +71,14 @@ public class ImageController {
 		model.addAttribute("listimagesproposed", images);
 		return "guesser";//view
 	}
-	
-//	@GetMapping("/showImage")
-//	public String showImage(Model model,
-//			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name) {
-//		String[] files = labelReader.getImageFiles(name);
-//		String image_folder_name = getImageFolder(files);
-//		ArrayList<String> imageLabels = getAllLabels(labelReader);
-//		model.addAttribute("listlabels", imageLabels);
-//		ArrayList<String> images = new ArrayList<String>();
-//		for (int i = 0; i < 49; ++i) {
-//			images.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
-//		}
-//		model.addAttribute("listimages", images);
-//		return "welcome"; // view
-//	}
-	
+
 	@GetMapping("/game")
 	public String game(Model model, @RequestParam(value = "id", required = true, defaultValue = "-1") String name) {
 		System.out.println(name);
 		return "proposer";//View
 	}
 
+	//Proposer Controller (example of a first part)
 	@GetMapping("/proposerImageSelection")
 	public String showLabels(Model model) {
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
@@ -98,6 +86,7 @@ public class ImageController {
 		return "proposer"; // view
 	}
 
+	//private method taking back the image folder
 	private String getImageFolder(String[] files) {
 		String image_folder_name = "";
 		for (String file : files) {
@@ -113,6 +102,7 @@ public class ImageController {
 		return image_folder_name;
 	}
 
+	//private methode returning all of the images label
 	private ArrayList<String> getAllLabels(ImageLabelReader ilr) {
 		ArrayList<String> labels = new ArrayList<String>();
 		for (Resource r : resources) {
@@ -124,6 +114,7 @@ public class ImageController {
 		return labels;
 	}
 
+	//WelcomePage controller example
 	@RequestMapping("/welcomePage")
 	public String newEntry(Model model, User user,
 			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
@@ -145,16 +136,7 @@ public class ImageController {
 		System.out.println(user.getName());
 		return "welcomePage";
 	}
-	
-	@RequestMapping("/welcomePage/playerRole_playMode")
-	public String gameParamater(
-			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
-			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
-		System.out.println("playMode : " + playMode);
-		System.out.println("playerMode : " + playerMode);
-		return "welcomePage";
-	}
-	
+
 	@RequestMapping("/addPlayer")
 	public String addPlayer(Model model, User user) {
 		model.addAttribute("obj", user);
