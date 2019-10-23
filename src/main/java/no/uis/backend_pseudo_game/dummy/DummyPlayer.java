@@ -69,14 +69,16 @@ public class DummyPlayer {
     /**
      * Getter for the player status
      * @return The current player status enum value
+     * @author Alan Rostem
      */
     public PlayerStatus getPlayerStatus() {
         return status;
     }
 
     /**
-     * Set the player's current status
+     * Set the player's current status. // TODO: Call respective necessary event methods.
      * @param status Player status enum
+     * @author Alan Rostem
      */
     public void setPlayerStatus(PlayerStatus status) {
         this.status = status;

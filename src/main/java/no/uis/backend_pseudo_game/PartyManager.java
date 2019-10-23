@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Singleton class that manages what party a player goes into depending on the role they select
+ * @author Alan Rostem
  */
 public class PartyManager {
     private ArrayDeque<DummyPlayer> proposerQueue = new ArrayDeque<>();
@@ -28,6 +29,7 @@ public class PartyManager {
      * Creates a new party and pushes them into the array list where we update them in the future.
      *
      * @return Party
+     * @author Alan Rostem
      */
     private Party createParty() {
         Party party = new Party();
@@ -40,6 +42,7 @@ public class PartyManager {
      *
      * @param type PlayerType
      * @return boolean
+     * @author Alan Rostem
      */
     private boolean isPlayerWaitingForParty(DummyPlayer.PlayerType type) {
         switch (type) {
@@ -56,6 +59,7 @@ public class PartyManager {
      * Checks if there is an open party available
      *
      * @return boolean
+     * @author Alan Rostem
      */
     private boolean isThereAnOpenParty() {
         return currentOpenParty != null;
@@ -63,6 +67,7 @@ public class PartyManager {
 
     /**
      * Method used to update the game sequentially. Party management core logic occurs here
+     * @author Alan Rostem
      */
     public void update() {
         if (!areBothQueuesEmpty()) {
@@ -95,6 +100,11 @@ public class PartyManager {
         }
     }
 
+    /**
+     * Check if both respective player queues are empty
+     * @return boolean
+     * @author Alan Rostem
+     */
     private boolean areBothQueuesEmpty() {
         return proposerQueue.size() == 0 && guesserQueue.size() == 0;
     }
@@ -114,6 +124,7 @@ public class PartyManager {
      * Adds a player to the guesser queue if given PlayerType is GUESSER
      *
      * @param guesser Player with PlayerType GUESSER
+     * @author Alan Rostem
      */
     private void queueUpGuesser(DummyPlayer guesser) {
         guesserQueue.add(guesser);
@@ -124,6 +135,7 @@ public class PartyManager {
      * Adds a player to the proposer queue if given PlayerType is PROPOSER
      *
      * @param proposer Player with PlayerType GUESSER
+     * @author Alan Rostem
      */
     private void queueUpProposer(DummyPlayer proposer) {
         proposerQueue.add(proposer);
@@ -135,6 +147,7 @@ public class PartyManager {
      *
      * @param player Either a proposer or guesser depending on the PlayerType
      * @see no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType
+     * @author Alan Rostem
      */
     public void queueUpPlayer(DummyPlayer player) {
         switch (player.getPlayerType()) {
@@ -163,8 +176,7 @@ public class PartyManager {
 
         AtomicInteger testIndex = new AtomicInteger();
 
-        TickExecution playerQueueing = new TickExecution(2000L,
-                () -> {
+        TickExecution playerQueueing = new TickExecution(2000L, () -> {
                     if (testIndex.get() < players.length)
                         partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]);
                 });

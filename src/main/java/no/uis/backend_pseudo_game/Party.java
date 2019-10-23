@@ -1,8 +1,11 @@
 package no.uis.backend_pseudo_game;
 
 import no.uis.backend_pseudo_game.dummy.DummyPlayer;
-import no.uis.players.Player;
 
+/**
+ * Holds the game state data of the guesser and proposer
+ * @author Alan Rostem
+ */
 public class Party {
     // TODO: Add controller logic when ready to merge with the front-end
 
@@ -10,6 +13,10 @@ public class Party {
     private DummyPlayer proposer;
     private PartyStatus currentStatus;
 
+    /**
+     * Party status enumerate class
+     * @author Alan Rostem
+     */
     public enum PartyStatus {
         WAITING_FOR_PLAYERS,
         READY_TO_PLAY,
@@ -19,6 +26,7 @@ public class Party {
 
     /**
      * Method called when the party state has been changed to READY_TO_PLAY
+     * @author Alan Rostem
      */
     public void onReady() {
 
@@ -26,6 +34,7 @@ public class Party {
 
     /**
      * Method called when the party state has been changed to FINISHED_GAME
+     * @author Alan Rostem
      */
     public void onFinished() {
 
@@ -35,18 +44,38 @@ public class Party {
         this.currentStatus = PartyStatus.WAITING_FOR_PLAYERS;
     }
 
+    /**
+     * Sets a proposer to the party
+     * @param proposer Player
+     * @author Alan Rostem
+     */
     public void setProposer(DummyPlayer proposer) {
         this.proposer = proposer;
     }
 
+    /**
+     * Sets a guesser to the party
+     * @param guesser Player
+     * @author Alan Rostem
+     */
     public void setGuesser(DummyPlayer guesser) {
         this.guesser = guesser;
     }
 
+    /**
+     * Retrieve the current state of the party
+     * @return Party.PartyStatus
+     * @author Alan Rostem
+     */
     public PartyStatus getStatus() {
         return currentStatus;
     }
 
+    /**
+     * Set the current state of the party. Respective event methods are called upon setting.
+     * @param status Party.PartyStatus
+     * @author Alan Rostem
+     */
     public void setStatus(PartyStatus status) {
         currentStatus = status;
         switch (status) {
