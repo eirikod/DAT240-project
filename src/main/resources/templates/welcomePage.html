@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+	<div class="row">
+		Title
+	</div>
+	<div class="row">
+		<div class="col-sm">
+			<form action="welcomePage" method="POST">
+			    <select  id="dropOperator" name="selectedPlayModelabel">
+				    <option value="0">Select a label </option>
+				    <option th:each="label : ${listPlayMode}" th:value="${label}" th:text="${label}"></option>
+			    </select>
+			    <select  id="dropOperator" name="selectedPlayerModelabel">
+				    <option value="0">Select a label </option>
+				    <option th:each="label : ${listPlayerMode}" th:value="${label}" th:text="${label}"></option>
+			    </select>
+			    <input type="submit">
+			</form>
+		</div>
+		
+		<div class="col-sm">
+			<span th:text="${obj.name}"> </span>
+			<span th:text="${obj.id}"> </span>
+			  
+			<form action="addPlayer" method="POST">
+				<input type="text" name="id"><br>
+				<input type="text" name="name"><br>
+				<input type="submit">
+			</form>
+		</div>
+	</div>
+	<div class="row">
+	</div>
+	
+</body>
+</html>
