@@ -18,10 +18,14 @@ import no.uis.players.PlayerRepository;
 import no.uis.players.User;
 import no.uis.players.Player.PlayerType;
 
+
 @Controller
 public class ImageController {
 	
 	final static int HIGHER_SCORE = 100;
+	final static String CONST_PLAY_MODE = "listPlayMode";
+	final static String CONST_PLAYER_MODE = "listPlayerMode";
+	
 	
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
@@ -120,21 +124,42 @@ public class ImageController {
 		return labels;
 	}
 
-//	@RequestMapping("/user")
-//	public String newEntry(Model model, 
-//			@requestParam(User user) {
-//		model.addAttribute("obj", user);
-//		System.out.println(user.getName());
-//		return "user";
-//	}
-	
 	@RequestMapping("/welcomePage")
-	public String newEntry(Model model, 
-			@RequestParam(value = "userName", required = false, defaultValue = "") String user_name,
-			@RequestParam(value = "passwordName", required = false, defaultValue = "") String password_user) {
-		model.addAttribute("obj", user_name);
-		System.out.println(user_name);
+	public String newEntry(Model model, User user,
+			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
+			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
+		System.out.println("playMode : " + playMode);
+		System.out.println("playerMode : " + playerMode);
+		model.addAttribute("obj", user);
+		
+		ArrayList<String> lstPlayMode = new ArrayList<String>();
+		lstPlayMode.add("GUESSER");
+		lstPlayMode.add("PROPOSER");
+		model.addAttribute(CONST_PLAY_MODE, lstPlayMode);
+		
+		ArrayList<String> lstPlayerMode = new ArrayList<String>();
+		lstPlayerMode.add("SINGLE PLAYER");
+		lstPlayerMode.add("MULTIPLE PLAYER");
+		model.addAttribute(CONST_PLAYER_MODE, lstPlayerMode);
+		
+		System.out.println(user.getName());
 		return "welcomePage";
 	}
-
+	
+	@RequestMapping("/welcomePage/playerRole_playMode")
+	public String gameParamater(
+			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
+			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
+		System.out.println("playMode : " + playMode);
+		System.out.println("playerMode : " + playerMode);
+		return "welcomePage";
+	}
+	
+	@RequestMapping("/addPlayer")
+	public String addPlayer(Model model, User user) {
+		model.addAttribute("obj", user);
+		System.out.println(user.getName());
+		return "welcomePage";
+	}
+	
 }
