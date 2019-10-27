@@ -7,44 +7,41 @@ h1 {
     text-align: center;
 }
 
-button {
-	position:absolute;
-    background-color: #8092ff;
-    padding: 10px 20px;
-    border-radius: 3px;
-    border: none;
-    right: 500px;
-}
 
-form {
-    margin: auto;
-    display: flex;
-    flex-direction: column;
+/* --------------------------------------------------------------------------*/
+/* Proposer Button */
+/* --------------------------------------------------------------------------*/
+.myButton {
+	background-color:#a73f2d;
+	border-radius:5px;
+	border:1px solid #241d13;
+	display:inline-block !important;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Trebuchet MS;
+	font-size:11px;
+	font-weight:bold;
+	font-style:italic;
+	padding:5px 16px;
+	text-decoration:none;
+	text-shadow:0px 1px 14px #7a2a1d;
 }
-
-div {
-    margin: auto;
-    width: auto;
-    max-width: 800px;
-    margin-bottom: 30px;
+.myButton:hover {
+	background-color:#b34332;
 }
-
-input, textarea {
-    font-size: 13px;
-    padding: 5px;
-    width: 500px;
-    left: 0px;
+.myButton:active {
+	position:relative;
+	top:1px;
 }
+/* --------------------------------------------------------------------------*/
 
-select{
-	width: 500px;
-	left: 0px;
-}
-
+/* --------------------------------------------------------------------------*/
+/* Image placement */
+/* --------------------------------------------------------------------------*/
 img
 {
     position:absolute;
-    top: 100px;
+    top: 0px;
     left: 0px;
     padding: 5px;
     mask-type: alpha;
@@ -54,7 +51,27 @@ img
           drop-shadow(-1px -1px 0 grey);
             
 }
+/* --------------------------------------------------------------------------*/
 
+/* --------------------------------------------------------------------------*/
+/* black line separator */
+/* --------------------------------------------------------------------------*/
+.buttons-images-container {
+	border-top: 1px solid black;
+	margin: 10px 0;
+	padding: 10px 0;
+}
+
+.blackSideLine {
+	border-left: 1px solid black;
+	margin: 10px 0;
+	padding: 10px 0;
+}
+/* --------------------------------------------------------------------------*/
+
+/* --------------------------------------------------------------------------*/
+/* image mask (creating the choice effect) */
+/* --------------------------------------------------------------------------*/
 .alpha-mask {
   mask-mode: alpha;
   -webkit-mask-mode: alpha;
@@ -62,9 +79,102 @@ img
   -webkit-mask-repeat: no-repeat;
 }
 
+.beta-mask {
+  filter: contrast(50%);
+  opacity = 1;
+  top: 0px;
+  position:absolute;
+  left: 0px;
+  padding: 5px;
+  mask-type: alpha;
+}
+
 .img-mask {
   -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
    -webkit-filter: contrast(200%); /* Safari */
   filter: contrast(200%);	
+}
+/* --------------------------------------------------------------------------*/
+
+/* --------------------------------------------------------------------------*/
+/* guess box txt */
+/* --------------------------------------------------------------------------*/
+.Title {
+  margin: 0 0 var(--gutterXx) 0;
+  padding: 0;
+  color: #fff;
+  font-size: var(--fontSizeXx);
+  font-weight: 400;
+  line-height: var(--lineHeightSm);
+  text-align: center;
+  text-shadow: -0.1rem 0.1rem 0.2rem var(--colorPrimary800);
+}
+
+.Container{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	width: 25vw;
+	height: 15vh;
+	color: #455A64;
+	background-color: #7E57C2;
+	font-family: var(--fontFamily);
+	font-size: var(--fontSizeMd);
+	line-height: var(--lineHeightMd);
+	flex: 0 0 80%;
+	max-width: 80%;
+}
+
+.Input-text {
+  display: block;
+  margin: 0;
+  padding: var(--inputPaddingV) var(--inputPaddingH);
+  color: inherit;
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--inputFontSize);
+  font-weight: inherit;
+  line-height: var(--inputLineHeight);
+  border: none;
+  border-radius: 0.4rem;
+  transition: box-shadow var(--transitionDuration);
+}
+
+.Input-label {
+  display: block;
+  position: absolute;
+  bottom: 50%;
+  left: 1rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--inputFontSize);
+  font-weight: inherit;
+  line-height: var(--inputLineHeight);
+  opacity: 0;
+  transform: 
+    translate3d(0, var(--labelDefaultPosY), 0)
+    scale(1);
+  transform-origin: 0 0;
+  transition:
+    opacity var(--inputTransitionDuration) var(--inputTransitionTF),
+    transform var(--inputTransitionDuration) var(--inputTransitionTF),
+    visibility 0ms var(--inputTransitionDuration) var(--inputTransitionTF),
+    z-index 0ms var(--inputTransitionDuration) var(--inputTransitionTF);
+}
+/* --------------------------------------------------------------------------*/
+
+/* --------------------------------------------------------------------------*/
+/* --------------------------------------------------------------------------*/
+.bouton16 {
+	border:none;
+	padding:6px 0 6px 0;
+	border-radius:75%;
+	border-bottom:7px solid #4753f3;
+	font:bold 13px Arial;
+	color:#555;
+	background:#fff;
+	box-shadow:2px 2px 3px #999;
+	border-top:2px solid #59cd27;
 }
