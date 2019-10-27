@@ -153,7 +153,7 @@ public class Game {
 	 * @see nextRound
 	 */
 	public boolean checkAnswer() {
-		System.out.println("Type in your guess");
+		System.out.println("Type in your guess"); 
 		String guessInput = sc.nextLine();
 		boolean choice = guessInput == this.image ? true : false;
 		return choice;

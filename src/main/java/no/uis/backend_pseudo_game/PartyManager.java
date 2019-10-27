@@ -3,7 +3,7 @@ package no.uis.backend_pseudo_game;
 import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 import no.uis.backend_pseudo_game.tools.TickExecution;
 
-import static no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType.*;
+import static no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType.*; 
 
 import static no.uis.backend_pseudo_game.Party.PartyStatus.*;
 

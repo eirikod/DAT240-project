@@ -5,7 +5,7 @@ import org.junit.Test;
 public class PartyManagerTest {
 
     @Test
-    public void createPartyTest() {
+    public void createPartyTest() { 
 
     }
 
