@@ -3,7 +3,7 @@ package no.uis.backend_pseudo_game;
 import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 import no.uis.backend_pseudo_game.tools.TickExecution;
 
-import static no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType.*; 
+import static no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType.*;
 
 import static no.uis.backend_pseudo_game.Party.PartyStatus.*;
 
@@ -45,7 +45,7 @@ public class PartyManager {
      * @return boolean
      * @author Alan Rostem
      */
-    private boolean isPlayerWaitingForParty(DummyPlayer.PlayerType type) {
+    public boolean isPlayerWaitingForParty(DummyPlayer.PlayerType type) {
         switch (type) {
             case PROPOSER:
                 return currentlyWaitingProposer != null;
@@ -57,12 +57,12 @@ public class PartyManager {
     }
 
     /**
-     * Checks if there is an open party available
+     * Returns true if an open party exists
      *
      * @return boolean
      * @author Alan Rostem
      */
-    private boolean isThereAnOpenParty() {
+    public boolean isThereAnOpenParty() {
         return currentOpenParty != null;
     }
 
@@ -100,7 +100,36 @@ public class PartyManager {
                 }
             }
         }
+
+        // Update all parties and remove those that are finished
+        for (Party party : parties) {
+            party.update();
+            if (party.getStatus() == FINISHED_GAME) {
+                parties.remove(party);
+            }
+        }
     }
+
+    /**
+     * Get the guesser waiting for a game
+     *
+     * @return DummyPlayer
+     * @author Alan Rostem
+     */
+    public DummyPlayer getCurrentlyWaitingGuesser() {
+        return currentlyWaitingGuesser;
+    }
+
+    /**
+     * Get the proposer waiting for a game
+     *
+     * @return DummyPlayer
+     * @author Alan Rostem
+     */
+    public DummyPlayer getCurrentlyWaitingProposer() {
+        return currentlyWaitingProposer;
+    }
+
 
     /**
      * Check if both respective player queues are empty
@@ -108,18 +137,26 @@ public class PartyManager {
      * @return boolean
      * @author Alan Rostem
      */
-    private boolean areBothQueuesEmpty() {
+    public boolean areBothQueuesEmpty() {
         return proposerQueue.size() == 0 && guesserQueue.size() == 0;
     }
 
-    private boolean isQueueNotEmpty(DummyPlayer.PlayerType type) {
+    /**
+     * Get the number of open/playing parties
+     * @return int
+     */
+    public int getPartyCount() {
+        return parties.size();
+    }
+
+    public boolean isQueueNotEmpty(DummyPlayer.PlayerType type) {
         switch (type) {
             case PROPOSER:
                 return proposerQueue.size() > 0;
             case GUESSER:
                 return guesserQueue.size() > 0;
             default:
-                return true;
+                return false;
         }
     }
 

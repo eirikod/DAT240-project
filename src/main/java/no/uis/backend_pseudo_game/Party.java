@@ -15,6 +15,13 @@ public class Party {
     private PartyStatus currentStatus;
 
     /**
+     * Sequential update method
+     */
+    public void update() {
+
+    }
+
+    /**
      * Party status enumerate class
      *
      * @author Alan Rostem
