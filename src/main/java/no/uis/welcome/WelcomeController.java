@@ -12,8 +12,8 @@ public class WelcomeController {
     @MessageMapping("/home")
     @SendTo("/broker/chat")
     public Greeting greeting(HelloMessage message) throws Exception {
-        Thread.sleep(1000); // simulated delay
-        return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
+        Thread.sleep(100); // simulated delay
+        return new Greeting(HtmlUtils.htmlEscape(message.getMessage()));
     }
 
     @GetMapping("/welcome")
