@@ -52,13 +52,6 @@ function onMessageReceived(data) {
     messages.appendChild(document.createElement('br'));
 }
 
-function range(length) {
-    let arr = [];
-    arr.length = length;
-    arr.fill(null, 0, length);
-    return arr;
-}
-
 for (let i = 1; i <= 3; i++) {
     const button = document.createElement('button');
     button.innerHTML = "Room" + i;
