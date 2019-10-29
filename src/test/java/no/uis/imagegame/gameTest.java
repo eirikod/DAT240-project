@@ -1,67 +1,28 @@
 package no.uis.imagegame;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
-public class gameTest {
+import no.uis.backend_pseudo_game.Game;
+import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 
-    @Test
-    public void gameTest() {
-
-    }
-
-    @Test
-    public void selectImageTest() {
-
-    }
-
-    @Test
-    public void getImageFolderTest() {
-
-    }
-
-    @Test
-    public void getAllLabelsTest() {
-
-    }
-
-    @Test
-    public void playTest() {
-
-
-    }
-
-    @Test
-    public void nestRoundTest() {
-
-
-    }
-
-    @Test
-    public void chooseSegmentTest() {
-
-
-    }
-
-    @Test
-    public void checkAnswerTest() {
-
-
-    }
-
-    @Test
-    public void giveUpTest() {
-
-
-    }
-
-    @Test
-    public void getScoreTest() {
-
-    
-    }
-
-    
-
-
-
+public class GameTest {
+	
+	/**
+	 * Testing init of new game
+	 */
+	@Test
+	public void newGame_instantiate() {
+		DummyPlayer testPlayer1 = new DummyPlayer();
+		DummyPlayer testPlayer2 = new DummyPlayer();
+		Game testGame = new Game(testPlayer1, testPlayer2);
+		assertEquals(true, testPlayer1 instanceof DummyPlayer);
+		assertEquals(true, testPlayer2 instanceof DummyPlayer);
+		assertEquals(true, testGame instanceof Game);
+	}
 }
+
+
+
+
