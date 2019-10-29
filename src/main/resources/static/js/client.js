@@ -1,16 +1,28 @@
+/**
+ * Composed class containing all socket functionality in abstract form
+ */
 class Client {
-    constructor(socketURL) {
+    constructor(socketURL = '/gs-guide-websocket') {
         this.socket = new SockJS(socketURL);
         this.stomp = Stomp.over(this.socket);
         const _this = this;
         this.stomp.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            _this.stomp.subscribe('/topic/greetings', function (greeting) {
-                console.log("Got this data:", JSON.parse(greeting.body).content);
-            });
+            for (let listener of _this.stompListenerQueue) {
+                _this.stomp.subscribe(listener.destination, listener.callback);
+            }
+            this.stompListenerQueue = null; // Delete the queue since all listeners have been added!
         });
+
+        this.stompListenerQueue = [];
     }
 
+    /**
+     *
+     * @param data {object} - Data to be sent to the server
+     * @param route {string} - Routing URL
+     * @author Alan Rostem
+     */
     send(data, route = "/app/hello") {
         if (data) {
             if (typeof data === "object") {
@@ -22,16 +34,24 @@ class Client {
     }
 
     /**
-     * Add a listener to a socket event
+     * Add a listener to a socket event and do something with the received data
      * @param destination {string} - Destination URL
      * @param callback {function} - Function that takes the data as parameter
+     * @author Alan Rostem
      */
     addStompListener(destination, callback) {
-        this.stomp.subscribe(destination, data => {
-            callback(JSON.parse(data.body).content);
+        this.stompListenerQueue.push({
+            destination: destination,
+            callback: data => {
+                callback(JSON.parse(data.body).content);
+            }
         });
     }
 
+    /**
+     * Disconnect the socket from the server
+     * @author Alan Rostem
+     */
     disconnect() {
         if (this.stomp !== null) {
             this.stomp.disconnect();
@@ -39,5 +59,3 @@ class Client {
         console.log("Disconnected.");
     }
 }
-
-const client = new Client('/gs-guide-websocket');
