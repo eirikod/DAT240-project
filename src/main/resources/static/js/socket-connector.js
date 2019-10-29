@@ -2,16 +2,20 @@
  * Composed class containing all socket functionality in abstract form
  */
 class SocketConnector {
-    constructor(socketURL = '/ws-default-connection') {
-        this.socket = new SockJS(socketURL);
+    constructor(endpoint = '/ws') {
+        this.connected = false;
+        this.subscriptions = {};
+        this.socket = new SockJS(endpoint);
         this.stomp = Stomp.over(this.socket);
         const _this = this;
         this.stomp.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             for (let listener of _this.stompListenerQueue) {
-                _this.stomp.subscribe(listener.destination, listener.callback);
+                _this.subscribe(listener.destination, listener.callback);
+
             }
-            this.stompListenerQueue = null; // Delete the queue since all listeners have been added!
+            _this.stompListenerQueue = null; // Delete the queue since all listeners have been added!
+            _this.connected = true;
         });
 
         this.stompListenerQueue = [];
@@ -23,7 +27,7 @@ class SocketConnector {
      * @param route {string} - Routing URL
      * @author Alan Rostem
      */
-    send(data, route = "/app/home") {
+    send(data, route) {
         if (data) {
             if (typeof data === "object") {
                 this.stomp.send(route, {}, JSON.stringify(data));
@@ -40,12 +44,41 @@ class SocketConnector {
      * @author Alan Rostem
      */
     addStompListener(destination, callback) {
-        this.stompListenerQueue.push({
-            destination: destination,
-            callback: data => {
+        if (!this.connected) {
+            this.stompListenerQueue.push({
+                destination: destination,
+                callback: data => {
+                    callback(JSON.parse(data.body).content);
+                }
+            });
+        } else {
+            this.subscribe(destination, callback);
+        }
+    }
+
+    /**
+     * TODO: Add docs
+     * @param destination
+     * @param callback
+     */
+    subscribe(destination, callback) {
+        this.subscriptions[destination] =
+            this.stomp.subscribe(destination, data => {
                 callback(JSON.parse(data.body).content);
-            }
-        });
+            });
+        //console.log(destination, this.subscriptions[destination])
+        return this.subscriptions[destination];
+    }
+
+    /**
+     * TODO: Add docs
+     * @param destination
+     */
+    unsubscribe(destination) {
+        if (this.subscriptions[destination]) {
+            this.subscriptions[destination].unsubscribe();
+            delete this.subscriptions[destination];
+        }
     }
 
     /**
