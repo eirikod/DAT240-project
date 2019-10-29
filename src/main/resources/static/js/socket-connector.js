@@ -2,7 +2,7 @@
  * Composed class containing all socket functionality in abstract form
  */
 class SocketConnector {
-    constructor(socketURL = '/gs-guide-websocket') {
+    constructor(socketURL = '/ws-default-connection') {
         this.socket = new SockJS(socketURL);
         this.stomp = Stomp.over(this.socket);
         const _this = this;
@@ -23,7 +23,7 @@ class SocketConnector {
      * @param route {string} - Routing URL
      * @author Alan Rostem
      */
-    send(data, route = "/app/hello") {
+    send(data, route = "/app/home") {
         if (data) {
             if (typeof data === "object") {
                 this.stomp.send(route, {}, JSON.stringify(data));
