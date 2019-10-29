@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import no.uis.players.Player;
 import no.uis.players.PlayerRepository;
@@ -45,9 +47,9 @@ public class ImageController {
     private Player proposer;
     private Player guesser;
     private String image;
-    private ArrayList<String> proposerImage;
-    private ArrayList<String> guesserImage;
-    private ArrayList<String> chosenSegments;
+    private String[] proposerImage;
+    private String[] guesserImage;
+    private String[] chosenSegments = new String[50];
     private int countTotalSegments;
   
     
@@ -73,26 +75,28 @@ public class ImageController {
 
 	@RequestMapping("/proposer")
 	public String showImage(Model model,
-			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name, //name of the image
+			@RequestParam(value = "selectedlabel", required = false, defaultValue="cinema") String name, //name of the image
 			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) //image chose by the proposer 
 	{
 		String[] files = labelReader.getImageFiles(name);
 		String image_folder_name = getImageFolder(files);
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
-		model.addAttribute("selectedlabel", name);
 		model.addAttribute("listlabels", imageLabels);
 		model.addAttribute("highestscore", HIGHER_SCORE);
+		model.addAttribute("selectedLabel", name);
 		
-		proposerImage = new ArrayList<String>();
-		guesserImage = new ArrayList<String>();
 		countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
+		proposerImage = new String [countTotalSegments];
+		guesserImage = new String [countTotalSegments];
 		
 		for (int i = 0; i < countTotalSegments-1; i++) {
-			proposerImage.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
+			proposerImage[i] = "images/scattered_images/" + image_folder_name + "/" + i + ".png";
 		}
 		model.addAttribute("listimages", proposerImage);
-		return "proposer"; // view
+		
+		return "proposer";
 	}
+	
 	
 	/**
 	 * Changes opacity of the proposer images that are chosen
@@ -114,21 +118,17 @@ public class ImageController {
     public String newSegment(Model model,
     		@RequestParam (value="selectedLabel", required=false, defaultValue="cinema") String name,
     		@RequestParam (value="id", required=false, defaultValue="-1") String id) {
+    	System.out.println(name);
     	if (id != "-1") {
     		String[] files = labelReader.getImageFiles(name);
     		String image_folder_name = getImageFolder(files);
         	int segmentID = Integer.parseInt(id);
     		System.out.println(id);
-    		guesserImage.add(segmentID, "images/scattered_images/" + image_folder_name + "/" + id  + ".png");
-    		return "/redirect";
-        } else {
-        	return "/proposer";
-        }
+    		guesserImage[segmentID] = "images/scattered_images/" + image_folder_name + "/" + id  + ".png";
+        } 
+    	return String.format("redirect:proposer?selectedLabel=%s",name);  
+
     }
-  
- 
-	// if model attribute of image is here --> set up arraylist of segments, if not wait and check later
-	//Guesser controller example
     
     /**
      * Guesser init, loads available segments
@@ -137,16 +137,15 @@ public class ImageController {
      * @param id
      * @return view
      */
-	@GetMapping("/guesser")
+	@RequestMapping("/guesser")
 	public String showImageGuesser(Model model,
 			@RequestParam (value="selectedLabel", required=false, defaultValue="cinema") String name,
 			@RequestParam (value="id", required=false, defaultValue="-1") String id) {
-		guesserImage = new ArrayList<String>();
 		String[] files = labelReader.getImageFiles(name);
 		String image_folder_name = getImageFolder(files);
 		for (int i = 0; i < countTotalSegments-1; i++) {
-			if (guesserImage.get(i) == null & chosenSegments.get(i) != null) {
-				guesserImage.add(i, "images/scattered_images/" + image_folder_name + "/" + i + ".png");
+			if (guesserImage[i] == null & chosenSegments[i] != null) {
+				guesserImage[i] = "images/scattered_images/" + image_folder_name + "/" + i + ".png";
 			}
 		}
 		model.addAttribute("listimagesproposed", guesserImage);
@@ -155,7 +154,7 @@ public class ImageController {
 	
 	
 	//Proposer Controller (example of a first part)
-	@GetMapping("/proposerImageSelection")
+	@RequestMapping("/proposerImageSelection")
 	public String showLabels(Model model) {
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
 		model.addAttribute("listlabels", imageLabels);
