@@ -30,7 +30,7 @@ public class PlayerController {
         model.addAttribute("givenAction", "/player");
         model.addAttribute("givenUserName", "");
         model.addAttribute("givenPlayerType", "");
-        return "entry";
+        return "player";
     }
 
     @RequestMapping(value = "/player", method = RequestMethod.POST)
