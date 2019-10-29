@@ -15,7 +15,7 @@ input.addEventListener("keydown", event => {
    }
 });
 
-client.addStompListener('/broker/chat', data => {
+client.addStompListener('/user/broker/chat', data => {
    const message = document.createElement('span');
    message.innerHTML = data;
    messages.appendChild(message);
