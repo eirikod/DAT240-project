@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableAutoConfiguration
 // TODO: Tell group about this key component
-@ComponentScan({"no.uis.websocket", "no.uis.imagegame", "no.uis.players",})
+@ComponentScan({"no.uis.welcome", "no.uis.imagegame", "no.uis.players",})
 public class ImagegameApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package no.uis.websocket;
+package no.uis.imagegame;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/welcome");
+        config.enableSimpleBroker("/broker");
         config.setApplicationDestinationPrefixes("/app");
     }
 

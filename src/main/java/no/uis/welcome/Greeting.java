@@ -1,4 +1,4 @@
-package no.uis.websocket;
+package no.uis.welcome;
 
 public class Greeting {
     private String content;

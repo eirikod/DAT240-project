@@ -1,7 +1,5 @@
-package no.uis.websocket;
+package no.uis.welcome;
 
-import no.uis.websocket.Greeting;
-import no.uis.websocket.HelloMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -12,7 +10,7 @@ import org.springframework.web.util.HtmlUtils;
 public class WelcomeController {
 
     @MessageMapping("/home")
-    @SendTo("/welcome/client")
+    @SendTo("/broker/chat")
     public Greeting greeting(HelloMessage message) throws Exception {
         Thread.sleep(1000); // simulated delay
         return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
