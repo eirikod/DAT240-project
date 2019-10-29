@@ -1,7 +1,7 @@
 /**
  * Composed class containing all socket functionality in abstract form
  */
-class Client {
+class SocketConnector {
     constructor(socketURL = '/gs-guide-websocket') {
         this.socket = new SockJS(socketURL);
         this.stomp = Stomp.over(this.socket);
