@@ -10,12 +10,11 @@ class SocketConnector {
         const _this = this;
         this.stomp.connect({}, function (frame) {
             console.log('Connected: ' + frame);
+            _this.connected = true;
             for (let listener of _this.stompListenerQueue) {
                 _this.subscribe(listener.destination, listener.callback);
-
             }
             _this.stompListenerQueue = null; // Delete the queue since all listeners have been added!
-            _this.connected = true;
         });
 
         this.stompListenerQueue = [];
@@ -48,7 +47,11 @@ class SocketConnector {
             this.stompListenerQueue.push({
                 destination: destination,
                 callback: data => {
-                    callback(JSON.parse(data.body).content);
+                    if (typeof data === "object") {
+                        callback(data);
+                    } else if (typeof data === "string"){
+                        callback(JSON.parse(data.body).content);
+                    }
                 }
             });
         } else {
@@ -79,6 +82,10 @@ class SocketConnector {
             this.subscriptions[destination].unsubscribe();
             delete this.subscriptions[destination];
         }
+    }
+
+    onConnect() {
+
     }
 
     /**

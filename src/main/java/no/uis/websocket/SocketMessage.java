@@ -1,20 +1,20 @@
-package no.uis.welcome;
+package no.uis.websocket;
 
-public class ChatMessage {
+public class SocketMessage {
 
     public enum MessageType {
         CHAT, JOIN, LEAVE
     }
 
-    private MessageType messageType;
+    private String messageType;
     private String content;
     private String sender;
 
-    public MessageType getType() {
+    public String getType() {
         return messageType;
     }
 
-    public void setType(MessageType messageType) {
+    public void setType(String messageType) {
         this.messageType = messageType;
     }
 
