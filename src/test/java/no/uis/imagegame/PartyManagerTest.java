@@ -26,7 +26,6 @@ public class PartyManagerTest {
         PartyManager partyManager = new PartyManager();
         Player guesser = new Player("Test", Player.PlayerType.GUESSER);
 
-
         Player proposer = new Player("Test", Player.PlayerType.PROPOSER);
 
 

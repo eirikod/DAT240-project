@@ -75,10 +75,15 @@ public class Player {
 		this.status = status;
 	}
 
-	public void update(SimpMessageSendingOperations messagingTemplate) {
+	public void sendData(SocketMessage message, SimpMessageSendingOperations messageSendingOperations) {
+		messageSendingOperations.convertAndSend("/channel/update/" + getUsername(),
+				message);
+	}
+
+	public void update(SimpMessageSendingOperations messageSendingOperations) {
 		SocketMessage message = new SocketMessage();
 		message.setContent("Haha this is a message!");
-		messagingTemplate.convertAndSend("/channel/update/" + getUsername(),
+		messageSendingOperations.convertAndSend("/channel/update/" + getUsername(),
 				message);
 	}
 }
