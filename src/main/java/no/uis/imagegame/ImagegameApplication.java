@@ -17,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // TODO: Tell group about this key component
 @ComponentScan({
         "no.uis.websocket",
-        "no.uis.welcome",
         "no.uis.imagegame",
         "no.uis.players",
         "no.uis.party",
