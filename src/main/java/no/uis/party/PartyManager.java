@@ -1,16 +1,13 @@
 package no.uis.party;
 
-import no.uis.backend_pseudo_game.tools.TickExecution;
 import no.uis.players.Player;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
 import static no.uis.players.Player.PlayerType.*;
-
-
 import static no.uis.party.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 /**
  * Singleton class that manages what party a player goes into depending on the role they select
@@ -34,26 +31,7 @@ public class PartyManager {
      */
     private Party createParty() {
         Party party = new Party();
-        parties.add(party);
         return party;
-    }
-
-    /**
-     * Checks if the given type of player is waiting to be put into a party
-     *
-     * @param type PlayerType
-     * @return boolean
-     * @author Alan Rostem
-     */
-    public boolean isPlayerWaitingForParty(Player.PlayerType type) {
-        switch (type) {
-            case PROPOSER:
-                return currentlyWaitingProposer != null;
-            case GUESSER:
-                return currentlyWaitingGuesser != null;
-            default:
-                return false;
-        }
     }
 
     /**
@@ -71,39 +49,37 @@ public class PartyManager {
      *
      * @author Alan Rostem
      */
-    public void update() {
-        if (!areBothQueuesEmpty()) {
-            if (!isThereAnOpenParty()) {
-                currentOpenParty = createParty();
-                System.out.println("Party opened! Parties created: " + parties.size());
+    public void update(SimpMessageSendingOperations messagingTemplate) {
+        if (!isThereAnOpenParty()) {
+            currentOpenParty = createParty();
+            System.out.println("Party opened! Parties created: " + parties.size());
+        }
+        // If both types of player are waiting, add them to the newly created party
+        if (currentlyWaitingGuesser != null && currentlyWaitingProposer != null) {
+            currentOpenParty.setGuesser(currentlyWaitingGuesser);
+            currentOpenParty.setProposer(currentlyWaitingProposer);
+            currentlyWaitingGuesser = null; // Guesser no longer waiting
+            currentlyWaitingProposer = null; // Proposer no longer waiting
+            currentOpenParty.setStatus(READY_TO_PLAY);
+            parties.add(currentOpenParty);
+            currentOpenParty = null; // Party is now closed
+            System.out.println("Both users put into party. Next!");
+        } else {
+            // If one or the other waiting player is non-existent, take them
+            // out of the queue and set them if the queues are not empty.
+            if (isQueueNotEmpty(GUESSER)) {
+                currentlyWaitingGuesser = guesserQueue.pop();
+                System.out.println("The guesser " + currentlyWaitingGuesser.getUsername() + " has waited long enough!");
             }
-            // If both types of player are waiting, add them to the newly created party
-            if (isPlayerWaitingForParty(GUESSER) && isPlayerWaitingForParty(PROPOSER)) {
-                currentOpenParty.setGuesser(currentlyWaitingGuesser);
-                currentOpenParty.setProposer(currentlyWaitingProposer);
-                currentlyWaitingGuesser = null; // Guesser no longer waiting
-                currentlyWaitingProposer = null; // Proposer no longer waiting
-                currentOpenParty.setStatus(READY_TO_PLAY);
-                currentOpenParty = null; // Party is now closed
-                System.out.println("Both users put into party. Next!");
-            } else {
-                // If one or the other waiting player is non-existent, take them
-                // out of the queue and set them if the queues are not empty.
-                if (isQueueNotEmpty(GUESSER)) {
-                    currentlyWaitingGuesser = guesserQueue.pop();
-                    System.out.println("The guesser " + currentlyWaitingGuesser.getUsername() + " has waited long enough!");
-                }
 
-                if (isQueueNotEmpty(PROPOSER)) {
-                    currentlyWaitingProposer = proposerQueue.pop();
-                    System.out.println("The proposer " + currentlyWaitingProposer.getUsername() + " has waited long enough!");
-                }
+            if (isQueueNotEmpty(PROPOSER)) {
+                currentlyWaitingProposer = proposerQueue.pop();
+                System.out.println("The proposer " + currentlyWaitingProposer.getUsername() + " has waited long enough!");
             }
         }
-
         // Update all parties and remove those that are finished
         for (Party party : parties) {
-            party.update();
+            party.update(messagingTemplate);
             if (party.getStatus() == FINISHED_GAME) {
                 parties.remove(party);
             }
@@ -130,19 +106,9 @@ public class PartyManager {
         return currentlyWaitingProposer;
     }
 
-
-    /**
-     * Check if both respective player queues are empty
-     *
-     * @return boolean
-     * @author Alan Rostem
-     */
-    public boolean areBothQueuesEmpty() {
-        return proposerQueue.size() == 0 && guesserQueue.size() == 0;
-    }
-
     /**
      * Get the number of open/playing parties
+     *
      * @return int
      */
     public int getPartyCount() {
@@ -187,7 +153,7 @@ public class PartyManager {
      *
      * @param player Either a proposer or guesser depending on the PlayerType
      * @author Alan Rostem
-     * @see no.uis.backend_pseudo_game.dummy.Player.PlayerType
+     * @see no.uis.players.Player.PlayerType
      */
     public void queueUpPlayer(Player player) {
         switch (player.getPlayerType()) {
@@ -198,32 +164,5 @@ public class PartyManager {
                 queueUpGuesser(player);
                 break;
         }
-    }
-
-    public static void main(String[] args) {
-        PartyManager partyManager = new PartyManager();
-        Player[] players = new Player[11];
-
-        for (int i = 0; i < players.length; i++) {
-            Player player;
-            if (i % 2 == 0) {
-                player = new Player("username_" + i, GUESSER);
-            } else {
-                player = new Player("username_" + i, PROPOSER);
-            }
-            players[i] = player;
-        }
-
-        AtomicInteger testIndex = new AtomicInteger();
-
-        TickExecution playerQueueing = new TickExecution(2000L, () -> {
-            if (testIndex.get() < players.length)
-                partyManager.queueUpPlayer(players[testIndex.getAndIncrement()]);
-        });
-
-        TickExecution partyUpdater = new TickExecution(100L, partyManager::update);
-
-        playerQueueing.execute();
-        partyUpdater.execute();
     }
 }

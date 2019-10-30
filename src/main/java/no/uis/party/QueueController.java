@@ -35,13 +35,7 @@ public class QueueController {
     }
 
     private void update() {
-        for (Player player : playerList) {
-            SocketMessage message = new SocketMessage();
-            message.setContent("Haha this is a message!");
-            messagingTemplate.convertAndSend(
-                    "/channel/test/" + player.getUsername(),
-                    message);
-        }
+        partyManager.update(messagingTemplate);
     }
 
     @Autowired

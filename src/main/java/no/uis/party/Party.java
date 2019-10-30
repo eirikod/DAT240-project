@@ -1,6 +1,7 @@
 package no.uis.party;
 
 import no.uis.players.Player;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 /**
  * Holds the game state data of the guesser and proposer.
@@ -17,8 +18,13 @@ public class Party {
     /**
      * Sequential update method
      */
-    public void update() {
-
+    public void update(SimpMessageSendingOperations messagingTemplate) {
+        if (guesser != null) {
+            guesser.update(messagingTemplate);
+        }
+        if (proposer != null) {
+            proposer.update(messagingTemplate);
+        }
     }
 
     /**

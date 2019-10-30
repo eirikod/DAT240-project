@@ -8,7 +8,7 @@ client.addStompListener('/user/channel/queueUp', data => {
     roomID = Number(data.content);
 });
 
-client.addStompListener(`/channel/test/${username}`, data => {
+client.addStompListener(`/channel/update/${username}`, data => {
     console.log("SPECIFIC TO USER ", username + ":", data)
 });
 

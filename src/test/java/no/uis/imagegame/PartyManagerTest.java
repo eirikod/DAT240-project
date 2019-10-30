@@ -15,11 +15,10 @@ public class PartyManagerTest {
         assertFalse(partyManager.isThereAnOpenParty());
 
         partyManager.queueUpPlayer(guesser);
-        partyManager.update();
+        partyManager.update(null);
 
         assertTrue(partyManager.isThereAnOpenParty());
 
-        assertEquals(1, partyManager.getPartyCount());
     }
 
     @Test
@@ -33,12 +32,14 @@ public class PartyManagerTest {
 
         partyManager.queueUpPlayer(guesser);
         assertTrue(partyManager.isQueueNotEmpty(Player.PlayerType.GUESSER));
-        partyManager.update();
+        partyManager.update(null);
 
         partyManager.queueUpPlayer(proposer);
         assertTrue(partyManager.isQueueNotEmpty(Player.PlayerType.PROPOSER));
-        partyManager.update();
+        partyManager.update(null);
 
         assertTrue(partyManager.areBothQueuesEmpty());
+        assertEquals(1, partyManager.getPartyCount());
+
     }
 }
