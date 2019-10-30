@@ -1,7 +1,7 @@
 package no.uis.imagegame;
 
-import no.uis.backend_pseudo_game.PartyManager;
-import no.uis.backend_pseudo_game.dummy.DummyPlayer;
+import no.uis.party.PartyManager;
+import no.uis.players.Player;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -10,8 +10,7 @@ public class PartyManagerTest {
     @Test
     public void createPartyTest() {
         PartyManager partyManager = new PartyManager();
-        DummyPlayer guesser = new DummyPlayer();
-        guesser.setPlayerType(DummyPlayer.PlayerType.GUESSER);
+        Player guesser = new Player("Test", Player.PlayerType.GUESSER);
 
         assertFalse(partyManager.isThereAnOpenParty());
 
@@ -26,18 +25,18 @@ public class PartyManagerTest {
     @Test
     public void queuePlayersTest() {
         PartyManager partyManager = new PartyManager();
-        DummyPlayer guesser = new DummyPlayer();
-        guesser.setPlayerType(DummyPlayer.PlayerType.GUESSER);
+        Player guesser = new Player("Test", Player.PlayerType.GUESSER);
 
-        DummyPlayer proposer = new DummyPlayer();
-        proposer.setPlayerType(DummyPlayer.PlayerType.PROPOSER);
+
+        Player proposer = new Player("Test", Player.PlayerType.PROPOSER);
+
 
         partyManager.queueUpPlayer(guesser);
-        assertTrue(partyManager.isQueueNotEmpty(DummyPlayer.PlayerType.GUESSER));
+        assertTrue(partyManager.isQueueNotEmpty(Player.PlayerType.GUESSER));
         partyManager.update();
 
         partyManager.queueUpPlayer(proposer);
-        assertTrue(partyManager.isQueueNotEmpty(DummyPlayer.PlayerType.PROPOSER));
+        assertTrue(partyManager.isQueueNotEmpty(Player.PlayerType.PROPOSER));
         partyManager.update();
 
         assertTrue(partyManager.areBothQueuesEmpty());

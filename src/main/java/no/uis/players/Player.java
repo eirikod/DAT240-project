@@ -71,5 +71,4 @@ public class Player {
 	public void setPlayerStatus(PlayerStatus status) {
 		this.status = status;
 	}
-
 }

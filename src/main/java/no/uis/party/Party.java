@@ -1,6 +1,6 @@
-package no.uis.backend_pseudo_game;
+package no.uis.party;
 
-import no.uis.backend_pseudo_game.dummy.DummyPlayer;
+import no.uis.players.Player;
 
 /**
  * Holds the game state data of the guesser and proposer.
@@ -10,8 +10,8 @@ import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 public class Party {
     // TODO: Add controller logic when ready to merge with the front-end
 
-    private DummyPlayer guesser;
-    private DummyPlayer proposer;
+    private Player guesser;
+    private Player proposer;
     private PartyStatus currentStatus;
 
     /**
@@ -66,7 +66,7 @@ public class Party {
      * @param proposer Player
      * @author Alan Rostem
      */
-    public void setProposer(DummyPlayer proposer) {
+    public void setProposer(Player proposer) {
         this.proposer = proposer;
     }
 
@@ -76,7 +76,7 @@ public class Party {
      * @param guesser Player
      * @author Alan Rostem
      */
-    public void setGuesser(DummyPlayer guesser) {
+    public void setGuesser(Player guesser) {
         this.guesser = guesser;
     }
 

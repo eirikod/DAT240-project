@@ -1,11 +1,11 @@
-package no.uis.backend_pseudo_game;
+package no.uis.party;
 
-import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 import no.uis.backend_pseudo_game.tools.TickExecution;
+import no.uis.players.Player;
+import static no.uis.players.Player.PlayerType.*;
 
-import static no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType.*;
 
-import static no.uis.backend_pseudo_game.Party.PartyStatus.*;
+import static no.uis.party.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -18,13 +18,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Alan Rostem
  */
 public class PartyManager {
-    private ArrayDeque<DummyPlayer> proposerQueue = new ArrayDeque<>();
-    private ArrayDeque<DummyPlayer> guesserQueue = new ArrayDeque<>();
+    private ArrayDeque<Player> proposerQueue = new ArrayDeque<>();
+    private ArrayDeque<Player> guesserQueue = new ArrayDeque<>();
     private ArrayList<Party> parties = new ArrayList<>();
 
     private Party currentOpenParty;
-    private DummyPlayer currentlyWaitingProposer;
-    private DummyPlayer currentlyWaitingGuesser;
+    private Player currentlyWaitingProposer;
+    private Player currentlyWaitingGuesser;
 
     /**
      * Creates a new party and pushes them into the array list where we update them in the future.
@@ -45,7 +45,7 @@ public class PartyManager {
      * @return boolean
      * @author Alan Rostem
      */
-    public boolean isPlayerWaitingForParty(DummyPlayer.PlayerType type) {
+    public boolean isPlayerWaitingForParty(Player.PlayerType type) {
         switch (type) {
             case PROPOSER:
                 return currentlyWaitingProposer != null;
@@ -113,20 +113,20 @@ public class PartyManager {
     /**
      * Get the guesser waiting for a game
      *
-     * @return DummyPlayer
+     * @return Player
      * @author Alan Rostem
      */
-    public DummyPlayer getCurrentlyWaitingGuesser() {
+    public Player getCurrentlyWaitingGuesser() {
         return currentlyWaitingGuesser;
     }
 
     /**
      * Get the proposer waiting for a game
      *
-     * @return DummyPlayer
+     * @return Player
      * @author Alan Rostem
      */
-    public DummyPlayer getCurrentlyWaitingProposer() {
+    public Player getCurrentlyWaitingProposer() {
         return currentlyWaitingProposer;
     }
 
@@ -149,7 +149,7 @@ public class PartyManager {
         return parties.size();
     }
 
-    public boolean isQueueNotEmpty(DummyPlayer.PlayerType type) {
+    public boolean isQueueNotEmpty(Player.PlayerType type) {
         switch (type) {
             case PROPOSER:
                 return proposerQueue.size() > 0;
@@ -166,7 +166,7 @@ public class PartyManager {
      * @param guesser Player with PlayerType GUESSER
      * @author Alan Rostem
      */
-    private void queueUpGuesser(DummyPlayer guesser) {
+    private void queueUpGuesser(Player guesser) {
         guesserQueue.add(guesser);
         System.out.println("We queued a guesser named " + guesser.getUsername() + "! Queue count: " + guesserQueue.size());
     }
@@ -177,7 +177,7 @@ public class PartyManager {
      * @param proposer Player with PlayerType GUESSER
      * @author Alan Rostem
      */
-    private void queueUpProposer(DummyPlayer proposer) {
+    private void queueUpProposer(Player proposer) {
         proposerQueue.add(proposer);
         System.out.println("We queued a proposer named " + proposer.getUsername() + "! Queue count: " + proposerQueue.size());
     }
@@ -187,9 +187,9 @@ public class PartyManager {
      *
      * @param player Either a proposer or guesser depending on the PlayerType
      * @author Alan Rostem
-     * @see no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType
+     * @see no.uis.backend_pseudo_game.dummy.Player.PlayerType
      */
-    public void queueUpPlayer(DummyPlayer player) {
+    public void queueUpPlayer(Player player) {
         switch (player.getPlayerType()) {
             case PROPOSER:
                 queueUpProposer(player);
@@ -202,14 +202,14 @@ public class PartyManager {
 
     public static void main(String[] args) {
         PartyManager partyManager = new PartyManager();
-        DummyPlayer[] players = new DummyPlayer[11];
+        Player[] players = new Player[11];
 
         for (int i = 0; i < players.length; i++) {
-            DummyPlayer player;
+            Player player;
             if (i % 2 == 0) {
-                player = new DummyPlayer("username_" + i, GUESSER);
+                player = new Player("username_" + i, GUESSER);
             } else {
-                player = new DummyPlayer("username_" + i, PROPOSER);
+                player = new Player("username_" + i, PROPOSER);
             }
             players[i] = player;
         }
