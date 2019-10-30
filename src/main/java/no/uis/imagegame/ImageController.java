@@ -1,6 +1,7 @@
 package no.uis.imagegame;
 
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,10 +9,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import no.uis.players.Player;
 import no.uis.players.PlayerRepository;
@@ -35,11 +40,42 @@ public class ImageController {
 	//Initialize my label reader
 	ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
 			"src/main/resources/static/label/image_mapping.csv");
+	
+	private int score;
+	private int guesses;
+	
+    private Player proposer;
+    private Player guesser;
+    private String image;
+    private String[] proposerImage;
+    private String[] guesserImage;
+    private String[] chosenSegments = new String[50];
+    private int countTotalSegments;
+  
+    
+    /**
+     * Returns player to correct view
+     * @param model
+     * @param player
+     * @return players view
+     */
+    @RequestMapping("/game")
+    public String Game(Model model,
+    		@RequestParam(value = "player", required = true) Player player) {
+    	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
+    }
+    
+  /**
+   * Proposer init, loads picture and player stats
+   * @param model
+   * @param name
+   * @param id
+   * @return view
+   */
 
-	//Proposer controller example
 	@RequestMapping("/proposer")
 	public String showImage(Model model,
-			@RequestParam(value = "selectedlabel", required = false, defaultValue = "cinema") String name, //name of the image
+			@RequestParam(value = "selectedlabel", required = false, defaultValue="cinema") String name, //name of the image
 			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) //image chose by the proposer 
 	{
 		String[] files = labelReader.getImageFiles(name);
@@ -49,37 +85,78 @@ public class ImageController {
 		model.addAttribute("selectedlabel", name);
 		model.addAttribute("listlabels", imageLabels);
 		model.addAttribute("highestscore", HIGHER_SCORE);
-		ArrayList<String> images = new ArrayList<String>();
-		for (int i = 0; i < 49; ++i) {
-			images.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
+		model.addAttribute("selectedLabel", name);
+		
+		countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
+		proposerImage = new String [countTotalSegments];
+		guesserImage = new String [countTotalSegments];
+		
+		for (int i = 0; i < countTotalSegments-1; i++) {
+			proposerImage[i] = "images/scattered_images/" + image_folder_name + "/" + i + ".png";
 		}
-		model.addAttribute("listimages", images);
-		return "proposer"; // view
+		model.addAttribute("listimages", proposerImage);
+		
+		return "proposer";
 	}
 	
-	//Guesser controller example
+	
+	/**
+	 * Changes opacity of the proposer images that are chosen
+	 * @return chosen segments by ID
+	 */
+	/*public String chosenSegments() {
+		/TODO
+	}
+	*/
+	
+    
+	/**
+	 * Adds the chosen segment to the guessers view
+	 * @param id
+	 * @param name
+	 * @return redirect
+	 */
+    @RequestMapping(value = "/proposer", method = RequestMethod.POST)
+    public String newSegment(Model model,
+    		@RequestParam (value="selectedLabel", required=false, defaultValue="cinema") String name,
+    		@RequestParam (value="id", required=false, defaultValue="-1") String id) {
+    	System.out.println(name);
+    	if (id != "-1") {
+    		String[] files = labelReader.getImageFiles(name);
+    		String image_folder_name = getImageFolder(files);
+        	int segmentID = Integer.parseInt(id);
+    		System.out.println(id);
+    		guesserImage[segmentID] = "images/scattered_images/" + image_folder_name + "/" + id  + ".png";
+        } 
+    	return String.format("redirect:proposer?selectedLabel=%s",name);  
+
+    }
+    
+    /**
+     * Guesser init, loads available segments
+     * @param model
+     * @param name
+     * @param id
+     * @return view
+     */
 	@RequestMapping("/guesser")
-	public String showImage(Model model,
-			@RequestParam(value = "submettedGuess", required = false, defaultValue = "") String guess) {
-		System.out.println(guess);
-		ArrayList<String> images = new ArrayList<String>();
-		String[] files = labelReader.getImageFiles("cinema");
+	public String showImageGuesser(Model model,
+			@RequestParam (value="selectedLabel", required=false, defaultValue="cinema") String name,
+			@RequestParam (value="id", required=false, defaultValue="-1") String id) {
+		String[] files = labelReader.getImageFiles(name);
 		String image_folder_name = getImageFolder(files);
-		images.add("images/scattered_images/" + image_folder_name + "/" + 25 + ".png");
-		images.add("images/scattered_images/" + image_folder_name + "/" + 24 + ".png");
-		images.add("images/scattered_images/" + image_folder_name + "/" + 23 + ".png");
-		model.addAttribute("listimagesproposed", images);
+		for (int i = 0; i < countTotalSegments-1; i++) {
+			if (guesserImage[i] == null & chosenSegments[i] != null) {
+				guesserImage[i] = "images/scattered_images/" + image_folder_name + "/" + i + ".png";
+			}
+		}
+		model.addAttribute("listimagesproposed", guesserImage);
 		return "guesser";//view
 	}
-
-	@GetMapping("/game")
-	public String game(Model model, @RequestParam(value = "id", required = true, defaultValue = "-1") String name) {
-		System.out.println(name);
-		return "proposer";//View
-	}
-
+	
+	
 	//Proposer Controller (example of a first part)
-	@GetMapping("/proposerImageSelection")
+	@RequestMapping("/proposerImageSelection")
 	public String showLabels(Model model) {
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
 		model.addAttribute("listlabels", imageLabels);

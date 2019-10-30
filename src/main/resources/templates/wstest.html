@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebSocket</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="js/structures/socket-connector.js"></script>
+
+</head>
+<body>
+<h1>Welcome! Chat with other people!</h1>
+
+<div style="text-align: center;">
+    <label for="chat-input">General: </label>
+    <input type="text" id="chat-input">
+    <div id="messages"></div>
+</div>
+<script src="js/page_inits/chat.js"></script>
+
+</body>
+</html>

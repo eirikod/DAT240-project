@@ -1,5 +1,8 @@
 package no.uis.players;
 
+import no.uis.websocket.SocketMessage;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -72,4 +75,15 @@ public class Player {
 		this.status = status;
 	}
 
+	public void sendData(SocketMessage message, SimpMessageSendingOperations messageSendingOperations) {
+		messageSendingOperations.convertAndSend("/channel/update/" + getUsername(),
+				message);
+	}
+
+	public void update(SimpMessageSendingOperations messageSendingOperations) {
+		SocketMessage message = new SocketMessage();
+		message.setContent("Haha this is a message!");
+		messageSendingOperations.convertAndSend("/channel/update/" + getUsername(),
+				message);
+	}
 }
