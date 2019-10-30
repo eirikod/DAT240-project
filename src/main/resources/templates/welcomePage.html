@@ -2,10 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>WELCOME</title>
 <link th:href="@{/css/main.css}" rel="stylesheet">
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+.picColumn{
+width:100%;
+height: 300px;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+
+[class*="col-"] {
+  float: left;
+  padding: 15px;
+  
+}
+
+.header{
+background-color:PaleTurquoise;
+}
+
+.label_game{
+color:black;
+border:4px solid PaleTurquoise;
+text-align:left;
+}
+
+.container {
+  padding: 16px;
+}
+
+
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+</style>
+
+
 </head>
 <body>
+<div class="header">
+	<div class="row">
+	<h1>WELCOME TO "GUESS WHAT?"</h1>
+	</div>
+</div>	
+
+<div class="row">
+  <div class="column" style="border:5px solid powderblue;">
+	<select>
+  	<option value="0">MODE</option>
+  	<option value="Singleplayer">Singleplayer</option>
+  	<option value="Multiplayer">Multiplayer</option>
+  	
+	</select>
+  
+<br> 
+<br> 
+
+	<select>
+	<option value="0">ROLE</option>
+	<option value="Guesser">Guesser</option>
+	<option value="Proposer">Proposer</option>
+	</select>
+
+<br> 
+<br>
+
+<!-- CHANGE ONCLICK, MAKE JAVASCRIPT -->
+	<button type="button" onclick="document.getElementById('demo').innerHTML = Date()"> RESEARCH PARTY </button>
+ </div>
+  
+  <div class="column" style="border:5px solid powderblue;">
+    <div class="container">
+    <label for="uname"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" name="uname" required>
+	<br>
+	<br>
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="psw" required>
+    
+    <br>
+    <button type="submit">Login</button>
+  	</div>
+  </div>
+  
+</div>
+	
+	<!--  
 	  <span th:text="${obj.name}"> </span>
 	  <span th:text="${obj.id}"> </span>
 	  
@@ -14,5 +138,7 @@
 	  <input type="text" name="name"><br>
 	  <input type="submit">
 	  </form>
+	 --> 
+	  
 </body>
 </html>
