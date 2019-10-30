@@ -38,7 +38,6 @@ public class PartyManagerTest {
         assertTrue(partyManager.isQueueNotEmpty(Player.PlayerType.PROPOSER));
         partyManager.update(null);
 
-        assertTrue(partyManager.areBothQueuesEmpty());
         assertEquals(1, partyManager.getPartyCount());
 
     }
