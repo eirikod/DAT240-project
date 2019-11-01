@@ -13,6 +13,8 @@
 	<script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<!--     <script type="text/javascript" th:src="@{/js/socket-connector.js}"></script> -->
+    <script src="js/structures/socket-connector.js"></script>
     <script type="text/javascript" th:src="@{/js/welcomePage.js}"></script>
 	
 	<style>
@@ -25,7 +27,6 @@
 	  float: left;
 	  width: 50%;
 	  padding: 10px;
-	  height: 300px; /* Should be removed. Only for demonstration */
 	}
 	
 	.picColumn{
@@ -94,29 +95,37 @@
 <body>
 <div class="header">
 	<div class="row">
-	<h1>WELCOME TO "GUESS WHAT?"</h1>
+		<div class="container">
+			<h1 >WELCOME TO "GUESS WHAT?"</h1>
+		</div>
 	</div>
 </div>
 
 <div class="row">
+	<button id="connect" class="btn btn-default" type="submit">Websocket Connection</button>
 	<div class="column" style="border:5px solid powderblue;">
 		<div th:switch="${user.isLogged}">
 				<div th:case="true">
 					<form action="welcomePage" method="POST">
-					    <select  id="dropOperator" name="selectedPlayModelabel">
-						    <option value="0">Select a label </option>
+					    <select  id="dropOperator" name="selectedPlayModelabel"  class="browser-default custom-select custom-select-lg mb-3">
+						    <option value="0">Select the play mode </option>
 						    <option th:each="label : ${listPlayMode}" th:value="${label}" th:text="${label}"></option>
 					    </select>
-					    <select  id="dropOperator2" name="selectedPlayerModelabel">
-						    <option value="0">Select a label </option>
+					    <select  id="dropOperator2" name="selectedPlayerModelabel"  class="browser-default custom-select custom-select-lg mb-3">
+						    <option value="0">Select the player mode</option>
 						    <option th:each="label : ${listPlayerMode}" th:value="${label}" th:text="${label}"></option>
 					    </select>
-					    <input type="submit">
+<!-- 					    <input type="submit"> -->
 					</form>
-					<button id="connect" class="btn btn-default" type="submit">Websocket Connection</button>
-					<button id="search" class="btn btn-default" type="submit">Research a party</button>
+					<button type="button" id="researchParty"> RESEARCH PARTY </button>
+					<div class="d-flex justify-content-center" id="loader" style="visibility:hidden;">
+						<div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+	  						<span class="sr-only">Loading...</span>
+						</div>
+					</div>
+<!-- 					<button id="search" class="btn btn-default" type="submit">Research a party</button> -->
 					<form id="navigateur" action="welcomePage" method="GET">
-						<button id="Begin party" class="btn btn-default" type="submit">Go to the party</button>
+						<button id="Begin party" class="btn btn-outline-success" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="submit">Go to the party</button>
 					</form>
 					
 				</div>
@@ -131,17 +140,16 @@
 <br>
 <br>
 
-	<select>
-	<option value="0">ROLE</option>
-	<option value="Guesser">Guesser</option>
-	<option value="Proposer">Proposer</option>
-	</select>
+<!-- 	<select> -->
+<!-- 	<option value="0">ROLE</option> -->
+<!-- 	<option value="Guesser">Guesser</option> -->
+<!-- 	<option value="Proposer">Proposer</option> -->
+<!-- 	</select> -->
 
 <br>
 <br>
 
 <!-- CHANGE ONCLICK, MAKE JAVASCRIPT -->
-	<button type="button" onclick="document.getElementById('demo').innerHTML = Date()"> RESEARCH PARTY </button>
  </div>
 
   <div class="column" style="border:5px solid powderblue;">
@@ -156,12 +164,12 @@
 							<div class='loginContent'>
 								<div class='loginWelcome'>Hello There!</div>
 								<div class='loginSubtitle'>Before playing, sign up or create an account ;).</div>
-								<div class='loginInput-fields'>
+								<div class='loginInput-fields' id="loginDiv">
 									<input name="pseudo" type='text' placeholder='Username' class='loginInput-line loginFull-width'></input>
 									<input name="password" type='password' placeholder='Password' class='loginInput-line loginFull-width'></input>
 								</div>
 						        <div>
-						        	<input class="loginGhost-round loginFull-width" value="create Account" type="submit">
+						        	<input class="loginGhost-round loginFull-width" id="login" value="create Account" type="submit">
 						        </div>
 							</div>
 						</div>
@@ -175,10 +183,12 @@
 						<div class='loginWindow'>
 							<div class='loginOverlay'></div>
 							<div class='loginContent'>
-<!-- 							<div class='loginWelcome' th:text="${user.name}"> </div> -->
-<!-- 							<p th:text="${user.name}"></p> -->
 								<span class='loginWelcome'>
 								Pseudo : <span th:text="${user.name}"></span>
+								<br>
+								Highest Score : <span th:text="${user.highestScore}"></span>
+								<br>
+								On  <span th:text="${user.map}"></span>
 								</span>
 							</div>
 						</div>
@@ -186,7 +196,6 @@
 				</div>
 			</div>
 			  <p th:case="#{roles.manager}">User is a manager</p>
-			  <p th:case="*">User is some other thing</p> 
 			
 			</div>
   	</div>
