@@ -3,11 +3,16 @@ package no.uis.imagegame;
 import java.io.*;
 import java.util.*;
 
+import static java.lang.String.format;
+import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +76,21 @@ public class ImageController {
     		@RequestParam(value = "player", required = true) Player player) {
     	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
     }
-    
+
+	@MessageMapping("/party/{partyId}/addUser")
+	public void addUser(@DestinationVariable String roomId, @Payload SocketMessage chatMessage,
+						SimpMessageHeaderAccessor headerAccessor) {
+		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", roomId);
+		if (currentRoomId != null) {
+			SocketMessage leaveMessage = new SocketMessage();
+			leaveMessage.setType("LEAVE");
+			leaveMessage.setSender(chatMessage.getSender());
+			messagingTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
+		}
+		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+		messagingTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
+	}
+
   /**
    * Proposer init, loads picture and player stats
    * @param model
