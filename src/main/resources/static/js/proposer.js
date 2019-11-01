@@ -18,11 +18,13 @@ var partyId = "";
 function sendImageId(id){
 	console.log(id);
 	console.log("sendImageId used");
-	client.send("/app/welcomePage", {}, JSON.stringify({'selectedPlayModelabel': $("#dropOperator").val(), 'selectedPlayerModelabel': $("#dropOperator2").val()}));
 	const message = {
-		content: JSON.stringify({'idImage': id})
+		sender : username,
+		content:id,
+		type: "JOIN"
 	};
-	client.send(chatMessage, `${topic}/sendImageId`);
+//	client.send(message, `app/party/queueUp`);
+	client.send(message, `app/party/${partyId}/sendImageId`);
 }
 
 /**
@@ -35,6 +37,7 @@ function subscribe(user_id, party_id){
 	console.log("Subscribe begins--------------------");
 	userId = user_id;
 	partyId = party_id;
+	console.log(user_id);
 	client.addStompListener(`/channel/update/${userId}`, update);
 	console.log("Subscribe ends--------------------");
 }
@@ -66,9 +69,7 @@ $(function () {
 * @author Grégoire Guillien
 */
 document.addEventListener("mouseover", ({ target }) => {
-	console.log(target)
 	if (target.className === "myButton") {
-		console.log(target);
 		var element = document.getElementById(target.value).parentElement;
 		element.className = "beta-mask";
 	}
@@ -95,9 +96,9 @@ document.addEventListener("mouseout", ({ target }) => {
 */
 document.addEventListener("click", ({ target }) => {
 	if (target.className === "myButton") {
-		console.log("button clicked");
 		console.log(target);
 		var element = document.getElementById(target.value).parentElement;
+		sendImageId(target.value);
 		target.disabled=true;
 		target.className="";
 	}

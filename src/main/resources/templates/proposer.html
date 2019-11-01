@@ -160,12 +160,12 @@
 			<div class="row">
 
 				<div th:each="image,iter : ${listimages}" class="alpha-mask">
-				 		<form action="/proposer" method="POST">
+<!-- 				 		<form action="/proposer" method="POST"> -->
 				 			<input name="id" th:value="${iter.index}" type="hidden" />
 				 			<input name="selectedlabel" th:value="${selectedlabel}" type="hidden" />	 		
 					 		<input class="myButton" th:value="${iter.index}" type="submit">
 				 			
-				 		</form>		
+<!-- 				 		</form>		 -->
 				 			 		
 					<br>
 				</div>
@@ -205,12 +205,10 @@
  
 <script th:inline="javascript">
 /*<![CDATA[*/
-
+	//Thimeleaf attribute
     var userId = /*[[${userId}]]*/ 'default';
-    console.log(userId);
-	
+
 	var partyId = /*[[${partyId}]]*/ 'default';
-    console.log(partyId);
     
     subscribe(userId, partyId);
 
