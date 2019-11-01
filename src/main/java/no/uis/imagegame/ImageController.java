@@ -36,10 +36,7 @@ public class ImageController {
 	
 	//Static parameters
 	final static int HIGHER_SCORE = 100;
-	final static String CONST_PLAY_MODE = "listPlayMode";
-	final static String CONST_PLAYER_MODE = "listPlayerMode";
-	
-	
+
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
 	private Resource[] resources;
@@ -196,32 +193,6 @@ public class ImageController {
 			labels.add(label);
 		}
 		return labels;
-	}
-
-	//WelcomePage controller example
-	@RequestMapping("/welcomePage")
-	public String newEntry(Model model, User user, @RequestParam(value = "username") String username,
-			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
-			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
-		System.out.println("playMode : " + playMode);
-		System.out.println("playerMode : " + playerMode);
-		//model.addAttribute("obj", user);
-		model.addAttribute("pseudo", "bernard");
-		User2 user2 = new User2();
-		model.addAttribute("user", user2);
-		ArrayList<String> lstPlayMode = new ArrayList<String>();
-		lstPlayMode.add("GUESSER");
-		lstPlayMode.add("PROPOSER");
-		model.addAttribute(CONST_PLAY_MODE, lstPlayMode);
-		
-		ArrayList<String> lstPlayerMode = new ArrayList<String>();
-		lstPlayerMode.add("SINGLE PLAYER");
-		lstPlayerMode.add("MULTIPLE PLAYER");
-		model.addAttribute(CONST_PLAYER_MODE, lstPlayerMode);
-		model.addAttribute("username", username);
-		
-		System.out.println(user.getName());
-		return "welcomePage";
 	}
 
 	@RequestMapping("/addPlayer")
