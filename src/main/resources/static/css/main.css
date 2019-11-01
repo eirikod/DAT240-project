@@ -92,6 +92,17 @@ img
   mask-type: alpha;
 }
 
+.gamma-mask {
+  filter: contrast(100%);
+  opacity = 1;
+  top: 0px;
+  position:absolute;
+  left: 0px;
+  padding: 5px;
+  mask-type: alpha;
+  disabled : true
+}
+
 .img-mask {
   -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
