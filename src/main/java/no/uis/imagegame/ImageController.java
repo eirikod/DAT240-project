@@ -27,7 +27,6 @@ import no.uis.imagegame.ImageController.Greeting;
 import no.uis.imagegame.ImageController.HelloMessage;
 import no.uis.imagegame.ImageController.User2;
 import no.uis.players.Player;
-import no.uis.players.PlayerRepository;
 import no.uis.players.User;
 import no.uis.players.Player.PlayerType;
 

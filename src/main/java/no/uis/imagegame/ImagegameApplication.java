@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableAutoConfiguration
+@EnableJpaRepositories("no.uis.repositories")
 @ComponentScan({
         "no.uis.websocket",
         "no.uis.imagegame",

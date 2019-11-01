@@ -1,46 +1,20 @@
 package no.uis.players;
 
-import no.uis.tools.FileParser;
+import no.uis.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import no.uis.players.Player.PlayerType;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-
 @Controller
 public class PlayerController {
-    private static final String PLAYER_DATA_FILE_PATH = "src/main/resources/data/player_data.txt";
-//    @Autowired
-//    PlayerRepository entryRepository;
 
-    static HashMap<String, Player> playerHashMap = new HashMap<>();
-
-    public static Player getPlayer(String username) {
-        return playerHashMap.get(username);
-    }
-
-    PlayerController() {
-        FileParser.parseText(PLAYER_DATA_FILE_PATH, (String line) -> {
-            if (line.length() > 0) {
-                String[] strings = line.split(",");
-                String username = strings[0];
-                String password = strings[1];
-                Player player = new Player(username, password);
-                playerHashMap.put(username, player);
-            }
-        });
-    }
+    @Autowired
+    private PlayerRepository playerRepository;
 
     @RequestMapping("/")
     public String home(Model model) {
@@ -53,23 +27,14 @@ public class PlayerController {
                            @RequestParam(value = "reg_password") String reg_password,
                            @RequestParam(value = "reg_confirmpass") String reg_confirmpass
     ) {
-        if (!playerHashMap.containsKey(reg_username)) {
-            if (reg_confirmpass.equals(reg_password)) {
-                model.addAttribute("username", reg_username);
-                registerUser(reg_username, reg_password);
-                return "showUser";
-            }
-            return "login-register"; // TODO: Tell user to confirm pass
+        //System.out.println(playerRepository.findByUsername(reg_username).size());
+        if (reg_confirmpass.equals(reg_password)) {
+            createUser(reg_username, reg_password);
+            model.addAttribute("username", playerRepository.findByUsername(reg_username).get(0).getUsername());
+            return "showUser";
         }
-        return "login-register"; // TODO: Tell user that username exists
-    }
-
-    private static void registerUser(String username, String password) {
-        Player player = new Player(username, password);
-        playerHashMap.put(username, player);
-        String playerData = username + "," + password + "\n";
-        FileParser.writeTo(PLAYER_DATA_FILE_PATH, playerData);
-        System.out.println("Registered a new user: " + playerHashMap.get(username));
+        return "login-register"; // TODO: Tell user to confirm pass
+        //return "login-register"; // TODO: Tell user that username exists
     }
 
     @RequestMapping(value = "/player", method = RequestMethod.GET)
@@ -83,8 +48,14 @@ public class PlayerController {
 
     @RequestMapping(value = "/player", method = RequestMethod.POST)
     public String addEntry(@RequestParam String username, @RequestParam PlayerType type) {
-    	Player newEntry = new Player(username, type);
+        Player newEntry = new Player(username, type);
         return "redirect:/";
+    }
+
+    private void createUser(String username, String password) {
+        Player player = new Player(username, password);
+        playerRepository.save(player);
+        System.out.println("Created a new player: " + player);
     }
 
 }
