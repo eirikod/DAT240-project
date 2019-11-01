@@ -6,7 +6,10 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.messaging.core.MessageSendingOperations;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import org.springframework.web.util.HtmlUtils;
 
@@ -28,6 +33,7 @@ import no.uis.imagegame.ImageController.HelloMessage;
 import no.uis.imagegame.ImageController.User2;
 import no.uis.players.Player;
 import no.uis.players.User;
+import no.uis.websocket.SocketMessage;
 import no.uis.players.Player.PlayerType;
 
 
@@ -38,8 +44,10 @@ public class ImageController {
 	final static int HIGHER_SCORE = 100;
 	final static String CONST_PLAY_MODE = "listPlayMode";
 	final static String CONST_PLAYER_MODE = "listPlayerMode";
-	final static String USER_ID = "54";
+	final static String USER_ID = "20";
 	final static String PARTY_ID = "20";
+	final static String ADDR_CALLBACK_IMAGE = "app/party/20/sendImageId";
+	final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/20";
 	
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
@@ -48,6 +56,9 @@ public class ImageController {
 	//Initialize my label reader
 	ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
 			"src/main/resources/static/label/image_mapping.csv");
+	
+	@Autowired
+	private SimpMessageSendingOperations messageTemplate;
 	
 	private int score;
 	private int guesses;
@@ -141,6 +152,14 @@ public class ImageController {
     	return String.format("redirect:proposer?selectedLabel=%s",name);  
 
     }
+    
+	@MessageMapping("/party/20/sendImageId")
+	public void update(){
+		System.out.println("update ---------------------------------------------------");
+		SocketMessage sockMess = new SocketMessage();
+		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
+		return;
+  }
     
     /**
      * Guesser init, loads available segments
@@ -261,16 +280,6 @@ public class ImageController {
 	public String hello() {
 		return "index";
 	}
-	
-//	@MessageMapping("/hello")
-//    @SendTo("/topic/greetings")
-//    public Greeting greeting(HelloMessage message) throws Exception {
-//		System.out.println("Avant délai ---------------------------------------------------");
-//		System.out.println(message.name);
-//        Thread.sleep(1000); // simulated delay
-//		System.out.println("Après délai ---------------------------------------------------");
-//		return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
-//    }
 	
 	@MessageMapping("/hello")
     @SendTo("/channel/greetings")
