@@ -14,7 +14,7 @@ public class Player {
 	@Column(name="username")
 	private String username;
 	@Column(name="password")
-	private transient String password;
+	private String password;
     private PlayerType type;
     private PlayerStatus status;
 	@Column(name="score")

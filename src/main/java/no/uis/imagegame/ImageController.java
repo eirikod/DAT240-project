@@ -203,7 +203,7 @@ public class ImageController {
 
 	//WelcomePage controller example
 	@RequestMapping("/welcomePage")
-	public String newEntry(Model model, User user,
+	public String newEntry(Model model, User user, @RequestParam(value = "username") String username,
 			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
 			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
 		System.out.println("playMode : " + playMode);
@@ -221,6 +221,7 @@ public class ImageController {
 		lstPlayerMode.add("SINGLE PLAYER");
 		lstPlayerMode.add("MULTIPLE PLAYER");
 		model.addAttribute(CONST_PLAYER_MODE, lstPlayerMode);
+		model.addAttribute("username", username);
 		
 		System.out.println(user.getName());
 		return "welcomePage";

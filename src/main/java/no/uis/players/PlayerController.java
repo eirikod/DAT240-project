@@ -18,7 +18,7 @@ public class PlayerController {
 
     @RequestMapping("/")
     public String home(Model model) {
-        return "login-register";
+        return "loginPage";
     }
 
     @RequestMapping("reg-post")
@@ -29,13 +29,14 @@ public class PlayerController {
     ) {
         if (!userExists(reg_username)) {
             if (reg_confirmpass.equals(reg_password)) {
-                createUser(reg_username, reg_password);
-                model.addAttribute("username", playerRepository.findByUsername(reg_username).get(0).getUsername());
-                return "showUser";
+                Player player = createUser(reg_username, reg_password);
+                return "redirect:welcomePage?username=" + reg_username + "&id=" + player.getId();
             }
-            return "login-register"; // TODO: Tell user to confirm pass
+            model.addAttribute("invalid_message", "Please confirm your password.");
+            return "loginPage";
         }
-        return "login-register"; // TODO: Tell user that username exists
+        model.addAttribute("invalid_message", "This username already exists!");
+        return "loginPage";
     }
 
     @RequestMapping("login-post")
@@ -43,13 +44,13 @@ public class PlayerController {
                         @RequestParam(value = "login_username") String login_username,
                         @RequestParam(value = "login_password") String login_password) {
         if (userExists(login_username)) {
-            Player player = playerRepository.findByUsername(login_username).get(0);
+            Player player = playerRepository.findByUsername(login_username);
             if (player.getPassword().equals(login_password)) {
                 model.addAttribute("username", player.getUsername());
                 return "showUser";
             }
         }
-        return "login-register"; // TODO: Tell user that credentials were invalid
+        return "loginPage"; // TODO: Tell user that credentials were invalid
     }
 
     @RequestMapping(value = "/player", method = RequestMethod.GET)
@@ -67,13 +68,14 @@ public class PlayerController {
         return "redirect:/";
     }
 
-    private void createUser(String username, String password) {
+    private Player createUser(String username, String password) {
         Player player = new Player(username, password);
         playerRepository.save(player);
         System.out.println("Created a new player: " + player);
+        return player;
     }
 
     private boolean userExists(String username) {
-        return playerRepository.findByUsername(username).size() == 1;
+        return playerRepository.findByUsername(username) != null;
     }
 }
