@@ -14,19 +14,26 @@ public class Player {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String username;
+	private transient String password;
 	private PlayerType type;
 	private PlayerStatus status;
 	private int score;
 
+	public String getPassword() {
+		return password;
+	}
+
 	public enum PlayerType {
 		GUESSER, PROPOSER
-	};
+	}
 
 	public enum PlayerStatus {
 		WAITING, PLAYING, FINISHED
-	};
+	}
 
-	protected Player() {
+	protected Player(String username, String password) {
+		this.username = username;
+		this.password = password;
 	}
 
 	public Player(String username, PlayerType pType) {
@@ -83,7 +90,10 @@ public class Player {
 	public void update(SimpMessageSendingOperations messageSendingOperations) {
 		SocketMessage message = new SocketMessage();
 		message.setContent("Haha this is a message!");
-		messageSendingOperations.convertAndSend("/channel/update/" + getUsername(),
-				message);
+		sendData(message, messageSendingOperations);
+	}
+	@Override
+	public String toString() {
+		return "Player [name=" + username + ", id=" + id + "]";
 	}
 }

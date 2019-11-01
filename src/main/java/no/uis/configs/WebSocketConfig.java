@@ -1,4 +1,4 @@
-package no.uis.websocket;
+package no.uis.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;

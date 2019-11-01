@@ -308,7 +308,6 @@ public class ImageController {
     @SendTo("/channel/notif")
     public String notif(String message) throws Exception {
 		System.out.println("notif");
-		User2
 		System.out.println("Avant délai ---------------------------------------------------");
 		System.out.println(message);
         Thread.sleep(1000); // simulated delay
