@@ -37,6 +37,9 @@ public class ImageController {
 	//Static parameters
 	final static int HIGHER_SCORE = 100;
 
+	final static String USER_ID = "54";
+	final static String PARTY_ID = "20";
+
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
 	private Resource[] resources;
@@ -90,6 +93,8 @@ public class ImageController {
 		model.addAttribute("listlabels", imageLabels);
 		model.addAttribute("highestscore", HIGHER_SCORE);
 		model.addAttribute("selectedLabel", name);
+		model.addAttribute("userId", USER_ID);
+		model.addAttribute("partyId", PARTY_ID);
 		
 		countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 		proposerImage = new String [countTotalSegments];
