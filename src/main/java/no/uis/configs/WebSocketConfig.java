@@ -19,6 +19,7 @@ import java.util.Map;
 @EnableWebSocketMessageBroker
 @EntityScan("no.uis.players")
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/channel");

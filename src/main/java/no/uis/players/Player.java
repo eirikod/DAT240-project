@@ -102,6 +102,8 @@ public class Player {
     public void update(SimpMessageSendingOperations messageSendingOperations) {
         SocketMessage message = new SocketMessage();
         message.setContent("Haha this is a message!");
+
+
         sendData(message, messageSendingOperations);
     }
 
