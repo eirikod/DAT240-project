@@ -27,7 +27,7 @@ public class PlayerController {
                            @RequestParam(value = "reg_password") String reg_password,
                            @RequestParam(value = "reg_confirmpass") String reg_confirmpass
     ) {
-        if (playerRepository.findByUsername(reg_username).size() == 0) {
+        if (!userExists(reg_username)) {
             if (reg_confirmpass.equals(reg_password)) {
                 createUser(reg_username, reg_password);
                 model.addAttribute("username", playerRepository.findByUsername(reg_username).get(0).getUsername());
@@ -42,7 +42,7 @@ public class PlayerController {
     public String login(Model model,
                         @RequestParam(value = "login_username") String login_username,
                         @RequestParam(value = "login_password") String login_password) {
-        if (playerRepository.findByUsername(login_username).size() == 1) {
+        if (userExists(login_username)) {
             Player player = playerRepository.findByUsername(login_username).get(0);
             if (player.getPassword().equals(login_password)) {
                 model.addAttribute("username", player.getUsername());
@@ -73,4 +73,7 @@ public class PlayerController {
         System.out.println("Created a new player: " + player);
     }
 
+    private boolean userExists(String username) {
+        return playerRepository.findByUsername(username).size() == 1;
+    }
 }
