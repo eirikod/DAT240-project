@@ -100,14 +100,15 @@ public class ImageController {
 	public void addUser(@DestinationVariable String roomId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
 		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", roomId);
+		System.out.println(roomId);
 		if (currentRoomId != null) {
 			SocketMessage leaveMessage = new SocketMessage();
 			leaveMessage.setType("LEAVE");
 			leaveMessage.setSender(chatMessage.getSender());
-			messagingTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
+			messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
 		}
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-		messagingTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
+		messageTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
 	}
 
   /**

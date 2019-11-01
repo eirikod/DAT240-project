@@ -14,6 +14,7 @@ class SocketConnector {
             for (let listener of _this.stompListenerQueue) {
                 _this.subscribe(listener.destination, listener.callback);
             }
+            _this.onConnect();
             _this.stompListenerQueue = null; // Delete the queue since all listeners have been added!
         });
 

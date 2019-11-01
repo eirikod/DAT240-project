@@ -6,6 +6,11 @@
 
 const client = new SocketConnector();
 
+client.onConnect = function(){
+	route = `app/party/${partyId}/addUser`;
+	client.send({sender: "", type: 'JOIN'}, route);
+}
+
 var userId = "";
 
 var partyId = "";
@@ -19,12 +24,10 @@ function sendImageId(id){
 	console.log(id);
 	console.log("sendImageId used");
 	const message = {
-		sender : username,
-		content:id,
-		type: "JOIN"
+		content:id
 	};
 //	client.send(message, `app/party/queueUp`);
-	client.send(message, `app/party/${partyId}/sendImageId`);
+	client.send(message, `/app/party/${partyId}/sendImageId`);
 }
 
 /**
