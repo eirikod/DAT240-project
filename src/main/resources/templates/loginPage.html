@@ -3,9 +3,8 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>WELCOME</title>
-	<link th:href="@{/css/main.css}" rel="stylesheet">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
-	<rel="stylesheet" 
+	<rel="stylesheet"
 		href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
 		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
 		crossorigin="anonymous"
@@ -114,7 +113,8 @@
 
   <div class="column" style="border:5px solid powderblue;">
   	<div class="container"> 		  
-				<form action="/loginPage" method="POST">
+				<form action="/reg-post" method="POST">
+					<p th:text="${invalid_message}" style="color:red;"></p>
 					<div class='bold-line'></div>
 					<div class='loginContainer'>
 						<div class='loginWindow'>
@@ -123,18 +123,18 @@
 								<div class='loginWelcome'>Hello There!</div>
 								<br>							
 								<div class='loginSubtitle'>Before playing, sign up or create an account.</div>
-								<div class='loginInput-fields'>
-									<input name="pseudo" type='text' placeholder='Username' class='createLoginInput-line loginFull-width'></input>
-									<input name="password" type='password' placeholder='Password' class='createloginInput-line loginFull-width'></input>
-								</div>
-						        <div>
-						        	<input class="loginGhost-round loginFull-width" value="Create User" type="submit">
-						        </div>
+								<form class='loginInput-fields'>
+									<input name="reg_username" type='text' placeholder='Username' class='createLoginInput-line loginFull-width'></input>
+									<input name="reg_password" type='password' placeholder='Password' class='createloginInput-line loginFull-width'></input>
+									<input name="reg_confirmpass" type='password' placeholder='Confirm Password' class='loginInput-line loginFull-width'></input>
+									<br>
+									<input class="loginGhost-round loginFull-width" value="Create User" type="submit">
+								</form>
 							</div>
 						</div>
 					</div>			
 				</form>
-				  <form action="/loginPage" method="POST">
+				  <form action="/login-post" method="POST">
 					  <div class='bold-line'></div>
 					  <div class='loginContainer'>
 						  <div class='loginWindow'>
@@ -142,13 +142,12 @@
 							  <div class='loginContent'> <br>
 								  
 								  <div class='loginSubtitle'>Login</div>
-								  <div class='loginInput-fields'>
-									  <input name="pseudo" type='text' placeholder='Username' class='loginInput-line loginFull-width'></input>
-									  <input name="password" type='password' placeholder='Password' class='loginInput-line loginFull-width'></input>
-								  </div>
-								  <div>
+								  <form class='loginInput-fields'>
+									  <input name="login_username" type='text' placeholder='Username' class='loginInput-line loginFull-width'></input>
+									  <input name="login_password" type='password' placeholder='Password' class='loginInput-line loginFull-width'></input>
+									  <br>
 									  <input class="loginGhost-round loginFull-width" value="Sign In" type="submit">
-								  </div>
+								  </form>
 							  </div>
 						  </div>
 					  </div>			
