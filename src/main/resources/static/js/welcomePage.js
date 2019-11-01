@@ -2,54 +2,17 @@
 
 const client = new SocketConnector();
 
-let username = "user_" + Math.random().toFixed(3) * 1000;
-/**
-*
-* @param connected {boolean} - Websocket state
-* @author Grégoire Guillien
-*/
-function setConnected(connected) {
-	console.log("setConnected")
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-}
+client.addStompListener(`channel/update/${id}/`, data => {
 
-/**
-*
-* @param void
-* @author Grégoire Guillien
-*/
-function connect() {
-	currentSubscription = client.subscribe(`/channel/state`, onStateReceive);
-//	console.log("connect")
-//    var socket = new SockJS('/ws');
-//    stompClient = Stomp.over(socket);
-//    stompClient.connect({}, function (frame) {
-//        setConnected(true);
-//        console.log('Connected: ' + frame);
-//        stompClient.subscribe('/game/lunch', function (lunch) {
-//            console.log("----------------------------------J'ai recu le call");
-//            console.log(lunch);
-//            console.log(lunch.toString());
-//            var link = lunch.body;
-//            console.log(link);
-//            $("#navigateur")[0].action = link;
-//        });
-//        stompClient.subscribe('/game/state', function (lunch) {
-//            console.log("----------------------------------J'ai recu le call");
-//            console.log(lunch);
-//            console.log(lunch.toString());
-//            var link = lunch.body;
-//            console.log(link);
-//            $("#navigateur")[0].action = link;
-//        });
-//    });
-}
+});
 
-function onStateReceive(state){
-	console.log(state);
+function makeMessage(content) {
+    return {
+        content: content,
+        sender: username,
+        type: "MSG"
+    };
 }
-
 
 function disconnect() {
     if (stompClient !== null) {
@@ -67,27 +30,22 @@ function disconnect() {
 */
 function sendPartyParameters(){
 	console.log("sendPartyParameters used");
-	stompClient.send("/app/welcomePage", {}, JSON.stringify({'selectedPlayModelabel': $("#dropOperator").val(), 'selectedPlayerModelabel': $("#dropOperator2").val()}));
+	client.send(makeMessage($("#dropOperator").val()), "/app/party/queueUp");
 }
 
-/**
-*login method
-* @param void
-* @author Grégoire Guillien
-*/
-function login(){
-	var userName = $("#loginDiv")[0].children[0].value;
-	var password = $("#loginDiv")[0].children[1].value;
-	console.log(userName);
-	console.log(password);
-	const chatMessage = {
-            sender: username,
-            content: JSON.stringify({'User name': userName, 'selectedPlayerModelabel': password}),
-            type: 'CHAT'
-        };
-	client.send(chatMessage, `/app/welcomePage`);
-//	client.send("/app/welcomePage", {}, JSON.stringify({'User name': userName, 'selectedPlayerModelabel': password}));
+/*function enterRoom(newRoomId) {
+    topic = `/app/chat/${newRoomId}`;
+
+    if (currentSubscription) {
+        currentSubscription.unsubscribe();
+    }
+    currentSubscription = client.subscribe(`/channel/${newRoomId}`, onMessageReceived);
+
+    client.send({sender: username, type: 'JOIN'}, `${topic}/addUser`);
 }
+
+
+ */
 
 function researchParty(){
 	console.log("tamere");
@@ -95,6 +53,8 @@ function researchParty(){
 	console.log($( "#loader" ));
 	//console.log("document.getElementById('demo').innerHTML = Date()");
 }
+
+let searching = false;
 
 /**
 *Event management
@@ -106,7 +66,11 @@ $(function () {
         e.preventDefault();
     });
     $( "#connect" ).click(function() { connect(); });
-    $( "#search" ).click(function() { sendPartyParameters(); });
-    $( "#login" ).click(function() { login(); });
-    $( "#researchParty" ).click(function() { researchParty(); });
+    $( "#search" ).click(function() {
+        if (searching) {
+            sendPartyParameters();
+            researchParty();
+            searching = true;
+        }
+    });
 });

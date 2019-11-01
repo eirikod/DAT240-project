@@ -47,10 +47,11 @@ public class PlayerController {
             Player player = playerRepository.findByUsername(login_username);
             if (player.getPassword().equals(login_password)) {
                 model.addAttribute("username", player.getUsername());
-                return "showUser";
+                return "redirect:welcomePage?username=" + login_username + "&id=" + player.getId();
             }
         }
-        return "loginPage"; // TODO: Tell user that credentials were invalid
+        model.addAttribute("invalid_message", "Username or password is incorrect!");
+        return "loginPage";
     }
 
     @RequestMapping(value = "/player", method = RequestMethod.GET)

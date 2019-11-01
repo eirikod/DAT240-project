@@ -1,16 +1,23 @@
-package no.uis.imagegame;
+﻿package no.uis.imagegame;
 
 import java.io.*;
 import java.util.*;
 
+import static java.lang.String.format;
+import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+
 import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.messaging.handler.annotation.Header;
+
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +49,18 @@ public class ImageController {
 	
 	//Static parameters
 	final static int HIGHER_SCORE = 100;
+
 	final static String CONST_PLAY_MODE = "listPlayMode";
 	final static String CONST_PLAYER_MODE = "listPlayerMode";
-	final static String USER_ID = "20";
-	final static String PARTY_ID = "20";
 	final static String ADDR_CALLBACK_IMAGE = "app/party/20/sendImageId";
 	final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/20";
 	
+
+
+	final static String USER_ID = "54";
+	final static String PARTY_ID = "20";
+
+
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
 	private Resource[] resources;
@@ -83,7 +95,21 @@ public class ImageController {
     		@RequestParam(value = "player", required = true) Player player) {
     	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
     }
-    
+
+	@MessageMapping("/party/{partyId}/addUser")
+	public void addUser(@DestinationVariable String roomId, @Payload SocketMessage chatMessage,
+						SimpMessageHeaderAccessor headerAccessor) {
+		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", roomId);
+		if (currentRoomId != null) {
+			SocketMessage leaveMessage = new SocketMessage();
+			leaveMessage.setType("LEAVE");
+			leaveMessage.setSender(chatMessage.getSender());
+			messagingTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
+		}
+		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+		messagingTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
+	}
+
   /**
    * Proposer init, loads picture and player stats
    * @param model
@@ -218,32 +244,6 @@ public class ImageController {
 			labels.add(label);
 		}
 		return labels;
-	}
-
-	//WelcomePage controller example
-	@RequestMapping("/welcomePage")
-	public String newEntry(Model model, User user, @RequestParam(value = "username") String username,
-			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
-			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
-		System.out.println("playMode : " + playMode);
-		System.out.println("playerMode : " + playerMode);
-		//model.addAttribute("obj", user);
-		model.addAttribute("pseudo", "bernard");
-		User2 user2 = new User2();
-		model.addAttribute("user", user2);
-		ArrayList<String> lstPlayMode = new ArrayList<String>();
-		lstPlayMode.add("GUESSER");
-		lstPlayMode.add("PROPOSER");
-		model.addAttribute(CONST_PLAY_MODE, lstPlayMode);
-		
-		ArrayList<String> lstPlayerMode = new ArrayList<String>();
-		lstPlayerMode.add("SINGLE PLAYER");
-		lstPlayerMode.add("MULTIPLE PLAYER");
-		model.addAttribute(CONST_PLAYER_MODE, lstPlayerMode);
-		model.addAttribute("username", username);
-		
-		System.out.println(user.getName());
-		return "welcomePage";
 	}
 
 	@RequestMapping("/addPlayer")
