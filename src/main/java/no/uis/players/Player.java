@@ -46,6 +46,8 @@ public class Player {
         this.password = password;
     }
 
+    public Player() {  }
+
     public Player(String username, PlayerType pType) {
         this.setUsername(username);
         this.setPlayerType(pType);
