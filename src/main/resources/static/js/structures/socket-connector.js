@@ -47,15 +47,7 @@ class SocketConnector {
         if (!this.connected) {
             this.stompListenerQueue.push({
                 destination: destination,
-                callback: data => {
-                    if (typeof data === "object") {
-                        callback(data);
-                    } else if (typeof data === "string"){
-                    	console.log("Toto", data);
-//                        callback(JSON.parse(data.body).content);
-                        callback(JSON.parse(data).content);
-                    }
-                }
+                callback: callback
             });
         } else {
             this.subscribe(destination, callback);
