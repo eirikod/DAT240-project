@@ -7,7 +7,7 @@ client.onConnect = () => {
     client.subscribe(`/channel/update/${userId}`, data => {
         if (data.type === "JOIN_PARTY") {
             window.location.replace(
-                "http://localhost:8080/imageGame?otherPlayerName=" +
+                "http://localhost:8080/proposerImageSelection?otherPlayerName=" +
                 "&username=" + username + "&partyId=" + data.content.partyId);
         }
     });
