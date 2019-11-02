@@ -9,7 +9,7 @@ public class Player {
     private String username;
 
     private PlayerType type;
-    private PlayerStatus status = PlayerStatus.INACTIVE;
+    private PlayerStatus status;
     private int score;
 
     public enum PlayerType {
@@ -17,7 +17,7 @@ public class Player {
     }
 
     public enum PlayerStatus {
-        INACTIVE, WAITING, PLAYING, FINISHED
+        WAITING, PLAYING, FINISHED
     }
 
     public Player(Long id, String username) {
