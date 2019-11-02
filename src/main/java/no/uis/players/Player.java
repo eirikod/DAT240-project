@@ -5,24 +5,26 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import javax.persistence.*;
 
+import static no.uis.players.Player.PlayerStatus.PLAYING;
+
 @Entity
 @Table(name = "Players")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name="username")
+    @Column(name = "username")
     private String username;
 
-    @Column(name="password")
-	private String password;
+    @Column(name = "password")
+    private String password;
 
     private PlayerType type;
     private PlayerStatus status;
-	@Column(name="score")
-	private int score;
+    @Column(name = "score")
+    private int score;
     private boolean isLoggedIn = false;
 
     public void setLoggedIn(boolean bool) {
@@ -50,7 +52,8 @@ public class Player {
         this.password = password;
     }
 
-    public Player() {  }
+    public Player() {
+    }
 
     public Player(String username, PlayerType pType) {
         this.setUsername(username);
@@ -101,14 +104,11 @@ public class Player {
     public void sendData(SocketMessage message, SimpMessageSendingOperations messageSendingOperations) {
         messageSendingOperations.convertAndSend("/channel/update/" + getId(),
                 message);
+        //System.out.println("We sent a message to " + getUsername());
     }
 
     public void update(SimpMessageSendingOperations messageSendingOperations) {
-        SocketMessage message = new SocketMessage();
-        message.setContent("Haha this is a message!");
 
-
-        sendData(message, messageSendingOperations);
     }
 
     @Override

@@ -50,7 +50,7 @@ class SocketConnector {
                 callback: data => {
                     if (typeof data === "object") {
                         callback(data);
-                    } else if (typeof data === "string"){
+                    } else if (typeof data === "string") {
                         callback(JSON.parse(data.body).content);
                     }
                 }
@@ -66,17 +66,22 @@ class SocketConnector {
      * @param callback
      */
     subscribe(destination, callback) {
+        if (destination[0] !== "/") {
+            destination = "/" + destination
+        }
+        if (destination[destination.length - 1] === "/") {
+            destination[destination.length - 1] = "";
+        }
         this.subscriptions[destination] =
             this.stomp.subscribe(destination, data => {
-            	console.log(data);
-            	if (data){
-            		if (data.body){
-            			callback(data.body);            			
-            		}
-            	}
-            	else{
-            		callback(data);
-            	}
+                console.log(data);
+                if (data) {
+                    if (data.body) {
+                        callback(data.body);
+                    }
+                } else {
+                    callback(data);
+                }
             });
         //console.log(destination, this.subscriptions[destination])
         return this.subscriptions[destination];

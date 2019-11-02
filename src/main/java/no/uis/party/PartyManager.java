@@ -1,6 +1,7 @@
 package no.uis.party;
 
 import no.uis.players.Player;
+import no.uis.websocket.SocketMessage;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import static no.uis.players.Player.PlayerType.*;
@@ -8,6 +9,7 @@ import static no.uis.party.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Singleton class that manages what party a player goes into depending on the role they select
@@ -51,12 +53,35 @@ public class PartyManager {
     public void update(SimpMessageSendingOperations messagingTemplate) {
         if (!isThereAnOpenParty()) {
             openParty();
-            System.out.println("Party opened! Parties created: " + parties.size());
+            System.out.println("Party opened: " + currentOpenParty.getId() + ". Parties created: " + parties.size());
         }
         // If both types of player are waiting, add them to the newly created party
         if (currentlyWaitingGuesser != null && currentlyWaitingProposer != null) {
             currentOpenParty.setGuesser(currentlyWaitingGuesser);
             currentOpenParty.setProposer(currentlyWaitingProposer);
+
+            SocketMessage proposerMsg = new SocketMessage();
+            proposerMsg.setSender("server");
+
+            HashMap<String, Object> proposerContent = new HashMap<>();
+            proposerContent.put("role", "PROPOSER");
+            proposerContent.put("partyId", "" + currentOpenParty.getId());
+            proposerContent.put("otherPlayerName", currentlyWaitingGuesser.getUsername());
+            proposerMsg.setContent(proposerContent);
+
+            proposerMsg.setType("JOIN_PARTY");
+            currentlyWaitingProposer.sendData(proposerMsg, messagingTemplate);
+
+            SocketMessage guesserMsg = new SocketMessage();
+            guesserMsg.setSender("" + currentOpenParty.getId());
+            HashMap<String, Object> guesserContent = new HashMap<>();
+            guesserContent.put("role", "GUESSER");
+            guesserContent.put("partyId", "" + currentOpenParty.getId());
+            guesserContent.put("otherPlayerName", currentlyWaitingProposer.getUsername());
+            guesserMsg.setContent(guesserContent);
+            guesserMsg.setType("JOIN_PARTY");
+            currentlyWaitingGuesser.sendData(guesserMsg, messagingTemplate);
+
             currentlyWaitingGuesser = null; // Guesser no longer waiting
             currentlyWaitingProposer = null; // Proposer no longer waiting
             currentOpenParty.setStatus(READY_TO_PLAY);

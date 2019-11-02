@@ -2,15 +2,23 @@
 
 const client = new SocketConnector();
 
-client.addStompListener(`channel/update/${id}/`, data => {
+client.onConnect = () => {
+    client.send(makeMessage(userId, "JOIN"), `/app/update/${userId}/registerUserUpdates`);
+    client.subscribe(`/channel/update/${userId}`, data => {
+        console.log(data.type);
+        console.log(data.content.type);
+        console.log(data.content);
+        if (data.type === "JOIN_PARTY") {
+            //window.location.replace("http://localhost:8080/" + data.content.toLowerCase());
+        }
+    });
+};
 
-});
-
-function makeMessage(content) {
+function makeMessage(content, type = "MSG") {
     return {
         content: content,
         sender: username,
-        type: "MSG"
+        type: type
     };
 }
 
@@ -24,50 +32,35 @@ function disconnect() {
 
 
 /**
-*
-* @param void
-* @author Grégoire Guillien
-*/
-function sendPartyParameters(){
-	console.log("sendPartyParameters used");
-	client.send(makeMessage($("#dropOperator").val()), "/app/party/queueUp");
-}
-
-/*function enterRoom(newRoomId) {
-    topic = `/app/chat/${newRoomId}`;
-
-    if (currentSubscription) {
-        currentSubscription.unsubscribe();
-    }
-    currentSubscription = client.subscribe(`/channel/${newRoomId}`, onMessageReceived);
-
-    client.send({sender: username, type: 'JOIN'}, `${topic}/addUser`);
-}
-
-
+ *
+ * @param void
+ * @author Grégoire Guillien
  */
+function sendPartyParameters() {
+    console.log("sendPartyParameters used");
+    client.send(makeMessage($("#dropOperator").val()), "/app/party/queueUp");
+}
 
-function researchParty(){
-	console.log("tamere");
-	$( "#loader" )[0].style="visibility:;";
-	console.log($( "#loader" ));
-	//console.log("document.getElementById('demo').innerHTML = Date()");
+function researchParty() {
+    $("#loader")[0].style = "visibility:;";
 }
 
 let searching = false;
 
 /**
-*Event management
-* @param void
-* @author Grégoire Guillien
-*/
+ *Event management
+ * @param void
+ * @author Grégoire Guillien
+ */
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#search" ).click(function() {
-        if (searching) {
+    $("#connect").click(function () {
+        connect();
+    });
+    $("#search").click(function () {
+        if (!searching) {
             sendPartyParameters();
             researchParty();
             searching = true;

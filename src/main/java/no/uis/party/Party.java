@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Random;
 
 /**
  * Holds the game state data of the guesser and proposer.
@@ -14,10 +15,7 @@ import javax.persistence.Id;
  */
 public class Party {
     // TODO: Add controller logic when ready to merge with the front-end
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long id = Math.abs(new Random().nextLong());
     private Player guesser;
     private Player proposer;
     private PartyStatus currentStatus;

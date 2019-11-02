@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,13 +62,20 @@ public class QueueController {
         }
     }
 
+    @RequestMapping("/imageGameTest")
+    public String testRedirectParty(Model model, @RequestParam String partyId, @RequestParam String otherPlayerName) {
+        model.addAttribute("partyId", partyId);
+        model.addAttribute("otherPlayerName", otherPlayerName);
+        return "imageGameTest";
+    }
+
     //WelcomePage controller example
     @RequestMapping("/welcomePage")
     public String newEntry(Model model,
                            @RequestParam(value = "username") String username,
                            @RequestParam(value = "id") String id,
                            @RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
-                           @RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
+                           @RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode) {
         System.out.println("playMode : " + playMode);
         System.out.println("playerMode : " + playerMode);
         ArrayList<String> listPlayerRole = new ArrayList<String>();
