@@ -6,9 +6,18 @@ client.onConnect = () => {
     client.send(makeMessage(userId, "JOIN"), `/app/update/${userId}/registerUserUpdates`);
     client.subscribe(`/channel/update/${userId}`, data => {
         if (data.type === "JOIN_PARTY") {
-            window.location.replace(
-                "http://localhost:8080/proposerImageSelection?otherPlayerName=" +
-                "&username=" + username + "&partyId=" + data.content.partyId);
+            let role = data.content.role.toLowerCase();
+            if (role === "proposer") {
+                role = "proposerImageSelection";
+            }
+
+            let url = "http://localhost:8080/" + role +
+                "?username=" + username + "&partyId=" + data.content.partyId;
+            if (role === "guesser") {
+                url += "&selectedlabel=" + data.content.selectedlabel;
+            }
+
+            window.location.replace(url);
         }
     });
 };

@@ -14,6 +14,9 @@
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="js/structures/socket-connector.js"></script>
+	<script th:inline="javascript">
+		let label = /*[[${selectedlabel}]]*/ 'default';
+	</script>
     <script type="text/javascript" th:src="@{/js/proposer.js}"></script>
     
     <!--  -->

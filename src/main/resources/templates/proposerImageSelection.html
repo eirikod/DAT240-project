@@ -113,6 +113,7 @@
 			    <option value="0">Select an image </option>
 			    <option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
 			    </select>
+				<input type="hidden" name="partyId" th:value="${partyId}">
 			    <input type="submit">
 			</form>
 		</div>

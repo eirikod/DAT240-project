@@ -82,16 +82,6 @@ public class PartyManager {
             msg.setType("JOIN_PARTY");
             currentlyWaitingProposer.sendData(msg, messagingTemplate);
 
-            msg = new SocketMessage();
-
-            HashMap<String, Object> guesserContent = new HashMap<>();
-            guesserContent.put("role", "GUESSER");
-            guesserContent.put("partyId", "" + currentOpenParty.getId());
-            guesserContent.put("otherPlayerName", currentlyWaitingProposer.getUsername());
-            msg.setContent(guesserContent);
-            msg.setType("JOIN_PARTY");
-            currentlyWaitingGuesser.sendData(msg, messagingTemplate);
-
             currentlyWaitingGuesser.setGameStatus(Player.GameStatus.PLAYING);
             currentlyWaitingProposer.setGameStatus(Player.GameStatus.PLAYING);
             currentlyWaitingGuesser = null; // Guesser no longer waiting

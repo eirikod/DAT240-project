@@ -96,6 +96,23 @@ public class ImageController {
     	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
     }
 
+	@MessageMapping("/party/{partyId}/respToGuesser")
+	public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
+						SimpMessageHeaderAccessor headerAccessor) {
+    	Party party = QueueController.getPartyManager().getParty(partyId);
+
+    	SocketMessage msg = new SocketMessage();
+    	msg.setSender(party.getProposer().getId());
+		msg.setType("JOIN_PARTY");
+
+		HashMap<String, Object> guesserContent = new HashMap<>();
+		guesserContent.put("role", "GUESSER");
+		guesserContent.put("partyId", "" + partyId);
+		guesserContent.put("selectedlabel", chatMessage.getContent());
+		msg.setContent(guesserContent);
+		party.getGuesser().sendData(msg, messageTemplate);
+	}
+
 	@MessageMapping("/party/{partyId}/addUser")
 	public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
@@ -123,8 +140,7 @@ public class ImageController {
 	@RequestMapping("/proposer")
 	public ModelAndView showImage(ModelAndView model,
 			@ModelAttribute("selectedlabel") Object modelname,
-			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
-			@RequestParam(value = "userId", required = false, defaultValue = "-1") Long userId) {
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
 
 			System.out.println("NO NOT HERRRRRRE----------------------------------------------");
 
@@ -135,19 +151,16 @@ public class ImageController {
 			
 //			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
-
 			PartyManager partyManager = QueueController.getPartyManager();
 			Party party = partyManager.getParty(partyId);
 			Player proposer = party.getProposer();
 
-			User player = playerRepository.findById(userId);
-
 			//TODO
 //				model.addObject("highestscore", player.getHigherScore());
-			model.addObject("userId", userId);
+			//model.addObject("userId", userId);
 			model.addObject("partyId", partyId);
 
-			model.addObject("listlabels", imageLabels);
+			//model.addObject("listlabels", imageLabels);
 
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;

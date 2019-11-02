@@ -100,6 +100,9 @@ public class QueueController {
         listPlayerMode.add("MULTIPLE PLAYER");
         model.addAttribute(CONST_PLAYER_MODE, listPlayerMode);
 
+        model.addAttribute("username", username);
+        model.addAttribute("id", id);
+
         if (partyManager.isPlayerActive(username)) {
             Player player = partyManager.getActivePlayer(username);
             if (player.getGameStatus() == Player.GameStatus.PLAYING) {
@@ -108,8 +111,6 @@ public class QueueController {
             }
         }
         model.addAttribute("playerIsSearching", partyManager.isPlayerActive(username));
-        model.addAttribute("username", username);
-        model.addAttribute("id", id);
 
         makeScoresForTest();
         ArrayList<ScoreData> list = createTop5ScoreList();

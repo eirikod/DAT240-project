@@ -29,10 +29,10 @@ const enumState= {
  */
 client.onConnect = function(){
 	console.log("----------------------------------------------")
-	route = `/app/party/${partyId}/addUser`;
+	route = `/app/party/${partyId}/respToGuesser`;
 	console.log(route);
-	client.send({sender: "", type: 'JOIN'}, route);
-}
+	client.send({sender: "", content: `${label}`, type: 'JOIN'}, route);
+};
 
 var userId = "";
 
