@@ -73,6 +73,7 @@ public class ImageController {
    * @return view
    */
 
+<<<<<<< Updated upstream
 	@RequestMapping("/proposer")
 	public String showImage(Model model,
 			@RequestParam(value = "selectedlabel", required = false, defaultValue="cinema") String name, //name of the image
@@ -95,6 +96,10 @@ public class ImageController {
 		model.addAttribute("listimages", proposerImage);
 		
 		return "proposer";
+=======
+			model.addObject("listimages", propSegment);	
+			return model;
+>>>>>>> Stashed changes
 	}
 	
 	

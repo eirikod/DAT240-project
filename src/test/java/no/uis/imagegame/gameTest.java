@@ -7,7 +7,7 @@ import org.junit.Test;
 import no.uis.backend_pseudo_game.Game;
 import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 
-public class GameTest {
+public class gameTest {
 	
 	/**
 	 * Testing init of new game
