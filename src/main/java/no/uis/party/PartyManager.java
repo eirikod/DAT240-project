@@ -8,7 +8,6 @@ import static no.uis.players.Player.PlayerType.*;
 import static no.uis.party.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
