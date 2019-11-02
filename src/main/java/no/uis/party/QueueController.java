@@ -1,5 +1,6 @@
 package no.uis.party;
 
+import no.uis.players.User;
 import no.uis.repositories.PlayerRepository;
 import no.uis.tools.TickExecution;
 import no.uis.players.Player;
@@ -7,18 +8,14 @@ import no.uis.websocket.SocketMessage;
 import no.uis.websocket.WebSocketEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.Socket;
 import java.util.ArrayList;
 
 import static java.lang.String.format;
@@ -60,9 +57,12 @@ public class QueueController {
             } else {
                 type = Player.PlayerType.GUESSER;
             }
-            Player player = repository.findByUsername(socketMessage.getSender());
-            player.setPlayerType(type);
-            partyManager.queueUpPlayer(player);
+            User user = repository.findByUsername(socketMessage.getSender());
+            if (!partyManager.isPlayerActive(user.getUsername())) {
+                Player player = new Player(user.getId(), user.getUsername());
+                player.setPlayerType(type);
+                partyManager.queueUpPlayer(player);
+            }
         }
     }
 
@@ -96,6 +96,7 @@ public class QueueController {
         listPlayerMode.add("MULTIPLE PLAYER");
         model.addAttribute(CONST_PLAYER_MODE, listPlayerMode);
 
+        model.addAttribute("playerIsSearching", partyManager.isPlayerActive(username));
         model.addAttribute("username", username);
         model.addAttribute("id", id);
         return "welcomePage";

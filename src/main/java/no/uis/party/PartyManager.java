@@ -22,9 +22,15 @@ public class PartyManager {
     private ArrayDeque<Player> guesserQueue = new ArrayDeque<>();
     private HashMap<Long, Party> parties = new HashMap<>();
 
+    private HashMap<String, Player> activePlayers = new HashMap<>();
+
     private Party currentOpenParty;
     private Player currentlyWaitingProposer;
     private Player currentlyWaitingGuesser;
+
+    public boolean isPlayerActive(String username) {
+        return activePlayers.containsKey(username);
+    }
 
     /**
      * Creates a new party and pushes them into the array list where we update them in the future.
@@ -89,6 +95,7 @@ public class PartyManager {
 
             currentlyWaitingGuesser = null; // Guesser no longer waiting
             currentlyWaitingProposer = null; // Proposer no longer waiting
+
             currentOpenParty.setStatus(READY_TO_PLAY);
             parties.put(currentOpenParty.getId(), currentOpenParty);
             currentOpenParty = null; // Party is now closed
@@ -111,6 +118,8 @@ public class PartyManager {
             Party party = pair.getValue();
             party.update(messagingTemplate);
             if (party.getStatus() == FINISHED_GAME) {
+                activePlayers.remove(party.getProposer().getUsername());
+                activePlayers.remove(party.getGuesser().getUsername());
                 parties.remove(party.getId());
             }
         }
@@ -189,9 +198,11 @@ public class PartyManager {
         switch (player.getPlayerType()) {
             case PROPOSER:
                 queueUpProposer(player);
+                activePlayers.put(player.getUsername(), player);
                 break;
             case GUESSER:
                 queueUpGuesser(player);
+                activePlayers.put(player.getUsername(), player);
                 break;
         }
     }

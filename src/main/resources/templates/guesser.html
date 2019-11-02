@@ -133,13 +133,14 @@ text-align:left;
 
 <div class="row">
 		<div class="col-7">
-          <h>labelGuesserNumber: </h>
+          <h>INFO: </h>
           
         	<div class="label_game">
-        	<h2>labelGuesserNumber</h2>
+					<h2 th:text = "${infotext}"> Wait for segment</h2>
+					<h2 th:text = "${guessesleft}"></h2>
     		</div>
-   	</div>
-
+		 </div>
+		 
 
     <div class="col-3">
           <h> BEST PLAYER ON THIS IMAGE: </h>
@@ -173,12 +174,9 @@ text-align:left;
 		<div class="col-4">	 	
 			 <form action="guesser" method="POST">
 			<input type="text" name="SubmittedGuess" placeholder="Your guess:"><br>
-			<input type="submit" value="SUBMIT"><br>
+			<input type="submit" value="SUBMIT">
+			<input type="button"  value="NEW SEGMENT"><br>
 			</form>
-			 	
-		 	<!-- MAKE A JAVASCRIPT FUNCTION THAT SHOWS IMAGE WHEN PRESSING BUTTON -->
-			<button type="button" onclick="document.getElementById('demo').innerHTML = Date()">
-			NEW IMAGE REQUEST</button>	
 		</div>
 		
 </div>

@@ -3,41 +3,14 @@ package no.uis.players;
 import no.uis.websocket.SocketMessage;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
-import javax.persistence.*;
-
-import static no.uis.players.Player.PlayerStatus.PLAYING;
-
-@Entity
-@Table(name = "Players")
 public class Player {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "username")
     private String username;
-
-    @Column(name = "password")
-    private String password;
 
     private PlayerType type;
     private PlayerStatus status;
-    @Column(name = "score")
     private int score;
-    private boolean isLoggedIn = false;
-
-    public void setLoggedIn(boolean bool) {
-        isLoggedIn = bool;
-    }
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 
     public enum PlayerType {
         GUESSER, PROPOSER
@@ -47,9 +20,9 @@ public class Player {
         WAITING, PLAYING, FINISHED
     }
 
-    protected Player(String username, String password) {
+    public Player(Long id, String username) {
         this.username = username;
-        this.password = password;
+        this.id = id;
     }
 
     public Player() {
@@ -58,7 +31,6 @@ public class Player {
     public Player(String username, PlayerType pType) {
         this.setUsername(username);
         this.setPlayerType(pType);
-        this.setPlayerStatus(PlayerStatus.WAITING);
     }
 
     public Long getId() {

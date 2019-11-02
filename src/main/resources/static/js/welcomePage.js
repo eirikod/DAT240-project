@@ -7,7 +7,7 @@ client.onConnect = () => {
     client.subscribe(`/channel/update/${userId}`, data => {
         if (data.type === "JOIN_PARTY") {
             window.location.replace(
-                "http://localhost:8080/imageGame?otherPlayerName=" +
+                "http://localhost:8080/proposerImageSelection?otherPlayerName=" +
                 "&username=" + username + "&partyId=" + data.content.partyId);
         }
     });
@@ -42,6 +42,9 @@ function sendPartyParameters() {
 
 function researchParty() {
     $("#loader")[0].style = "visibility:;";
+    $("#search")[0].style = "visibility: hidden";
+    $("#searching-text")[0].style = "visibility:; text-align: center;";
+
 }
 
 let searching = false;
