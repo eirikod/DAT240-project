@@ -123,7 +123,9 @@ public class ImageController {
 			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
 			model.addObject("highestscore", HIGHER_SCORE);
-
+			model.addObject("userId", USER_ID);
+			model.addObject("partyId", PARTY_ID);
+			
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 			countTotalSegments = countTotalSegments-1;
@@ -140,7 +142,6 @@ public class ImageController {
 			model.addObject("listimages", propSegment);
 			return model;
 	}
-
 
 	/**
 	 *  Lets user choose a picture
