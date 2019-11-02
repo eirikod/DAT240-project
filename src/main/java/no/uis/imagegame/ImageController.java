@@ -135,11 +135,11 @@ public class ImageController {
 			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
 
-//				PartyManager partyManager = QueueController.getPartyManager();
-//				Party party = partyManager.getParty(partyId);
-//				Player proposer = party.getProposer();
+			PartyManager partyManager = QueueController.getPartyManager();
+			Party party = partyManager.getParty(partyId);
+			Player proposer = party.getProposer();
 			
-			Player player = playerRepository.findById(userId);
+			User player = playerRepository.findById(userId);
 
 			//TODO
 //				model.addObject("highestscore", player.getHigherScore());

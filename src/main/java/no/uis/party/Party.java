@@ -36,14 +36,6 @@ public class Party {
         return id;
     }
 
-    public Player getProposer() {
-        return proposer;
-    }
-
-    public Player getGuesser() {
-        return guesser;
-    }
-
     /**
      * Party status enumerate class
      *

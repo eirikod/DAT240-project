@@ -5,8 +5,7 @@ import no.uis.players.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface PlayerRepository extends CrudRepository<Player, String> {
-    Player findByUsername(String username);
-    Player findById(Long id);
+public interface PlayerRepository extends CrudRepository<User, String> {
+    User findByUsername(String username);
+    User findById(Long id);
 }
