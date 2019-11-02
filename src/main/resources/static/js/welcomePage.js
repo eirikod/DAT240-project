@@ -5,11 +5,10 @@ const client = new SocketConnector();
 client.onConnect = () => {
     client.send(makeMessage(userId, "JOIN"), `/app/update/${userId}/registerUserUpdates`);
     client.subscribe(`/channel/update/${userId}`, data => {
-        console.log(data.type);
-        console.log(data.content.type);
-        console.log(data.content);
         if (data.type === "JOIN_PARTY") {
-            //window.location.replace("http://localhost:8080/" + data.content.toLowerCase());
+            window.location.replace(
+                "http://localhost:8080/imageGameTest?otherPlayerName="
+                + data.content.otherPlayerName + "&partyId=" + data.content.partyId);
         }
     });
 };

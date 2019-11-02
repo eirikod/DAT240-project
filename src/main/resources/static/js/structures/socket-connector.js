@@ -76,16 +76,10 @@ class SocketConnector {
         }
         this.subscriptions[destination] =
             this.stomp.subscribe(destination, data => {
-                console.log(data);
-                if (data) {
-                    if (data.body) {
-                        callback(data.body);
-                    }
-                } else {
-                    callback(data);
+                if (data.body) {
+                    callback(JSON.parse(data.body));
                 }
             });
-        //console.log(destination, this.subscriptions[destination])
         return this.subscriptions[destination];
     }
 
