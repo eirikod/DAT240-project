@@ -50,8 +50,10 @@ class SocketConnector {
                 callback: data => {
                     if (typeof data === "object") {
                         callback(data);
-                    } else if (typeof data === "string") {
-                        callback(JSON.parse(data.body).content);
+                    } else if (typeof data === "string"){
+                    	console.log("Toto", data);
+//                        callback(JSON.parse(data.body).content);
+                        callback(JSON.parse(data).content);
                     }
                 }
             });

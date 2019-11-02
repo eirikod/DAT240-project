@@ -29,9 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import no.uis.imagegame.ImageController.Greeting;
-import no.uis.imagegame.ImageController.HelloMessage;
-import no.uis.imagegame.ImageController.User2;
+
 import no.uis.players.Player;
 import no.uis.players.User;
 import no.uis.websocket.SocketMessage;
@@ -46,8 +44,12 @@ public class ImageController {
 
 	final static String CONST_PLAY_MODE = "listPlayMode";
 	final static String CONST_PLAYER_MODE = "listPlayerMode";
-	final static String ADDR_CALLBACK_IMAGE = "app/party/20/sendImageId";
-	final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/20";
+
+	final static String ADDR_CALLBACK_IMAGE = "/party/20/sendImageId";
+	final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/54";
+
+	final static String USER_ID = "54";
+	final static String PARTY_ID = "20";
 
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
@@ -121,7 +123,9 @@ public class ImageController {
 			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
 			model.addObject("highestscore", HIGHER_SCORE);
-
+			model.addObject("userId", USER_ID);
+			model.addObject("partyId", PARTY_ID);
+			
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 			countTotalSegments = countTotalSegments-1;
@@ -138,7 +142,6 @@ public class ImageController {
 			model.addObject("listimages", propSegment);
 			return model;
 	}
-
 
 	/**
 	 *  Lets user choose a picture
@@ -180,10 +183,25 @@ public class ImageController {
     	return model;
     }
 
-	@MessageMapping("/party/20/sendImageId")
+    private int count=0;
+    
+	@MessageMapping(ADDR_CALLBACK_IMAGE)
 	public void update(){
 		System.out.println("update ---------------------------------------------------");
 		SocketMessage sockMess = new SocketMessage();
+		count++;
+		if (count > 3) {
+			sockMess.setContent((Player.PlayerStatus.FINISHED).toString());
+		}
+		else {
+			sockMess.setContent((Player.PlayerStatus.PLAYING).toString());
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
 		return;
   }
@@ -268,129 +286,4 @@ public class ImageController {
 		return labels;
 	}
 
-	@RequestMapping("/addPlayer")
-	public String addPlayer(Model model, User user) {
-		model.addAttribute("obj", user);
-		System.out.println(user.getName());
-		return "welcomePage";
-	}
-
-	public class MonThread extends Thread {
-
-		private ImageController image_controller;
-
-		public MonThread(ImageController imageController) {
-			super();
-			this.image_controller = imageController;
-		}
-
-		public void run() {
-			try {
-				System.out.println("Début du thread");
-				this.sleep(10000);
-				System.out.println("Fin du thread");
-				HelloMessage message = new HelloMessage("coucou");
-				this.image_controller.greeting("coucou");
-			} catch (Exception e) {
-				// TODO: handle exception
-				System.out.println(e);
-			}
-		}
-	}
-
-	@RequestMapping("/hello")
-	public String hello() {
-		return "index";
-	}
-
-	@MessageMapping("/hello")
-    @SendTo("/channel/greetings")
-    public Greeting greeting(String message) throws Exception {
-		System.out.println("greetings");
-		System.out.println("Avant délai ---------------------------------------------------");
-		System.out.println(message);
-        Thread.sleep(1000); // simulated delay
-		System.out.println("Après délai ---------------------------------------------------");
-		return new Greeting("Hello, " + HtmlUtils.htmlEscape(message) + "!");
-    }
-
-	@MessageMapping("/welcomePage")
-    @SendTo("/channel/lunch")
-    public String search(String message) throws Exception {
-		System.out.println("search called");
-		System.out.println("Avant délai ---------------------------------------------------");
-		System.out.println(message);
-        Thread.sleep(1000); // simulated delay
-		System.out.println("Après délai ---------------------------------------------------");
-		String url = "http://localhost:8080/proposer";
-		return url;
-    }
-
-//	@MessageMapping("/welcomePage")
-//    @SendTo("/channel/state")
-//    public String changeState(String message) throws Exception {
-//		System.out.println("changeState called");
-//		System.out.println("Avant délai ---------------------------------------------------");
-//		System.out.println(message);
-//        Thread.sleep(1000); // simulated delay
-//		System.out.println("Après délai ---------------------------------------------------");
-//		String url = "http://localhost:8080/proposer";
-//		return url;
-//    }
-
-	@MessageMapping("/notif")
-    @SendTo("/channel/notif")
-    public String notif(String message) throws Exception {
-		System.out.println("notif");
-		System.out.println("Avant délai ---------------------------------------------------");
-		System.out.println(message);
-        Thread.sleep(1000); // simulated delay
-		System.out.println("Après délai ---------------------------------------------------");
-		String url = "COUCOU";
-		return url;
-    }
-
-	protected class User2{
-		public boolean isLogged = true;
-		public int highestScore = 41;
-		public String name = "SuperMan";
-		public String map = "Casino";
-	}
-
-	protected class HelloMessage {
-
-	    private String name;
-
-	    public HelloMessage() {
-	    }
-
-	    public HelloMessage(String name) {
-	        this.name = name;
-	    }
-
-	    public String getName() {
-	        return name;
-	    }
-
-	    public void setName(String name) {
-	        this.name = name;
-	    }
-	}
-
-	protected class Greeting {
-
-	    private String content;
-
-	    public Greeting() {
-	    }
-
-	    public Greeting(String content) {
-	        this.content = content;
-	    }
-
-	    public String getContent() {
-	        return content;
-	    }
-
-	}
 }

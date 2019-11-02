@@ -6,6 +6,27 @@
 
 const client = new SocketConnector();
 
+/*
+ * party state label
+ */
+const msg= {
+		msgMyTurn: "It's your turn",
+		msgNotMyTurn: "wait your turn",
+		msgPartyFinished: "you loose"
+};
+	
+/*
+ * Enum statement
+ */
+const enumState= {
+		myTurn: "PLAYING",
+		waiting: "WAITING",
+		finished: "FINISHED"
+};
+
+/*
+ * funtion trigerred on websocket connexion
+ */
 client.onConnect = function(){
 	route = `app/party/${partyId}/addUser`;
 	client.send({sender: "", type: 'JOIN'}, route);
@@ -14,6 +35,12 @@ client.onConnect = function(){
 var userId = "";
 
 var partyId = "";
+
+var myTurn = true;
+
+var state = enumState.myTurn;
+
+updateState();
 
 /**
 *Send the image's id to the back-end using the web-socket channel
@@ -46,11 +73,46 @@ function subscribe(user_id, party_id){
 }
 
 
-function update(){
-	console.log("yop")
+/**
+*callback
+* @param msg - object or string
+* @author Guillien Grégoire
+*/
+function update(msg){
+	console.log("update appele");
+	console.log(msg);
+	state = msg;
+	updateState();
 	//TODO
 }
 
+/**
+*update the state features
+* @author Guillien Grégoire
+*/
+function updateState(){
+	
+	switch(state){
+		case enumState.myTurn:
+			console.log("my turn");
+			$( "#proposerPopUp" ).text(msg.msgMyTurn);
+			break;
+
+		case enumState.waiting:
+			console.log("Not my turn");
+			$( "#proposerPopUp" ).text(msg.msgNotMyTurn);
+			break;
+	
+		case enumState.finished:
+			console.log("Party finished");
+			$( "#proposerPopUp" ).text(msg.msgPartyFinished);
+			break;
+			
+		default:
+			break
+		
+	}
+}
 
 /**
 *Fonctions managing events on id html object
@@ -99,10 +161,20 @@ document.addEventListener("mouseout", ({ target }) => {
 */
 document.addEventListener("click", ({ target }) => {
 	if (target.className === "myButton") {
-		console.log(target);
-		var element = document.getElementById(target.value).parentElement;
-		sendImageId(target.value);
-		target.disabled=true;
-		target.className="";
+		console.log("tour de jeu", myTurn);
+		if(state === enumState.myTurn){
+			console.log(target);
+			var element = document.getElementById(target.value).parentElement;
+			sendImageId(target.value);
+			target.disabled=true;
+			target.className="";
+			myTurn = false;
+			state = enumState.waiting;
+			updateState();
+		}
+		else{
+			state = enumState.waiting;
+			updateState();
+		}
 	}
 })
