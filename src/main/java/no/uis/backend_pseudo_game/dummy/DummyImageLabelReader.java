@@ -4,12 +4,16 @@ import java.io.*;
 import java.util.*;
 
 public class DummyImageLabelReader {
-    // TODO: Store a bunch of image file names here to just like the normal image label reader
 	private HashMap<String, Integer>imageMapping;
 	private HashMap<Integer, ArrayList<String>>reverseImageMapping;
 	private HashMap<Integer, String>labelMapping;
 	private HashMap<String, Integer>reverseLabelMapping;
 
+	/**
+	 * 
+	 * @param labelMappingFile
+	 * @param imageMappingFile
+	 */
 	public DummyImageLabelReader(String labelMappingFile, String imageMappingFile) {
 		this.imageMapping = new HashMap<String, Integer>();
 		this.labelMapping = new HashMap<Integer, String>();
@@ -46,9 +50,12 @@ public class DummyImageLabelReader {
 		}
 	}
      	
-	//Given an image file get it's label
-	//Note that each image has a single label
-	//If the given image file is not found return null
+	/**
+	 * Given an image file get it's label, note that each image has a single label
+	 * if the given image file is not found return null
+	 * @param imageFileName
+	 * @return null when the given image file is not found
+	 */
 	public String getLabel(String imageFileName){
 		if(this.imageMapping.containsKey(imageFileName)) {
 			int labelKey = this.imageMapping.get(imageFileName);
@@ -58,6 +65,10 @@ public class DummyImageLabelReader {
 		return null;
 	}
 	
+	/**
+	 * Adds all the keys form labelMapping to allLabels
+	 * @return allLabels
+	 */
 	public ArrayList<String> getAllLabels() {
 		ArrayList<String> allLabels = new ArrayList<>();
 		for (Integer key : labelMapping.keySet()) {
@@ -66,9 +77,13 @@ public class DummyImageLabelReader {
 		return allLabels;
 	}
 	
-	//Given a label get all the image files corresponding to this label
-	//Note that there could be multiple images for a given label
-	//If the given label is not found return null
+	/**
+	 * Given a label get all the image files corresponding to this label,
+	 * note that there could be multiple images for a given label
+	 * if the given label is not found return null
+	 * @param label 
+	 * @return null when given label is not found
+	 */
 	public String[] getImageFiles(String label){
 		if(this.reverseLabelMapping.containsKey(label)) {
 			int key = this.reverseLabelMapping.get(label);

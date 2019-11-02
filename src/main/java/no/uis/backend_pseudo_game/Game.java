@@ -30,7 +30,8 @@ public class Game {
     private boolean lost = false;
     
     /**
-     * constructor for the game, init game by selecting photo and transferring all lable filenames to proposerSegments
+     * Constructor for the game, initializes
+     * the game by selecting an image and transferring all label filenames to proposerSegments
      * @param dp1
      * @param dp2
      */
@@ -105,7 +106,7 @@ public class Game {
 	}
 	
 	/**
-	 * proposer chooses segment to show for guesser
+	 * Proposer chooses which segments to present for the guesser
 	 * @see nextRound
 	 */
 	public void chooseSegment() {
@@ -126,7 +127,7 @@ public class Game {
 	}
 	
 	/**
-	 * write out score
+	 * Writes out the score for the paired players
 	 */
 	public void getScore() {
 		int score = lost ? 0 : (proposerSegments.size() - guesserSegments.size())*2;
@@ -134,7 +135,7 @@ public class Game {
 	}
 	
 	/**
-	 * test the game logic
+	 * Tests the game logic
 	 * @param args
 	 */
 	 public static void main(String[] args) {
