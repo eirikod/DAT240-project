@@ -22,33 +22,6 @@ public class PlayerController {
     @Autowired
     private ScoreBoardRepository scoreBoardRepository;
 
-
-    @RequestMapping("/scoreboard")
-    public String scoreboardTest(Model model) {
-        scoreBoardRepository.save(new ScoreData(1L, "pro_hello", "guess_yoyo", 696));
-        scoreBoardRepository.save(new ScoreData(2L, "nono", "ayyy", 890));
-        scoreBoardRepository.save(new ScoreData(3L, "ayyy", "lmao", 105550));
-        scoreBoardRepository.save(new ScoreData(4L, "blabla", "poop", 143200));
-        scoreBoardRepository.save(new ScoreData(5L, "pro_hello", "something", 43));
-        scoreBoardRepository.save(new ScoreData(6L, "something", "xD", 87));
-
-        Comparator<ScoreData> comparator = (scoreData, t1) -> t1.score - scoreData.score;
-
-        Iterable<ScoreData> originalList = scoreBoardRepository.findAll();
-        TreeSet<ScoreData> newList = new TreeSet<>(comparator);
-        for (ScoreData scoreData : originalList) {
-            newList.add(scoreData);
-        }
-        Iterator iterator = newList.iterator();
-
-        String[] list = new String[3];
-        for (int i = 0; i < list.length; i++) {
-            list[i] = iterator.next().toString();
-        }
-        model.addAttribute("scoreList", list);
-        return "scoreTest";
-    }
-
     @RequestMapping("/")
     public String home(Model model) {
         return "loginPage";

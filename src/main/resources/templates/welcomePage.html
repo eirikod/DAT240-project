@@ -190,7 +190,19 @@
     <div class="column" style="border:5px solid powderblue;">
         <div class="container">
             <div>
-				<h2>Leader boards:</h2>
+				<h2>Top 5 players:</h2>
+                <table>
+                    <tr>
+                        <th>Proposer</th>
+                        <th>Guesser</th>
+                        <th>High score</th>
+                    </tr>
+                    <tr th:each="score : ${scoreBoard}">
+                        <td th:text="${score.proposerName}"></td>
+                        <td th:text="${score.guesserName}"></td>
+                        <td th:text="${score.score}"></td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

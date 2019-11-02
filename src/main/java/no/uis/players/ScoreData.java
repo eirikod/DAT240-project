@@ -8,19 +8,18 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ScoreBoard")
 public class ScoreData {
-
     @Id
-    @Column(name="id")
-    Long id;
+    @Column(name = "id")
+    public Long id;
 
-    @Column(name="proposername")
-    String proposerName;
+    @Column(name = "proposername")
+    public String proposerName;
 
-    @Column(name="guessername")
-    String guesserName;
+    @Column(name = "guessername")
+    public String guesserName;
 
-    @Column(name="score")
-    Integer score;
+    @Column(name = "score")
+    public Integer score;
 
     public ScoreData() {
 
@@ -35,6 +34,6 @@ public class ScoreData {
 
     @Override
     public String toString() {
-        return proposerName + " and " + guesserName + " scored " + score + " together!";
+        return proposerName + " & " + guesserName + ". Scored " + score + ".";
     }
 }

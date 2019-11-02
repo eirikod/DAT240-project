@@ -1,7 +1,9 @@
 package no.uis.party;
 
+import no.uis.players.ScoreData;
 import no.uis.players.User;
 import no.uis.repositories.PlayerRepository;
+import no.uis.repositories.ScoreBoardRepository;
 import no.uis.tools.TickExecution;
 import no.uis.players.Player;
 import no.uis.websocket.SocketMessage;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import static java.lang.String.format;
 
@@ -99,7 +104,44 @@ public class QueueController {
         model.addAttribute("playerIsSearching", partyManager.isPlayerActive(username));
         model.addAttribute("username", username);
         model.addAttribute("id", id);
+
+        makeScoresForTest();
+        ArrayList<ScoreData> list = createTop5ScoreList();
+        model.addAttribute("scoreBoard", list);
         return "welcomePage";
     }
 
+    public ArrayList<ScoreData> createTop5ScoreList() {
+        TreeSet<ScoreData> scoreDataSorted = new TreeSet<>((t0, t1) -> t1.score - t0.score);
+        for (ScoreData scoreData : scoreBoardRepository.findAll()) {
+            scoreDataSorted.add(scoreData);
+        }
+
+        Iterator iterator = scoreDataSorted.iterator();
+
+        ArrayList<ScoreData> list = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            list.add(i, (ScoreData) iterator.next());
+        }
+        return list;
+    }
+
+    void makeScoresForTest() {
+        scoreBoardRepository.save(new ScoreData(1L, "pro_hello", "guess_yoyo", 696));
+        scoreBoardRepository.save(new ScoreData(2L, "nono", "ayyy", 890));
+        scoreBoardRepository.save(new ScoreData(3L, "ayyy", "lmao", 105550));
+        scoreBoardRepository.save(new ScoreData(4L, "blabla", "poop", 143200));
+        scoreBoardRepository.save(new ScoreData(5L, "pro_hello", "something", 43));
+        scoreBoardRepository.save(new ScoreData(6L, "something", "xD", 87));
+        scoreBoardRepository.save(new ScoreData(7L, "something", "xD", 5));
+        scoreBoardRepository.save(new ScoreData(8L, "something", "xD", 4));
+        scoreBoardRepository.save(new ScoreData(9L, "something", "xD", 3));
+        scoreBoardRepository.save(new ScoreData(10L, "something", "xD", 2));
+        scoreBoardRepository.save(new ScoreData(11L, "something", "xD", 1));
+    }
+
+
+
+    @Autowired
+    private ScoreBoardRepository scoreBoardRepository;
 }
