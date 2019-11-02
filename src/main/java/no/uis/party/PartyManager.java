@@ -29,9 +29,8 @@ public class PartyManager {
      * @return Party
      * @author Alan Rostem
      */
-    private Party createParty() {
-        Party party = new Party();
-        return party;
+    private void openParty() {
+        currentOpenParty = new Party();
     }
 
     /**
@@ -51,7 +50,7 @@ public class PartyManager {
      */
     public void update(SimpMessageSendingOperations messagingTemplate) {
         if (!isThereAnOpenParty()) {
-            currentOpenParty = createParty();
+            openParty();
             System.out.println("Party opened! Parties created: " + parties.size());
         }
         // If both types of player are waiting, add them to the newly created party
