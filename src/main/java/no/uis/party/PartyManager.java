@@ -198,7 +198,6 @@ public class PartyManager {
         switch (player.getPlayerType()) {
             case PROPOSER:
                 queueUpProposer(player);
-                currentlyWaitingGuesser.setPlayerStatus(Player.PlayerStatus.WAITING);
                 activePlayers.put(player.getUsername(), player);
                 break;
             case GUESSER:
