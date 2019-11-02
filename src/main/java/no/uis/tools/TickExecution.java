@@ -1,4 +1,4 @@
-package no.uis.backend_pseudo_game.tools;
+package no.uis.tools;
 
 /**
  * Simple structural class that executes some code every x milliseconds.

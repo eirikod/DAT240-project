@@ -1,5 +1,6 @@
-package no.uis.websocket;
+package no.uis.configs;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -16,7 +17,9 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@EntityScan("no.uis.players")
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/channel");

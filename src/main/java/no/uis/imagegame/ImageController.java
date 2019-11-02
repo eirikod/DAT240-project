@@ -1,8 +1,10 @@
-package no.uis.imagegame;
+﻿package no.uis.imagegame;
 
 import java.io.*;
 import java.util.*;
 
+import static java.lang.String.format;
+import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -26,30 +28,36 @@ import no.uis.imagegame.ImageController.Greeting;
 import no.uis.imagegame.ImageController.HelloMessage;
 import no.uis.imagegame.ImageController.User2;
 import no.uis.players.Player;
-import no.uis.players.PlayerRepository;
 import no.uis.players.User;
+import no.uis.websocket.SocketMessage;
 import no.uis.players.Player.PlayerType;
 
 
 @Controller
 public class ImageController {
-	
+
 	//Static parameters
 	final static int HIGHER_SCORE = 100;
+
 	final static String CONST_PLAY_MODE = "listPlayMode";
 	final static String CONST_PLAYER_MODE = "listPlayerMode";
-	
+	final static String ADDR_CALLBACK_IMAGE = "app/party/20/sendImageId";
+	final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/20";
+
 	//Load list of images in my scattered_images folder
 	@Value("classpath:/static/images/scattered_images/*")
 	private Resource[] resources;
-	
+
 	//Initialize my label reader
 	ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
 			"src/main/resources/static/label/image_mapping.csv");
-	
+
+	@Autowired
+	private SimpMessageSendingOperations messageTemplate;
+
 	private int score;
 	private int guessesLeft;
-	
+
 //    private Player proposer;
 //    private Player guesser;
     private String image;
@@ -59,7 +67,7 @@ public class ImageController {
     private int countTotalSegments;
 //    display remaining segments in frontend?
     private int countRemainingSegments;
-  
+
     /**
      * Returns player to correct view
      * @author Eirik
@@ -72,7 +80,22 @@ public class ImageController {
     		@RequestParam(value = "player", required = true) Player player) {
     	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
     }
-    
+
+	@MessageMapping("/party/{partyId}/addUser")
+	public void addUser(@DestinationVariable String roomId, @Payload SocketMessage chatMessage,
+						SimpMessageHeaderAccessor headerAccessor) {
+		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", roomId);
+		System.out.println(roomId);
+		if (currentRoomId != null) {
+			SocketMessage leaveMessage = new SocketMessage();
+			leaveMessage.setType("LEAVE");
+			leaveMessage.setSender(chatMessage.getSender());
+			messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
+		}
+		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+		messageTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
+	}
+
   /**
    * Proposer init, loads picture and player stats
    * @author Eirik
@@ -85,33 +108,33 @@ public class ImageController {
 	public ModelAndView showImage(ModelAndView model,
 			@ModelAttribute("selectedlabel") Object modelname,
 			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) {
-		
+
 			String name = modelname.toString() != null ? modelname.toString() : "cinema";
-			
+
 			String[] files = labelReader.getImageFiles(name);
 			String image_folder_name = getImageFolder(files);
 			ArrayList<String> imageLabels = getAllLabels(labelReader);
-			
+
 			model.addObject("highestscore", HIGHER_SCORE);
-			
+
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 			countTotalSegments = countTotalSegments-1;
 			countRemainingSegments = countTotalSegments;
 			guessesLeft = 3;
-			
+
 			propSegment = new ArrayList<String>();
 			guesSegment = new ArrayList<String>();
 
 			for (int i = 0; i < countTotalSegments; ++i) {
 				propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
 			}
-			
+
 			model.addObject("listimages", propSegment);
 			return model;
 	}
-	
-	
+
+
 	/**
 	 *  Lets user choose a picture
 	 * @author Eirik
@@ -124,8 +147,8 @@ public class ImageController {
 		model.addObject("listlabels", imageLabels);
 		return model;
 	}
-	
-	
+
+
 	/**
 	 * Adds the chosen segment to the guessers view
 	 * @author Eirik
@@ -134,7 +157,7 @@ public class ImageController {
 	 * @return redirect
 	 */
     @RequestMapping(value = "/proposer", method = RequestMethod.POST)
-    public ModelAndView newSegment(ModelAndView model, @ModelAttribute ("selectedlabel") String name, 
+    public ModelAndView newSegment(ModelAndView model, @ModelAttribute ("selectedlabel") String name,
     		@RequestParam (value="id", required=false, defaultValue="-1") String id) {
     	if (!id.equals("-1") & guessesLeft > 0) {
     		String[] files = labelReader.getImageFiles(name);
@@ -151,7 +174,15 @@ public class ImageController {
     	model.addObject("listimages", propSegment);
     	return model;
     }
-    
+
+	@MessageMapping("/party/20/sendImageId")
+	public void update(){
+		System.out.println("update ---------------------------------------------------");
+		SocketMessage sockMess = new SocketMessage();
+		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
+		return;
+  }
+
     /**
      * Guesser init, loads available segments
      * @author Eirik
@@ -185,7 +216,7 @@ public class ImageController {
 		if (!guess.equals("-1") & guessesLeft > 0) {
 			System.out.println("guesses left: " + guessesLeft);
 			--guessesLeft;
-			
+
 			if (guess == name) {
 				System.out.println("You win");
 				//TODO flash message redirect attribute
@@ -202,9 +233,9 @@ public class ImageController {
 	//TODO
 	// proposer choose a segment (newSegment)
 	// 3 guesses or give up or correct
-	
 
-	
+
+
 	private String getImageFolder(String[] files) {
 		String image_folder_name = "";
 		for (String file : files) {
@@ -232,47 +263,22 @@ public class ImageController {
 		return labels;
 	}
 
-	//WelcomePage controller example
-	@RequestMapping("/welcomePage")
-	public String newEntry(Model model, User user,
-			@RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
-			@RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode){
-		System.out.println("playMode : " + playMode);
-		System.out.println("playerMode : " + playerMode);
-		//model.addAttribute("obj", user);
-		model.addAttribute("pseudo", "bernard");
-		User2 user2 = new User2();
-		model.addAttribute("user", user2);
-		ArrayList<String> lstPlayMode = new ArrayList<String>();
-		lstPlayMode.add("GUESSER");
-		lstPlayMode.add("PROPOSER");
-		model.addAttribute(CONST_PLAY_MODE, lstPlayMode);
-		
-		ArrayList<String> lstPlayerMode = new ArrayList<String>();
-		lstPlayerMode.add("SINGLE PLAYER");
-		lstPlayerMode.add("MULTIPLE PLAYER");
-		model.addAttribute(CONST_PLAYER_MODE, lstPlayerMode);
-		
-		System.out.println(user.getName());
-		return "welcomePage";
-	}
-
 	@RequestMapping("/addPlayer")
 	public String addPlayer(Model model, User user) {
 		model.addAttribute("obj", user);
 		System.out.println(user.getName());
 		return "welcomePage";
 	}
-	
+
 	public class MonThread extends Thread {
-		
+
 		private ImageController image_controller;
-		
+
 		public MonThread(ImageController imageController) {
 			super();
 			this.image_controller = imageController;
 		}
-		
+
 		public void run() {
 			try {
 				System.out.println("Début du thread");
@@ -286,24 +292,14 @@ public class ImageController {
 			}
 		}
 	}
-	
+
 	@RequestMapping("/hello")
 	public String hello() {
 		return "index";
 	}
-	
-//	@MessageMapping("/hello")
-//    @SendTo("/topic/greetings")
-//    public Greeting greeting(HelloMessage message) throws Exception {
-//		System.out.println("Avant délai ---------------------------------------------------");
-//		System.out.println(message.name);
-//        Thread.sleep(1000); // simulated delay
-//		System.out.println("Après délai ---------------------------------------------------");
-//		return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
-//    }
-	
+
 	@MessageMapping("/hello")
-    @SendTo("/topic/greetings")
+    @SendTo("/channel/greetings")
     public Greeting greeting(String message) throws Exception {
 		System.out.println("greetings");
 		System.out.println("Avant délai ---------------------------------------------------");
@@ -312,9 +308,9 @@ public class ImageController {
 		System.out.println("Après délai ---------------------------------------------------");
 		return new Greeting("Hello, " + HtmlUtils.htmlEscape(message) + "!");
     }
-	
+
 	@MessageMapping("/welcomePage")
-    @SendTo("/game/lunch")
+    @SendTo("/channel/lunch")
     public String search(String message) throws Exception {
 		System.out.println("search called");
 		System.out.println("Avant délai ---------------------------------------------------");
@@ -324,9 +320,21 @@ public class ImageController {
 		String url = "http://localhost:8080/proposer";
 		return url;
     }
-	
+
+//	@MessageMapping("/welcomePage")
+//    @SendTo("/channel/state")
+//    public String changeState(String message) throws Exception {
+//		System.out.println("changeState called");
+//		System.out.println("Avant délai ---------------------------------------------------");
+//		System.out.println(message);
+//        Thread.sleep(1000); // simulated delay
+//		System.out.println("Après délai ---------------------------------------------------");
+//		String url = "http://localhost:8080/proposer";
+//		return url;
+//    }
+
 	@MessageMapping("/notif")
-    @SendTo("/game/notif")
+    @SendTo("/channel/notif")
     public String notif(String message) throws Exception {
 		System.out.println("notif");
 		System.out.println("Avant délai ---------------------------------------------------");
@@ -336,13 +344,14 @@ public class ImageController {
 		String url = "COUCOU";
 		return url;
     }
-	
+
 	protected class User2{
 		public boolean isLogged = true;
-		public int highScore = 120;
-		public String name = "Robert";
+		public int highestScore = 41;
+		public String name = "SuperMan";
+		public String map = "Casino";
 	}
-	
+
 	protected class HelloMessage {
 
 	    private String name;
@@ -362,7 +371,7 @@ public class ImageController {
 	        this.name = name;
 	    }
 	}
-	
+
 	protected class Greeting {
 
 	    private String content;

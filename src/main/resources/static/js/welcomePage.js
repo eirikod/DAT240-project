@@ -1,28 +1,17 @@
-var stompClient = null;
+//import { SocketConnector } from 'socket-connector';
 
-function setConnected(connected) {
-	console.log("setConnected")
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-    $("#greetings").html("");
-}
+const client = new SocketConnector();
 
-function connect() {
-	console.log("connect")
-    var socket = new SockJS('/gs-guide-websocket');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/game/lunch', function (lunch) {
-            console.log("----------------------------------J'ai recu le call");
-            console.log(lunch);
-            console.log(lunch.toString());
-            var link = lunch.body;
-            console.log(link);
-            $("#navigateur")[0].action = link;
-        });
-    });
+client.addStompListener(`channel/update/${id}/`, data => {
+
+});
+
+function makeMessage(content) {
+    return {
+        content: content,
+        sender: username,
+        type: "MSG"
+    };
 }
 
 function disconnect() {
@@ -34,17 +23,54 @@ function disconnect() {
 }
 
 
-
+/**
+*
+* @param void
+* @author Grégoire Guillien
+*/
 function sendPartyParameters(){
-	console.log("sendPartyParameters used")
-	stompClient.send("/app/welcomePage", {}, JSON.stringify({'selectedPlayModelabel': $("#dropOperator").val(), 'selectedPlayerModelabel': $("#dropOperator2").val()}));
+	console.log("sendPartyParameters used");
+	client.send(makeMessage($("#dropOperator").val()), "/app/party/queueUp");
+}
+
+/*function enterRoom(newRoomId) {
+    topic = `/app/chat/${newRoomId}`;
+
+    if (currentSubscription) {
+        currentSubscription.unsubscribe();
+    }
+    currentSubscription = client.subscribe(`/channel/${newRoomId}`, onMessageReceived);
+
+    client.send({sender: username, type: 'JOIN'}, `${topic}/addUser`);
 }
 
 
+ */
+
+function researchParty(){
+	console.log("tamere");
+	$( "#loader" )[0].style="visibility:;";
+	console.log($( "#loader" ));
+	//console.log("document.getElementById('demo').innerHTML = Date()");
+}
+
+let searching = false;
+
+/**
+*Event management
+* @param void
+* @author Grégoire Guillien
+*/
 $(function () {
     $("form").on('submit', function (e) {
-//        e.preventDefault();
+        e.preventDefault();
     });
     $( "#connect" ).click(function() { connect(); });
-    $( "#search" ).click(function() { sendPartyParameters(); });
+    $( "#search" ).click(function() {
+        if (searching) {
+            sendPartyParameters();
+            researchParty();
+            searching = true;
+        }
+    });
 });
