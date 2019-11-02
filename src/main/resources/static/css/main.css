@@ -363,3 +363,8 @@ loginInput-fields
     height: 100%;
   }
 }
+
+#proposerPopUp{
+	color: red;
+	text-transform: uppercase;
+}
