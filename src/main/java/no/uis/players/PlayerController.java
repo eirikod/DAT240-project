@@ -1,6 +1,7 @@
 package no.uis.players;
 
 import no.uis.repositories.PlayerRepository;
+import no.uis.repositories.ScoreBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,11 +11,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import no.uis.players.Player.PlayerType;
 
+import java.util.*;
+
 @Controller
 public class PlayerController {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private ScoreBoardRepository scoreBoardRepository;
 
     @RequestMapping("/")
     public String home(Model model) {

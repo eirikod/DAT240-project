@@ -15,7 +15,7 @@ import java.util.Random;
  */
 public class Party {
     // TODO: Add controller logic when ready to merge with the front-end
-    private Long id = Math.abs(new Random().nextLong());
+    private String id = "" + Math.abs(new Random().nextLong());
     private Player guesser;
     private Player proposer;
     private PartyStatus currentStatus;
@@ -32,16 +32,8 @@ public class Party {
         }
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
-    }
-
-    public Player getProposer() {
-        return proposer;
-    }
-
-    public Player getGuesser() {
-        return guesser;
     }
 
     /**
@@ -103,6 +95,26 @@ public class Party {
         this.guesser = guesser;
     }
 
+    /**
+     * Sets a proposer to the party.
+     *
+     * @param proposer Player
+     * @author Alan Rostem
+     */
+    public Player getProposer() {
+        return this.proposer;
+    }
+
+    /**
+     * Sets a guesser to the party.
+     *
+     * @param guesser Player
+     * @author Alan Rostem
+     */
+    public Player getGuesser() {
+        return(this.guesser);
+    }
+    
     /**
      * Retrieve the current state of the party.
      *

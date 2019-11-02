@@ -8,7 +8,6 @@ import static no.uis.players.Player.PlayerType.*;
 import static no.uis.party.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ import java.util.Map;
 public class PartyManager {
     private ArrayDeque<Player> proposerQueue = new ArrayDeque<>();
     private ArrayDeque<Player> guesserQueue = new ArrayDeque<>();
-    private HashMap<Long, Party> parties = new HashMap<>();
+    private HashMap<String, Party> parties = new HashMap<>();
 
     private HashMap<String, Player> activePlayers = new HashMap<>();
 
@@ -42,7 +41,7 @@ public class PartyManager {
         currentOpenParty = new Party();
     }
 
-    public Party getParty(Long id) {
+    public Party getParty(String id) {
         return parties.get(id);
     }
 
@@ -114,7 +113,7 @@ public class PartyManager {
             }
         }
         // Update all parties and remove those that are finished
-        for (Map.Entry<Long, Party> pair: parties.entrySet()) {
+        for (Map.Entry<String, Party> pair: parties.entrySet()) {
             Party party = pair.getValue();
             party.update(messagingTemplate);
             if (party.getStatus() == FINISHED_GAME) {
