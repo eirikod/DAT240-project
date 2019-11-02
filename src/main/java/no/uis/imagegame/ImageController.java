@@ -150,6 +150,7 @@ public class ImageController {
 			countRemainingSegments = countTotalSegments;
 			guessesLeft = 0;
 			giveup = false;
+			score = 1000;
 
 			propSegment = new ArrayList<String>();
 			guesSegment = new ArrayList<String>();
@@ -194,31 +195,31 @@ public class ImageController {
 
     private int count=0;
     
-//	@MessageMapping(ADDR_CALLBACK_IMAGE)
-//	public void update(SocketMessage message){
-//		System.out.println("update ---------------------------------------------------");
-//		System.out.println(message);
-//		Object id = message.getContent();
-//		String str_id = (String) id;
-//		System.out.println(id);
-//		SocketMessage sockMess = new SocketMessage();
-//		HashMap content = new HashMap();
-//		String state = (Player.PlayerStatus.FINISHED).toString();
-//		String score ="8";
-//		String time = "12:23";
-//		content.put("state", state);
-//		content.put("score", score);
-//		content.put("time", time);
-//		sockMess.setContent(content);
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
-//		return;
-//  }
+	@MessageMapping(ADDR_CALLBACK_IMAGE)
+	public void update(SocketMessage message){
+		System.out.println("update ---------------------------------------------------");
+		System.out.println(message);
+		Object id = message.getContent();
+		String str_id = (String) id;
+		System.out.println(id);
+		SocketMessage sockMess = new SocketMessage();
+		HashMap content = new HashMap();
+		String state = (Player.PlayerStatus.FINISHED).toString();
+		String score ="8";
+		String time = "12:23";
+		content.put("state", state);
+		content.put("score", score);
+		content.put("time", time);
+		sockMess.setContent(content);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
+		return;
+  }
 
     /**
      * Guesser init, loads available segments
@@ -251,8 +252,8 @@ public class ImageController {
 			@RequestParam (value = "SubmittedGuess", required = false, defaultValue = "-1") String guess,
 			// implement boolean button
 			@RequestParam (value = "nextround", defaultValue = "false") boolean nextround) {
+		model.addObject("guessesleft", "Guesses left: " + guessesLeft);
 		if (!guess.equals("-1") && guessesLeft > 0) {
-			model.addObject("guessesleft", "Guesses left: " + guessesLeft);
 			--guessesLeft;
 			
 			// add animation eg. shaking guess if wrong?
