@@ -29,7 +29,7 @@ public class PlayerController {
     ) {
         if (!userExists(reg_username)) {
             if (reg_confirmpass.equals(reg_password)) {
-                Player player = createUser(reg_username, reg_password);
+                User player = createUser(reg_username, reg_password);
                 return "redirect:welcomePage?username=" + reg_username + "&id=" + player.getId();
             }
             model.addAttribute("invalid_message", "Please confirm your password.");
@@ -44,7 +44,7 @@ public class PlayerController {
                         @RequestParam(value = "login_username") String login_username,
                         @RequestParam(value = "login_password") String login_password) {
         if (userExists(login_username)) {
-            Player player = playerRepository.findByUsername(login_username);
+            User player = playerRepository.findByUsername(login_username);
             if (player.getPassword().equals(login_password)) {
                 model.addAttribute("username", player.getUsername());
                 return "redirect:welcomePage?username=" + login_username + "&id=" + player.getId();
@@ -54,10 +54,10 @@ public class PlayerController {
         return "loginPage";
     }
 
-    private Player createUser(String username, String password) {
-        Player player = new Player(username, password);
+    private User createUser(String username, String password) {
+        User player = new User(username, password);
         playerRepository.save(player);
-        System.out.println("Created a new player: " + player);
+        System.out.println("Created a new user: " + player);
         return player;
     }
 
