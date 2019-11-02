@@ -28,7 +28,9 @@ const enumState= {
  * funtion trigerred on websocket connexion
  */
 client.onConnect = function(){
-	route = `app/party/${partyId}/addUser`;
+	console.log("----------------------------------------------")
+	route = `/app/party/${partyId}/addUser`;
+	console.log(route);
 	client.send({sender: "", type: 'JOIN'}, route);
 }
 
