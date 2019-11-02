@@ -182,15 +182,20 @@ public class ImageController {
 			@ModelAttribute ("selectedlabel") String name,
 			@RequestParam (value="SubmittedGuess", required=false, defaultValue="-1") String guess) {
 		model.addObject("listimagesproposed", guesSegment);
-		if (!guess.equals("-1")) {
-		//	--guessesLeft;
+		if (!guess.equals("-1") & guessesLeft > 0) {
+			System.out.println("guesses left: " + guessesLeft);
+			--guessesLeft;
 			
-			if (guess.equals(name)) {
-//				model.addObject("you won");
+			if (guess == name) {
 				System.out.println("You win");
 				//TODO flash message redirect attribute
 				return model;
+			} else {
+				System.out.println("Wrong guess " + guess);
+				System.out.println()
 			}
+		} else {
+			System.out.println("You're out of guesses, wait for new segment");
 		}
 		return model;
 	}
