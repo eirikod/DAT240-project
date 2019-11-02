@@ -9,7 +9,8 @@
 	<script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script type="text/javascript" th:src="@{/js/game.js}"></script>
+    <script src="js/structures/socket-connector.js"></script>
+    <script type="text/javascript" th:src="@{/js/guesser.js}"></script>
     
     <script>
 		//Start dato, tid etc.  --> key: startDate
@@ -136,7 +137,7 @@ text-align:left;
           <h>INFO: </h>
           
         	<div class="label_game">
-					<h2 th:text = "${infotext}"> Wait for segment</h2>
+					<h2 th:text = "${state}"> Wait for segment</h2>
 					<h2 th:text = "${guessesleft}"></h2>
     		</div>
 		 </div>
@@ -164,8 +165,11 @@ text-align:left;
 <div class="row">
 		<div class="col-8">
 			<div style="position: relative;">
-				<div th:each="image,iter : ${listimagesproposed}" class="alpha-mask">
-					<img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
+				<div th:each="image,iter : ${listimages}" class="alpha-mask">
+					<img th:id="${iter.index}" 
+						th:attr="src=@{|${image}|}" 
+						onerror="this.style.display='none'" 
+						style="visibility: hidden;"/>
 				</div>			
 			</div>
 		</div>
@@ -173,9 +177,9 @@ text-align:left;
 		
 		<div class="col-4">	 	
 			 <form action="guesser" method="POST">
-			<input type="text" name="SubmittedGuess" placeholder="Your guess:"><br>
-			<input type="submit" value="SUBMIT">
-			<input type="button"  value="NEW SEGMENT"><br>
+			<input type="text" id="guess" name="SubmittedGuess" placeholder="Your guess:"><br>
+			<input type="submit" id="submitGuess" value="SUBMIT">
+			<input type="button" id="submitNewSegment" value="NEW SEGMENT"><br>
 			</form>
 		</div>
 		
@@ -201,60 +205,20 @@ text-align:left;
     		</div>
    	</div>
 </div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	//Thimeleaf attribute
+    var userId = /*[[${userId}]]*/ 'default';
+    console.log("user id : ");
+    console.log(userId);
 
-
-<!--  
-
-<div class="container">
-	<div class="row">
-		Bande Titre & btn home & Disconect button & player info
-	</div>
+	var partyId = /*[[${partyId}]]*/ 'default';
+	console.log("partyId : ");
+	console.log(partyId);
 	
-	<div class="row">
-		<div class="col-sm">
-			Guesser number
-		</div>
-	
-		<div class="col-sm">
-			Best player label + score
-		</div>
-	</div>
+   subscribe(userId, partyId);
 
-	<div class="row buttons-images-container">
-		<div class="col-md">
-			<div style="position: relative;">
-				<div th:each="image,iter : ${listimagesproposed}" class="alpha-mask">
-					<img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
-				</div>			
-			</div>
-		</div>
-		
-		<div class="col-sm blackSideLine">
-			<div class="row">
-			 	<form action="guesser" method="POST">
-					<div class="col-sm">
-					<div class= "Container">
-						<div style="position: relative;">
-							<div class="Input">
-		    					<input type="text" id="input" name ="submettedGuess" class="Input-text" placeholder="Your guess of the image label, e.g. cinema">
-		    					<label for="input" class="Input-label">First name</label>
-		  					</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm">
-				 		<input class="bouton16" value="SUBMIT" type="submit">
-					</div>
-			 	</form>						
-			</div>
-			
-			<div class="row">
-				time & current score
-			</div>
-		</div>
-	</div>
-</div>
-
--->
+/*]]>*/
+</script>
 </body>
 </html>

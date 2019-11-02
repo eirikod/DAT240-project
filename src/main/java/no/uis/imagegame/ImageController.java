@@ -49,7 +49,7 @@ public class ImageController {
 	final static String CONST_PLAY_MODE = "listPlayMode";
 	final static String CONST_PLAYER_MODE = "listPlayerMode";
 
-	final static String ADDR_CALLBACK_IMAGE = "/party/20/sendImageId";
+	final static String ADDR_CALLBACK_IMAGE = "/party/20/sendGuess";
 	final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/54";
 
 	final static String USER_ID = "54";
@@ -99,7 +99,7 @@ public class ImageController {
 	@MessageMapping("/party/{partyId}/addUser")
 	public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
-		//System.out.println("FUCKKKKKKKKKKKKKKKKKKKKKKKKK YEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		System.out.println("FUCKKKKKKKKKKKKKKKKKKKKKKKKK YEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
 		System.out.println(partyId);
 		if (currentRoomId != null) {
@@ -132,7 +132,8 @@ public class ImageController {
 
 			String[] files = labelReader.getImageFiles(name);
 			String image_folder_name = getImageFolder(files);
-			ArrayList<String> imageLabels = getAllLabels(labelReader);
+			
+//			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
 
 			PartyManager partyManager = QueueController.getPartyManager();
@@ -145,7 +146,7 @@ public class ImageController {
 //				model.addObject("highestscore", player.getHigherScore());
 			model.addObject("userId", userId);
 			model.addObject("partyId", partyId);
-			model.addObject("listlabels", imageLabels);
+//			model.addObject("listlabels", imageLabels);
 			
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
@@ -212,6 +213,8 @@ public class ImageController {
 		content.put("state", state);
 		content.put("score", score);
 		content.put("time", time);
+		String segmentId = "14";
+		content.put("segment", segmentId);
 		sockMess.setContent(content);
 		try {
 			Thread.sleep(1000);
@@ -280,8 +283,8 @@ public class ImageController {
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
 		PartyManager partyManager = QueueController.getPartyManager();
 		Party party = partyManager.getParty(partyId);
-		Player guesser = party.getProposer();
-		String userId = Long.toString(guesser.getId());
+		Player proposer = party.getProposer();
+		String userId = Long.toString(proposer.getId());
 		model.addObject("listlabels", imageLabels);
 		model.addObject("userId", userId);
 		model.addObject("partyId", partyId);
@@ -322,6 +325,25 @@ public class ImageController {
     private int count=0;
     
 
+//    /**
+//     * Guesser init, loads available segments
+//     * @author Eirik
+//     * @param model
+//     * @param name
+//     * @param id
+//     * @return model
+//     */
+//	@RequestMapping(value = "/guesser")
+//	public ModelAndView showImageGuesser(ModelAndView model,
+//			@ModelAttribute ("selectedlabel") String name,
+//			@RequestParam (value="SubmittedGuess", required=false, defaultValue="-1") String guess,
+//			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
+//		model.addObject("listimagesproposed", guesSegment);
+//		model.addObject("infotext", "WAIT FOR SEGMENT");
+//		
+//		return model;
+//	}
+
     /**
      * Guesser init, loads available segments
      * @author Eirik
@@ -331,14 +353,36 @@ public class ImageController {
      * @return model
      */
 	@RequestMapping(value = "/guesser")
-	public ModelAndView showImageGuesser(ModelAndView model,
-			@ModelAttribute ("selectedlabel") String name,
-			@RequestParam (value="SubmittedGuess", required=false, defaultValue="-1") String guess) {
-		model.addObject("listimagesproposed", guesSegment);
-		model.addObject("infotext", "WAIT FOR SEGMENT");
+	public ModelAndView showImageGuesser(
+			@ModelAttribute("selectedlabel") Object modelname,
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
+		
+		ModelAndView model = new ModelAndView("guesser");
+		
+		PartyManager partyManager = QueueController.getPartyManager();
+//		Party party = partyManager.getParty(partyId);
+//		Player guesser = party.getGuesser();
+//		String userId = Long.toString(guesser.getId());
+		model.addObject("userId", USER_ID);
+		model.addObject("partyId", PARTY_ID);
+		
+		String name = modelname.toString() != null ? modelname.toString() : "cinema";
+		String[] files = labelReader.getImageFiles(name);
+		String image_folder_name = getImageFolder(files);
+		// finds number of segments per image
+		countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
+		countTotalSegments = countTotalSegments-1;
+		countRemainingSegments = countTotalSegments;
+		guessesLeft = 3;
+		propSegment = new ArrayList<String>();
+		for (int i = 0; i < countTotalSegments; ++i) {
+			propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
+		}
+		model.addObject("listimages", propSegment);
+		
 		return model;
 	}
-
+    
 	/**
 	 * Guesser view, processes guesses and if ready for new segment
 	 * @author Eirik

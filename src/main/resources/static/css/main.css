@@ -368,3 +368,7 @@ loginInput-fields
 	color: red;
 	text-transform: uppercase;
 }
+
+#wrapper   { display: table; }
+#firstDiv  { display: table-footer-group; }
+#secondDiv { display: table-header-group; }
