@@ -61,10 +61,11 @@ public class PlayerController {
     }
 
     private User createUser(String username, String password) {
-        User player = new User(username, password);
-        playerRepository.save(player);
-        System.out.println("Created a new user: " + player);
-        return player;
+        User user = new User(username, password);
+        System.out.println(user);
+        playerRepository.save(user);
+        System.out.println("Created a new user: " + user);
+        return user;
     }
 
     private boolean userExists(String username) {

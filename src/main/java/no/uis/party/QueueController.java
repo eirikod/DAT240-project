@@ -27,10 +27,11 @@ import static java.lang.String.format;
 
 @Controller
 public class QueueController {
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
-
     @Autowired
     PlayerRepository repository;
+
+    @Autowired
+    private ScoreBoardRepository scoreBoardRepository;
 
     final static String CONST_PLAY_MODE = "listPlayMode";
     final static String CONST_PLAYER_MODE = "listPlayerMode";
@@ -89,18 +90,17 @@ public class QueueController {
                            @RequestParam(value = "id") String id,
                            @RequestParam(value = "selectedPlayModelabel", required = false, defaultValue = "") String playMode,
                            @RequestParam(value = "selectedPlayerModelabel", required = false, defaultValue = "") String playerMode) {
-        System.out.println("playMode : " + playMode);
-        System.out.println("playerMode : " + playerMode);
         ArrayList<String> listPlayerRole = new ArrayList<String>();
         listPlayerRole.add("GUESSER");
         listPlayerRole.add("PROPOSER");
         model.addAttribute(CONST_PLAY_MODE, listPlayerRole);
 
-        ArrayList<String> listPlayerMode = new ArrayList<String>();
+        ArrayList<String> listPlayerMode = new ArrayList<>();
         listPlayerMode.add("SINGLE PLAYER");
         listPlayerMode.add("MULTIPLE PLAYER");
         model.addAttribute(CONST_PLAYER_MODE, listPlayerMode);
 
+        // TODO: Use Player.
         model.addAttribute("playerIsSearching", partyManager.isPlayerActive(username));
         model.addAttribute("username", username);
         model.addAttribute("id", id);
@@ -140,8 +140,4 @@ public class QueueController {
         scoreBoardRepository.save(new ScoreData(11L, "something", "xD", 1));
     }
 
-
-
-    @Autowired
-    private ScoreBoardRepository scoreBoardRepository;
 }

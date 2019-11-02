@@ -183,7 +183,7 @@ public class ImageController {
 		PartyManager partyManager = QueueController.getPartyManager();
 		Party party = partyManager.getParty(partyId);
 		Player proposer = party.getProposer();
-		String userId = Long.toString(proposer.getId());
+		String userId = (proposer.getId());
 		//String state = (proposer.getPlayerStatus()).toString();
 		content.put("state", state);
 		content.put("score", score);
@@ -246,7 +246,7 @@ public class ImageController {
 				PartyManager partyManager = QueueController.getPartyManager();
 				Party party = partyManager.getParty(partyId);
 				Player proposer = party.getProposer();
-				String userId = Long.toString(proposer.getId());
+				String userId = proposer.getId();
 
 				String name = "cinema";
 
@@ -283,7 +283,7 @@ public class ImageController {
 		PartyManager partyManager = QueueController.getPartyManager();
 		Party party = partyManager.getParty(partyId);
 		Player guesser = party.getProposer();
-		String userId = Long.toString(guesser.getId());
+		String userId = guesser.getId();
 		model.addObject("listlabels", imageLabels);
 		model.addObject("userId", userId);
 		model.addObject("partyId", partyId);

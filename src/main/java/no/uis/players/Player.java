@@ -4,12 +4,13 @@ import no.uis.websocket.SocketMessage;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 public class Player {
-    private Long id;
+    private String id;
 
     private String username;
 
     private PlayerType type;
     private PlayerStatus status;
+    private GameStatus gameStatus = GameStatus.INACTIVE;
     private int score;
 
     public enum PlayerType {
@@ -20,7 +21,11 @@ public class Player {
         WAITING, PLAYING, FINISHED
     }
 
-    public Player(Long id, String username) {
+    public enum GameStatus {
+        QUEUEING, PLAYING, INACTIVE
+    }
+
+    public Player(String id, String username) {
         this.username = username;
         this.id = id;
     }
@@ -33,11 +38,11 @@ public class Player {
         this.setPlayerType(pType);
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -71,6 +76,14 @@ public class Player {
 
     public void setPlayerStatus(PlayerStatus status) {
         this.status = status;
+    }
+
+    public GameStatus getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
     }
 
     public void sendData(SocketMessage message, SimpMessageSendingOperations messageSendingOperations) {

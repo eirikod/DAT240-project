@@ -1,6 +1,8 @@
 package no.uis.party;
 
 import no.uis.players.Player;
+import no.uis.repositories.ScoreBoardRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import javax.persistence.GeneratedValue;
@@ -19,6 +21,9 @@ public class Party {
     private Player guesser;
     private Player proposer;
     private PartyStatus currentStatus;
+
+    @Autowired
+    private ScoreBoardRepository scoreBoardRepository;
 
     /**
      * Sequential update method

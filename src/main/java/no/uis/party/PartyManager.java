@@ -92,6 +92,8 @@ public class PartyManager {
             msg.setType("JOIN_PARTY");
             currentlyWaitingGuesser.sendData(msg, messagingTemplate);
 
+            currentlyWaitingGuesser.setGameStatus(Player.GameStatus.PLAYING);
+            currentlyWaitingProposer.setGameStatus(Player.GameStatus.PLAYING);
             currentlyWaitingGuesser = null; // Guesser no longer waiting
             currentlyWaitingProposer = null; // Proposer no longer waiting
 
@@ -197,10 +199,12 @@ public class PartyManager {
         switch (player.getPlayerType()) {
             case PROPOSER:
                 queueUpProposer(player);
+                player.setGameStatus(Player.GameStatus.QUEUEING);
                 activePlayers.put(player.getUsername(), player);
                 break;
             case GUESSER:
                 queueUpGuesser(player);
+                player.setGameStatus(Player.GameStatus.QUEUEING);
                 activePlayers.put(player.getUsername(), player);
                 break;
         }
