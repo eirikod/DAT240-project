@@ -8,7 +8,7 @@ client.onConnect = () => {
         if (data.type === "JOIN_PARTY") {
             window.location.replace(
                 "http://localhost:8080/imageGameTest?otherPlayerName="
-                + data.content.otherPlayerName + "&partyId=" + data.content.partyId);
+                + data.content.otherPlayerName + "&username=" + username + "&partyId=" + data.content.partyId);
         }
     });
 };

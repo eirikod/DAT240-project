@@ -63,8 +63,12 @@ public class QueueController {
     }
 
     @RequestMapping("/imageGameTest")
-    public String testRedirectParty(Model model, @RequestParam String partyId, @RequestParam String otherPlayerName) {
+    public String testRedirectParty(Model model,
+                                    @RequestParam String partyId,
+                                    @RequestParam String otherPlayerName,
+                                    @RequestParam String username) {
         model.addAttribute("partyId", partyId);
+        model.addAttribute("username", username);
         model.addAttribute("otherPlayerName", otherPlayerName);
         return "imageGameTest";
     }
