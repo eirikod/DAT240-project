@@ -68,7 +68,7 @@ public class ImageController {
 
 	@Autowired
     private PlayerRepository playerRepository;
-	
+
 	private int score;
 	private int guessesLeft;
 
@@ -127,7 +127,7 @@ public class ImageController {
 			@RequestParam(value = "userId", required = false, defaultValue = "-1") Long userId) {
 
 			System.out.println("NO NOT HERRRRRRE----------------------------------------------");
-		
+
 			String name = modelname.toString() != null ? modelname.toString() : "cinema";
 
 			String[] files = labelReader.getImageFiles(name);
@@ -139,20 +139,23 @@ public class ImageController {
 			PartyManager partyManager = QueueController.getPartyManager();
 			Party party = partyManager.getParty(partyId);
 			Player proposer = party.getProposer();
-			
+
 			User player = playerRepository.findById(userId);
 
 			//TODO
 //				model.addObject("highestscore", player.getHigherScore());
 			model.addObject("userId", userId);
 			model.addObject("partyId", partyId);
-//			model.addObject("listlabels", imageLabels);
-			
+
+			model.addObject("listlabels", imageLabels);
+
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 			countTotalSegments = countTotalSegments-1;
 			countRemainingSegments = countTotalSegments;
-			guessesLeft = 3;
+			guessesLeft = 0;
+			giveup = false;
+			score = 1000;
 
 			propSegment = new ArrayList<String>();
 			guesSegment = new ArrayList<String>();
@@ -178,11 +181,11 @@ public class ImageController {
 		String state = (Player.PlayerStatus.FINISHED).toString();
 		String score ="8";
 		String time = "12:23";
-		
+
 		PartyManager partyManager = QueueController.getPartyManager();
 		Party party = partyManager.getParty(partyId);
 		Player proposer = party.getProposer();
-		String userId = Long.toString(proposer.getId());
+		String userId = (proposer.getId());
 		//String state = (proposer.getPlayerStatus()).toString();
 		content.put("state", state);
 		content.put("score", score);
@@ -241,27 +244,27 @@ public class ImageController {
 				@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
 
 				ModelAndView model = new ModelAndView("proposer");
-				
+
 				System.out.println("imageGame");
-				
+
 				PartyManager partyManager = QueueController.getPartyManager();
 				Party party = partyManager.getParty(partyId);
 				Player proposer = party.getProposer();
-				String userId = Long.toString(proposer.getId());
-				
+				String userId = proposer.getId();
+
 				String name = "cinema";
 
 				String[] files = labelReader.getImageFiles(name);
 				String image_folder_name = getImageFolder(files);
 				ArrayList<String> imageLabels = getAllLabels(labelReader);
-				
+
 				System.out.println("party id : " + partyId + "/ user id : " + userId);
 
 				model.addObject("highestscore", HIGHER_SCORE);
 				model.addObject("userId", userId);
 				model.addObject("partyId", partyId);
 				model.addObject("listlabels", imageLabels);
-				
+
 				// finds number of segments per image
 				countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 				countTotalSegments = countTotalSegments-1;
@@ -270,7 +273,7 @@ public class ImageController {
 
 				return model;
 		}
-	
+
 	/**
 	 *  Lets user choose a picture
 	 * @author Eirik
@@ -283,8 +286,9 @@ public class ImageController {
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
 		PartyManager partyManager = QueueController.getPartyManager();
 		Party party = partyManager.getParty(partyId);
-		Player proposer = party.getProposer();
-		String userId = Long.toString(proposer.getId());
+
+		Player guesser = party.getProposer();
+		String userId = guesser.getId();
 		model.addObject("listlabels", imageLabels);
 		model.addObject("userId", userId);
 		model.addObject("partyId", partyId);
@@ -299,9 +303,9 @@ public class ImageController {
 	 * @param name
 	 * @return redirect
 	 */
-	
+
     @RequestMapping(value = "/proposer", method = RequestMethod.POST)
-    public ModelAndView newSegment(ModelAndView model, 
+    public ModelAndView newSegment(ModelAndView model,
     		@ModelAttribute ("selectedlabel") String name,
     		@RequestParam (value="id", required=false, defaultValue="-1") String id) {
     	if (!id.equals("-1") && (guessesLeft == 0 || giveup)) {
@@ -323,7 +327,7 @@ public class ImageController {
     }
 
     private int count=0;
-    
+
 
 //    /**
 //     * Guesser init, loads available segments
@@ -397,10 +401,10 @@ public class ImageController {
 			@RequestParam (value = "SubmittedGuess", required = false, defaultValue = "-1") String guess,
 			// implement boolean button
 			@RequestParam (value = "nextround", defaultValue = "false") boolean nextround) {
+		model.addObject("guessesleft", "Guesses left: " + guessesLeft);
 		if (!guess.equals("-1") && guessesLeft > 0) {
-			model.addObject("guessesleft", "Guesses left: " + guessesLeft);
 			--guessesLeft;
-			
+
 			// add animation eg. shaking guess if wrong?
 			if (guess.equals(image)) {
 				model.addObject("infotext", "YOU WIN");

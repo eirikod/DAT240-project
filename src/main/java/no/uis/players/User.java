@@ -1,14 +1,14 @@
 package no.uis.players;
 
 import javax.persistence.*;
+import java.util.Random;
 
 @Entity
 @Table(name = "Players")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "id", nullable = false, unique = true)
+    private String id = "" + Math.abs(new Random().nextLong());
 
     @Column(name = "username")
     private String username;
@@ -30,12 +30,16 @@ public class User {
         return username;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     @Override

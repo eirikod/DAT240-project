@@ -8,7 +8,6 @@ import static no.uis.players.Player.PlayerType.*;
 import static no.uis.party.Party.PartyStatus.*;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +92,8 @@ public class PartyManager {
             msg.setType("JOIN_PARTY");
             currentlyWaitingGuesser.sendData(msg, messagingTemplate);
 
+            currentlyWaitingGuesser.setGameStatus(Player.GameStatus.PLAYING);
+            currentlyWaitingProposer.setGameStatus(Player.GameStatus.PLAYING);
             currentlyWaitingGuesser = null; // Guesser no longer waiting
             currentlyWaitingProposer = null; // Proposer no longer waiting
 
@@ -198,12 +199,18 @@ public class PartyManager {
         switch (player.getPlayerType()) {
             case PROPOSER:
                 queueUpProposer(player);
+                player.setGameStatus(Player.GameStatus.QUEUEING);
                 activePlayers.put(player.getUsername(), player);
                 break;
             case GUESSER:
                 queueUpGuesser(player);
+                player.setGameStatus(Player.GameStatus.QUEUEING);
                 activePlayers.put(player.getUsername(), player);
                 break;
         }
+    }
+
+    public Player getActivePlayer(String username) {
+        return activePlayers.get(username);
     }
 }
