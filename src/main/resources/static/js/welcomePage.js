@@ -44,7 +44,6 @@ function researchParty() {
     $("#loader")[0].style = "visibility:;";
     $("#search")[0].style = "visibility: hidden";
     $("#searching-text")[0].style = "visibility:; text-align: center;";
-
 }
 
 let searching = false;

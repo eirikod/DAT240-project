@@ -30,10 +30,14 @@ import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import no.uis.party.PartyManager;
+import no.uis.party.Party;
+import no.uis.party.QueueController;
 import no.uis.players.Player;
 import no.uis.players.User;
 import no.uis.websocket.SocketMessage;
 import no.uis.players.Player.PlayerType;
+import no.uis.repositories.PlayerRepository;
 
 
 @Controller
@@ -62,6 +66,9 @@ public class ImageController {
 	@Autowired
 	private SimpMessageSendingOperations messageTemplate;
 
+	@Autowired
+    private PlayerRepository playerRepository;
+
 	private int score;
 	private int guessesLeft;
 
@@ -83,38 +90,26 @@ public class ImageController {
      * @param player
      * @return players view
      */
-//    @RequestMapping("/game")
-//    public String Game(Model model,
-//    		@RequestParam(value = "player", required = true) Player player) {
-//    	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
-//    }
-//
-//	@MessageMapping("/party/{partyId}/addUser")
-//	public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
-//						SimpMessageHeaderAccessor headerAccessor) {
-//		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
-//		System.out.println(partyId);
-//		if (currentRoomId != null) {
-//			SocketMessage leaveMessage = new SocketMessage();
-//			leaveMessage.setType("LEAVE");
-//			leaveMessage.setSender(chatMessage.getSender());
-//			messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
-//		}
-//		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-//		messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
-//	}
-    
-	/**
-	 *  Lets user choose a picture
-	 * @author Eirik
-	 * @return model
-	 */
-	@RequestMapping("/proposerImageSelection")
-	public ModelAndView showLabels() {
-		ModelAndView model = new ModelAndView("proposerImageSelection");
-		ArrayList<String> imageLabels = getAllLabels(labelReader);
-		model.addObject("listlabels", imageLabels);
-		return model;
+    @RequestMapping("/game")
+    public String Game(Model model,
+    		@RequestParam(value = "player", required = true) Player player) {
+    	return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
+    }
+
+	@MessageMapping("/party/{partyId}/addUser")
+	public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
+						SimpMessageHeaderAccessor headerAccessor) {
+		//System.out.println("FUCKKKKKKKKKKKKKKKKKKKKKKKKK YEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
+		System.out.println(partyId);
+		if (currentRoomId != null) {
+			SocketMessage leaveMessage = new SocketMessage();
+			leaveMessage.setType("LEAVE");
+			leaveMessage.setSender(chatMessage.getSender());
+			messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
+		}
+		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+		messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
 	}
 
   /**
@@ -127,29 +122,38 @@ public class ImageController {
    */
 	@RequestMapping("/proposer")
 	public ModelAndView showImage(ModelAndView model,
-//			@ModelAttribute("selectedlabel") String name,
-			@RequestParam (value = "selectedlabel", required = false, defaultValue="cinema") String name,
-			@RequestParam(value = "id", required = false, defaultValue = "-1") String id) {
+			@ModelAttribute("selectedlabel") Object modelname,
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+			@RequestParam(value = "userId", required = false, defaultValue = "-1") Long userId) {
 
-//			System.out.println("proposer.get, image: " + name);
-//			System.out.println("porposer.get, id:" + id);
-		
+			System.out.println("NO NOT HERRRRRRE----------------------------------------------");
+
+			String name = modelname.toString() != null ? modelname.toString() : "cinema";
+
 			String[] files = labelReader.getImageFiles(name);
 			String image_folder_name = getImageFolder(files);
 			ArrayList<String> imageLabels = getAllLabels(labelReader);
-			image = name;
 
-			model.addObject("highestscore", HIGHER_SCORE);
-			model.addObject("userId", USER_ID);
-			model.addObject("partyId", PARTY_ID);
-			model.addObject("selectedlabel", name);
-			
+
+			PartyManager partyManager = QueueController.getPartyManager();
+			Party party = partyManager.getParty(partyId);
+			Player proposer = party.getProposer();
+
+			User player = playerRepository.findById(userId);
+
+			//TODO
+//				model.addObject("highestscore", player.getHigherScore());
+			model.addObject("userId", userId);
+			model.addObject("partyId", partyId);
+			model.addObject("listlabels", imageLabels);
+
 			// finds number of segments per image
 			countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
 			countTotalSegments = countTotalSegments-1;
 			countRemainingSegments = countTotalSegments;
 			guessesLeft = 0;
 			giveup = false;
+			score = 1000;
 
 			propSegment = new ArrayList<String>();
 			guesSegment = new ArrayList<String>();
@@ -162,6 +166,131 @@ public class ImageController {
 			return model;
 	}
 
+	@MessageMapping("/party/{partyId}/sendImageId")
+	public void updateProposerView(@DestinationVariable String partyId,
+									SocketMessage message){
+		System.out.println("update ---------------------------------------------------");
+		System.out.println(message);
+		Object id = message.getContent();
+		String str_id = (String) id;
+		System.out.println(id);
+		SocketMessage sockMess = new SocketMessage();
+		HashMap content = new HashMap();
+		String state = (Player.PlayerStatus.FINISHED).toString();
+		String score ="8";
+		String time = "12:23";
+
+		PartyManager partyManager = QueueController.getPartyManager();
+		Party party = partyManager.getParty(partyId);
+		Player proposer = party.getProposer();
+		String userId = Long.toString(proposer.getId());
+		//String state = (proposer.getPlayerStatus()).toString();
+		content.put("state", state);
+		content.put("score", score);
+		content.put("time", time);
+		sockMess.setContent(content);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		proposer.sendData(sockMess, messageTemplate);
+//		messageTemplate.convertAndSend("/party/"+partyId+"/sendImageId/%s".format(userId), sockMess);
+		return;
+  }
+	@MessageMapping(ADDR_CALLBACK_IMAGE)
+	public void update(SocketMessage message){
+		System.out.println("update ---------------------------------------------------");
+		System.out.println(message);
+		Object id = message.getContent();
+		String str_id = (String) id;
+		System.out.println(id);
+		SocketMessage sockMess = new SocketMessage();
+		HashMap content = new HashMap();
+		String state = (Player.PlayerStatus.FINISHED).toString();
+		String score ="8";
+		String time = "12:23";
+		content.put("state", state);
+		content.put("score", score);
+		content.put("time", time);
+		sockMess.setContent(content);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
+		return;
+  }
+	/**
+	   * Proposer init, loads picture and player stats
+	   * @author Eirik
+	   * @param model
+	   * @param modelname
+	   * @param id
+	   * @return view
+	   */
+		@RequestMapping("/toto")
+		public ModelAndView imageGame(
+//				ModelAndView model,
+//				@ModelAttribute("selectedlabel") Object modelname,
+				@RequestParam(value = "id", required = false, defaultValue = "-1") String id,
+				@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
+
+				ModelAndView model = new ModelAndView("proposer");
+
+				System.out.println("imageGame");
+
+				PartyManager partyManager = QueueController.getPartyManager();
+				Party party = partyManager.getParty(partyId);
+				Player proposer = party.getProposer();
+				String userId = Long.toString(proposer.getId());
+
+				String name = "cinema";
+
+				String[] files = labelReader.getImageFiles(name);
+				String image_folder_name = getImageFolder(files);
+				ArrayList<String> imageLabels = getAllLabels(labelReader);
+
+				System.out.println("party id : " + partyId + "/ user id : " + userId);
+
+				model.addObject("highestscore", HIGHER_SCORE);
+				model.addObject("userId", userId);
+				model.addObject("partyId", partyId);
+				model.addObject("listlabels", imageLabels);
+
+				// finds number of segments per image
+				countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
+				countTotalSegments = countTotalSegments-1;
+				countRemainingSegments = countTotalSegments;
+				guessesLeft = 3;
+
+				return model;
+		}
+
+	/**
+	 *  Lets user choose a picture
+	 * @author Eirik
+	 * @return model
+	 */
+	@RequestMapping("/proposerImageSelection")
+	public ModelAndView showLabels(
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
+		ModelAndView model = new ModelAndView("proposerImageSelection");
+		ArrayList<String> imageLabels = getAllLabels(labelReader);
+		PartyManager partyManager = QueueController.getPartyManager();
+		Party party = partyManager.getParty(partyId);
+		Player guesser = party.getProposer();
+		String userId = Long.toString(guesser.getId());
+		model.addObject("listlabels", imageLabels);
+		model.addObject("userId", userId);
+		model.addObject("partyId", partyId);
+		return model;
+	}
+
+
 	/**
 	 * Adds the chosen segment to the guessers view
 	 * @author Eirik
@@ -169,9 +298,9 @@ public class ImageController {
 	 * @param name
 	 * @return redirect
 	 */
-	
+
     @RequestMapping(value = "/proposer", method = RequestMethod.POST)
-    public ModelAndView newSegment(ModelAndView model, 
+    public ModelAndView newSegment(ModelAndView model,
     		@ModelAttribute ("selectedlabel") String name,
     		@RequestParam (value="id", required=false, defaultValue="-1") String id) {
     	if (!id.equals("-1") && (guessesLeft == 0 || giveup)) {
@@ -193,32 +322,7 @@ public class ImageController {
     }
 
     private int count=0;
-    
-//	@MessageMapping(ADDR_CALLBACK_IMAGE)
-//	public void update(SocketMessage message){
-//		System.out.println("update ---------------------------------------------------");
-//		System.out.println(message);
-//		Object id = message.getContent();
-//		String str_id = (String) id;
-//		System.out.println(id);
-//		SocketMessage sockMess = new SocketMessage();
-//		HashMap content = new HashMap();
-//		String state = (Player.PlayerStatus.FINISHED).toString();
-//		String score ="8";
-//		String time = "12:23";
-//		content.put("state", state);
-//		content.put("score", score);
-//		content.put("time", time);
-//		sockMess.setContent(content);
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
-//		return;
-//  }
+
 
     /**
      * Guesser init, loads available segments
@@ -251,10 +355,10 @@ public class ImageController {
 			@RequestParam (value = "SubmittedGuess", required = false, defaultValue = "-1") String guess,
 			// implement boolean button
 			@RequestParam (value = "nextround", defaultValue = "false") boolean nextround) {
+		model.addObject("guessesleft", "Guesses left: " + guessesLeft);
 		if (!guess.equals("-1") && guessesLeft > 0) {
-			model.addObject("guessesleft", "Guesses left: " + guessesLeft);
 			--guessesLeft;
-			
+
 			// add animation eg. shaking guess if wrong?
 			if (guess.equals(image)) {
 				model.addObject("infotext", "YOU WIN");
