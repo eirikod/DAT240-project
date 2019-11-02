@@ -6,15 +6,19 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Players")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="id")
     private Long id;
-	@Column(name="username")
-	private String username;
-	@Column(name="password")
+
+    @Column(name="username")
+    private String username;
+
+    @Column(name="password")
 	private String password;
+
     private PlayerType type;
     private PlayerStatus status;
 	@Column(name="score")

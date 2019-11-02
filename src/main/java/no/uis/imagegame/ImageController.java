@@ -1,5 +1,4 @@
-ï»¿package no.uis.imagegame;
-
+package no.uis.imagegame;
 import java.io.*;
 import java.util.*;
 
@@ -97,10 +96,10 @@ public class ImageController {
     }
 
 	@MessageMapping("/party/{partyId}/addUser")
-	public void addUser(@DestinationVariable String roomId, @Payload SocketMessage chatMessage,
+	public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
-		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", roomId);
-		System.out.println(roomId);
+		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
+		System.out.println(partyId);
 		if (currentRoomId != null) {
 			SocketMessage leaveMessage = new SocketMessage();
 			leaveMessage.setType("LEAVE");
@@ -108,7 +107,7 @@ public class ImageController {
 			messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
 		}
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-		messageTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
+		messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
 	}
 
   /**
@@ -265,7 +264,7 @@ public class ImageController {
 		
 		public void run() {
 			try {
-				System.out.println("DÃ©but du thread");
+				System.out.println("Début du thread");
 				this.sleep(10000);
 				System.out.println("Fin du thread");
 				HelloMessage message = new HelloMessage("coucou");
@@ -286,10 +285,10 @@ public class ImageController {
     @SendTo("/channel/greetings")
     public Greeting greeting(String message) throws Exception {
 		System.out.println("greetings");
-		System.out.println("Avant dÃ©lai ---------------------------------------------------");
+		System.out.println("Avant délai ---------------------------------------------------");
 		System.out.println(message);
         Thread.sleep(1000); // simulated delay
-		System.out.println("AprÃ¨s dÃ©lai ---------------------------------------------------");
+		System.out.println("Après délai ---------------------------------------------------");
 		return new Greeting("Hello, " + HtmlUtils.htmlEscape(message) + "!");
     }
 	
@@ -297,10 +296,10 @@ public class ImageController {
     @SendTo("/channel/lunch")
     public String search(String message) throws Exception {
 		System.out.println("search called");
-		System.out.println("Avant dÃ©lai ---------------------------------------------------");
+		System.out.println("Avant délai ---------------------------------------------------");
 		System.out.println(message);
         Thread.sleep(1000); // simulated delay
-		System.out.println("AprÃ¨s dÃ©lai ---------------------------------------------------");
+		System.out.println("Après délai ---------------------------------------------------");
 		String url = "http://localhost:8080/proposer";
 		return url;
     }
@@ -309,10 +308,10 @@ public class ImageController {
 //    @SendTo("/channel/state")
 //    public String changeState(String message) throws Exception {
 //		System.out.println("changeState called");
-//		System.out.println("Avant dÃ©lai ---------------------------------------------------");
+//		System.out.println("Avant délai ---------------------------------------------------");
 //		System.out.println(message);
 //        Thread.sleep(1000); // simulated delay
-//		System.out.println("AprÃ¨s dÃ©lai ---------------------------------------------------");
+//		System.out.println("Après délai ---------------------------------------------------");
 //		String url = "http://localhost:8080/proposer";
 //		return url;
 //    }
@@ -321,10 +320,10 @@ public class ImageController {
     @SendTo("/channel/notif")
     public String notif(String message) throws Exception {
 		System.out.println("notif");
-		System.out.println("Avant dÃ©lai ---------------------------------------------------");
+		System.out.println("Avant délai ---------------------------------------------------");
 		System.out.println(message);
         Thread.sleep(1000); // simulated delay
-		System.out.println("AprÃ¨s dÃ©lai ---------------------------------------------------");
+		System.out.println("Après délai ---------------------------------------------------");
 		String url = "COUCOU";
 		return url;
     }

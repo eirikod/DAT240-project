@@ -54,21 +54,6 @@ public class PlayerController {
         return "loginPage";
     }
 
-    @RequestMapping(value = "/player", method = RequestMethod.GET)
-    public String newEntry(Model model) {
-        model.addAttribute("pageTitle", "New Player");
-        model.addAttribute("givenAction", "/player");
-        model.addAttribute("givenUserName", "");
-        model.addAttribute("givenPlayerType", "");
-        return "player";
-    }
-
-    @RequestMapping(value = "/player", method = RequestMethod.POST)
-    public String addEntry(@RequestParam String username, @RequestParam PlayerType type) {
-        Player newEntry = new Player(username, type);
-        return "redirect:/";
-    }
-
     private Player createUser(String username, String password) {
         Player player = new Player(username, password);
         playerRepository.save(player);

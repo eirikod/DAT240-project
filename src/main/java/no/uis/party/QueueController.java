@@ -60,12 +60,6 @@ public class QueueController {
         }
     }
 
-    @MessageMapping("/party/{roomID}/hello")
-    public void test(@DestinationVariable String roomID, SocketMessage message) {
-        System.out.println("Hello! ---------------------- room: " + roomID + " | " + message.getContent());
-    }
-
-
     //WelcomePage controller example
     @RequestMapping("/welcomePage")
     public String newEntry(Model model,
