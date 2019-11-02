@@ -7,7 +7,7 @@ public class SocketMessage {
     }
 
     private String messageType;
-    private String content;
+    private Object content;
     private String sender;
 
     public String getType() {
@@ -18,11 +18,11 @@ public class SocketMessage {
         this.messageType = messageType;
     }
 
-    public String getContent() {
+    public Object getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(Object content) {
         this.content = content;
     }
 
