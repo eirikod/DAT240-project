@@ -1,6 +1,6 @@
 /**
  * proposer.js
- * class js managing the event on the proposer.html
+ * file managing the event on the proposer.html
  * 
  */
 
