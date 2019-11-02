@@ -208,6 +208,13 @@
   <input type="submit">
   </form>
  -->
-
+<script th:inline="javascript">
+    let alreadySearching = /*[[${playerIsSearching}]]*/ 'default';
+    if (alreadySearching) {
+        console.log("YOU'RE ALREADY SEARCHING!");
+        researchParty();
+        searching = true;
+    }
+</script>
 </body>
 </html>
