@@ -100,7 +100,13 @@ public class QueueController {
         listPlayerMode.add("MULTIPLE PLAYER");
         model.addAttribute(CONST_PLAYER_MODE, listPlayerMode);
 
-        // TODO: Use Player.
+        if (partyManager.isPlayerActive(username)) {
+            Player player = partyManager.getActivePlayer(username);
+            if (player.getGameStatus() == Player.GameStatus.PLAYING) {
+                // TODO: Redirect them to the respective game page
+                //return "redirect:";
+            }
+        }
         model.addAttribute("playerIsSearching", partyManager.isPlayerActive(username));
         model.addAttribute("username", username);
         model.addAttribute("id", id);

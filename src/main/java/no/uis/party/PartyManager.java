@@ -209,4 +209,8 @@ public class PartyManager {
                 break;
         }
     }
+
+    public Player getActivePlayer(String username) {
+        return activePlayers.get(username);
+    }
 }
