@@ -107,7 +107,7 @@ public class ImageController {
    * Proposer init, loads picture and player stats
    * @author Eirik
    * @param model
-   * @param name
+   * @param modelname
    * @param id
    * @return view
    */
@@ -186,16 +186,27 @@ public class ImageController {
     private int count=0;
     
 	@MessageMapping(ADDR_CALLBACK_IMAGE)
-	public void update(){
+	public void update(SocketMessage message){
 		System.out.println("update ---------------------------------------------------");
+		System.out.println(message);
+		Object id = message.getContent();
+		String str_id = (String) id;
+		System.out.println(id);
 		SocketMessage sockMess = new SocketMessage();
-		count++;
-		if (count > 3) {
-			sockMess.setContent((Player.PlayerStatus.FINISHED).toString());
-		}
-		else {
-			sockMess.setContent((Player.PlayerStatus.PLAYING).toString());
-		}
+		HashMap content = new HashMap();
+		String state = (Player.PlayerStatus.FINISHED).toString();
+		String score ="8";
+		String time = "12:23";
+		content.put("state", state);
+		content.put("score", score);
+		content.put("time", time);
+//		if (count > 3) {
+//			sockMess.setContent((Player.PlayerStatus.FINISHED).toString());
+//		}
+//		else {
+//			sockMess.setContent((Player.PlayerStatus.PLAYING).toString());
+//		}
+		sockMess.setContent(content);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

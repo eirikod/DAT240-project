@@ -40,6 +40,10 @@ var myTurn = true;
 
 var state = enumState.myTurn;
 
+var score = "0";
+
+var time = "00:00";
+
 updateState();
 
 /**
@@ -81,13 +85,17 @@ function subscribe(user_id, party_id){
 function update(msg){
 	console.log("update appele");
 	console.log(msg);
-	state = msg;
+	state = msg.content.state;
+	score = msg.content.score;
+	time = msg.content.time;
+	console.log(state);
 	updateState();
+	updateFeatures();
 	//TODO
 }
 
 /**
-*update the state features
+*update the state feature
 * @author Guillien Grégoire
 */
 function updateState(){
@@ -112,6 +120,12 @@ function updateState(){
 			break
 		
 	}
+}
+
+function updateFeatures(){
+	$("#time").text(time);
+	$("#score").text(score);
+	
 }
 
 /**
@@ -171,6 +185,11 @@ document.addEventListener("click", ({ target }) => {
 			myTurn = false;
 			state = enumState.waiting;
 			updateState();
+		}
+		else if(state === enumState.finished){
+			var element = document.getElementById(target.value).parentElement;
+			sendImageId(target.value);
+			target.disabled=true;
 		}
 		else{
 			state = enumState.waiting;
