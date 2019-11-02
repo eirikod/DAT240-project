@@ -10,6 +10,44 @@
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script type="text/javascript" th:src="@{/js/game.js}"></script>
+    
+    <script>
+		//Start dato, tid etc.  --> key: startDate
+		// save time when timer was started and measure difference
+		
+		var startDate = sessionStorage.getItem('startDate');
+		
+		if (startDate) {
+		    startDate = new Date(startDate);
+		} else {
+		    startDate = new Date();
+		    sessionStorage.setItem('startDate', startDate);  //key-value
+		}
+		
+		// setInterval(counter function, update timer)
+		var counter = setInterval(function() {
+		
+		    // getTime() method returns the number of milliseconds between midnight of January 1, 1970 and now
+		    var now = new Date().getTime();
+		
+		    // Find the distance between now an the count down date (startDate) and this current time
+		    var distance = now - startDate.getTime(); //hvor mange millisekunder som har gått siden du starta og nå
+		
+		    // Calculation for minutes and seconds
+		    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); // checks how many minutes in the distance
+		    var seconds = Math.floor((distance % (1000 * 60)) / 1000); // checks how many seconds in the distance
+		
+		    document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";},   1000); //runs the fuction every 1000ms = 1 s
+		
+		    
+		// function to stop the timer when the game is done
+		function StopTimer(){
+		  clearInterval(counter);
+		}
+	
+	</script>    
+    
+    
 <style>
 
 * {
@@ -154,7 +192,7 @@ text-align:left;
     <div class="col-2">
           <h> TIME: </h>
         	<div class="label_game">
-        	<h2> 00:00:00 </h2>
+        	<h2 id = "timer"> </h2>
     		  </div>
    	</div>
 
