@@ -40,6 +40,10 @@ public class QueueController {
         updater.execute();
     }
 
+    public static PartyManager getPartyManager() {
+        return partyManager;
+    }
+
     private void update() {
         partyManager.update(messagingTemplate);
     }

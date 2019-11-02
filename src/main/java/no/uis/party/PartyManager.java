@@ -10,6 +10,7 @@ import static no.uis.party.Party.PartyStatus.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Singleton class that manages what party a player goes into depending on the role they select
@@ -19,7 +20,7 @@ import java.util.HashMap;
 public class PartyManager {
     private ArrayDeque<Player> proposerQueue = new ArrayDeque<>();
     private ArrayDeque<Player> guesserQueue = new ArrayDeque<>();
-    private ArrayList<Party> parties = new ArrayList<>();
+    private HashMap<Long, Party> parties = new HashMap<>();
 
     private Party currentOpenParty;
     private Player currentlyWaitingProposer;
@@ -33,6 +34,10 @@ public class PartyManager {
      */
     private void openParty() {
         currentOpenParty = new Party();
+    }
+
+    public Party getParty(Long id) {
+        return parties.get(id);
     }
 
     /**
@@ -85,7 +90,7 @@ public class PartyManager {
             currentlyWaitingGuesser = null; // Guesser no longer waiting
             currentlyWaitingProposer = null; // Proposer no longer waiting
             currentOpenParty.setStatus(READY_TO_PLAY);
-            parties.add(currentOpenParty);
+            parties.put(currentOpenParty.getId(), currentOpenParty);
             currentOpenParty = null; // Party is now closed
             System.out.println("Both users put into party. Next!");
         } else {
@@ -102,10 +107,11 @@ public class PartyManager {
             }
         }
         // Update all parties and remove those that are finished
-        for (Party party : parties) {
+        for (Map.Entry<Long, Party> pair: parties.entrySet()) {
+            Party party = pair.getValue();
             party.update(messagingTemplate);
             if (party.getStatus() == FINISHED_GAME) {
-                parties.remove(party);
+                parties.remove(party.getId());
             }
         }
     }
