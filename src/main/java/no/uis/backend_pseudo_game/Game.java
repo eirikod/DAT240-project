@@ -5,14 +5,11 @@ import no.uis.backend_pseudo_game.dummy.DummyPlayer;
 import no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType;
 
 import java.util.*;
-import java.io.*;
 
 /**
- * 
+ * defining the basic game logic
  * @author Eirik & Markus
- *
  */
-
 public class Game {
 
 	DummyImageLabelReader labelReader = new DummyImageLabelReader("src/main/resources/static/label/label_mapping.csv",
@@ -30,8 +27,8 @@ public class Game {
     private boolean lost = false;
     
     /**
-     * Constructor for the game, initializes
-     * the game by selecting an image and transferring all label filenames to proposerSegments
+     * Constructor, initialize with 2 players and transfer all filename to proposer
+     * @author Eirik & Markus
      * @param dp1
      * @param dp2
      */
@@ -48,7 +45,8 @@ public class Game {
     }
     
     /**
-     * @return selected image or default image "cinema"
+     * @author Eirik & Markus
+     * @return selected image if exists or default image
      */
     public String selectImage() {
     	System.out.println(labelReader.getAllLabels());
@@ -58,24 +56,25 @@ public class Game {
     }
     
 	/**
-	 * starts the game
+	 * starts the game, continues until correct answer or lost
+	 * @author Eirik & Markus
 	 */
     public void play () {
-    	while (!isCorrect | !lost) {
+    	while (!isCorrect && !lost) {
     		nextRound();
     	}
     	getScore();
   	 }
     
    /**
-    * @return false if player is out of guesses or gives up
-    * @return true if player guesses right
+    * @author Eirik & Markus
+    * @return false if out of guesses/gives up, true if right answer
     * @see play()
     */
 	public boolean nextRound() {
 		chooseSegment();
 		int guesses = 3;
-		while (guesses > 0 & !isCorrect) {
+		while (guesses > 0 && !isCorrect) {
 			--guesses;
 			if (giveUp()) {
 				break;
@@ -86,8 +85,8 @@ public class Game {
 	}
 	
 	/** 
-	 * @return true if answer is correct
-	 * @see nextRound
+	 * checks answer
+	 * @author Eirik & Markus
 	 */
 	public void checkAnswer() {
 		System.out.println("Type in your guess"); 
@@ -97,8 +96,8 @@ public class Game {
 	}
 	
 	/**
-	 * @return true/false if player gives up this round
-	 * @see nextRound
+	 * @author Eirik & Markus
+	 * @return true if player gives up round
 	 */
 	public boolean giveUp() {
 		System.out.println("Give up? y/n");
@@ -106,8 +105,8 @@ public class Game {
 	}
 	
 	/**
-	 * Proposer chooses which segments to present for the guesser
-	 * @see nextRound
+	 * chooses new segment for new round
+	 * @author Eirik & Markus
 	 */
 	public void chooseSegment() {
 		System.out.println("Choose segment by id");
@@ -127,7 +126,8 @@ public class Game {
 	}
 	
 	/**
-	 * Writes out the score for the paired players
+	 * Writes out score for the paired players
+	 * @author Eirik & Markus
 	 */
 	public void getScore() {
 		int score = lost ? 0 : (proposerSegments.size() - guesserSegments.size())*2;
@@ -136,6 +136,7 @@ public class Game {
 	
 	/**
 	 * Tests the game logic
+	 * @author Eirik & Markus
 	 * @param args
 	 */
 	 public static void main(String[] args) {
