@@ -9,7 +9,11 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+
 
 /**
  * Holds the game state data of the guesser and proposer.
@@ -17,11 +21,15 @@ import java.util.Random;
  * @author Alan Rostem
  */
 public class Party {
+	
     // TODO: Add controller logic when ready to merge with the front-end
     private String id = "" + Math.abs(new Random().nextLong());
     private Player guesser;
     private Player proposer;
     private PartyStatus currentStatus;
+    private Player playerTurn;
+    private ArrayList<String> imageIds=new ArrayList<String>();
+    private int currentScore;
 
     @Autowired
     private ScoreBoardRepository scoreBoardRepository;
@@ -151,5 +159,30 @@ public class Party {
                 onFinished();
                 break;
         }
+    }
+
+    public int play(Player player,HashMap<String, Object> msg) {
+    	if (this.playerTurn != player) {
+    		return SR.SR_BAD_PLAYER;
+    	}
+    	if (player.getPlayerType()==Player.PlayerType.GUESSER) {
+    		playGuesser(msg);
+    		return SR.SR_OK;
+    	}
+    	else if(player.getPlayerType()==Player.PlayerType.PROPOSER) {
+    		playGuesser(msg);
+    		return SR.SR_OK;
+    	}
+    	else {
+    		return SR.SR_KO;
+    	}
+    }
+    private void playGuesser(Player player, HashMap<String, Object> msg) {
+    	
+    }
+    
+    private void playProposer(Player player, HashMap<String, Object> msg) {
+    	ImageId = msg.get("");
+    	if (this.imageIds.contains(imageId));
     }
 }
