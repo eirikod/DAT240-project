@@ -15,16 +15,7 @@ const msg = {
     msgPartyFinished: "YOU WIN"
 };
 
-/*
- * Enum statement
- */
-const enumState = {
-    myTurn: "PLAYING",
-    waiting: "WAITING",
-    finished: "FINISHED"
-};
-
-var imageId = 5;
+var imageId = 0;
 
 /*
  * funtion trigerred on websocket connexion
@@ -34,7 +25,7 @@ client.onConnect = function () {
     client.send({sender: "", type: 'JOIN'}, route);
 };
 
-var state = enumState.myTurn;
+var state = PLAYER_STATES.PLAYING;
 
 var score = "0";
 
@@ -51,9 +42,13 @@ function sendGuess(guess) {
     console.log(guess);
     console.log("sendImageId used");
     const message = {
-        content: guess
+        content: {
+            guess: guess,
+            role: PLAYER_ROLES.GUESSER,
+            sender: userId
+        },
+        type: "SEND_GUESS"
     };
-//	client.send(message, `app/party/queueUp`);
     client.send(message, `/app/party/${partyId}/update`);
 }
 
@@ -79,17 +74,15 @@ function subscribe(user_id, party_id) {
  * @author Guillien Grégoire
  */
 function update(msg) {
-    console.log("update appele");
     console.log(msg);
-    imgSegmnent = msg.content.segment;
+    imageId = msg.content.segment;
     state = msg.content.state;
     score = msg.content.score;
     time = msg.content.time;
-    console.log(state);
+
     updateState();
     updateFeatures();
     printImageSegment();
-    //TODO
 }
 
 /**
@@ -99,17 +92,17 @@ function update(msg) {
 function updateState() {
 
     switch (state) {
-        case enumState.myTurn:
+        case PLAYER_STATES.PLAYING:
             console.log("my turn");
             $("#proposerPopUp").text(msg.msgMyTurn);
             break;
 
-        case enumState.waiting:
+        case PLAYER_STATES.WAITING:
             console.log("Not my turn");
             $("#proposerPopUp").text(msg.msgNotMyTurn);
             break;
 
-        case enumState.finished:
+        case PLAYER_STATES.FINISHED:
             console.log("Party finished");
             $("#proposerPopUp").text(msg.msgPartyFinished);
             break;
@@ -137,10 +130,6 @@ function printImageSegment() {
  * @author Grégoire Guillien
  */
 $(function () {
-    $("form").on('submit', function (e) {
-        console.log(e);
-        e.preventDefault();
-    });
     $("#submitGuess").click(function () {
         submitGuess();
     });
@@ -156,10 +145,11 @@ function submitGuess() {
     console.log(guess);
     console.log("submitGuess used");
     const message = {
-        content: JSON.stringify({
+        content: ({
             guess: guess,
-            role: "GUESSER"
+            role: PLAYER_ROLES.GUESSER
         }),
+        type: MSG_TYPES.SEND_GUESS
     };
     client.send(message, `/app/party/${partyId}/update`);
 }
@@ -168,7 +158,12 @@ function submitNewSegment() {
     console.log(guess);
     console.log("submitNewSegment used");
     const message = {
-        content: "newSegment"
+        content: ({
+            requestSegment: true,
+            role: PLAYER_ROLES.GUESSER,
+        }),
+        type: MSG_TYPES.REQUEST_SEGMENT,
+        sender: userId
     };
-    client.send(message, `/app/party/${partyId}/requestSegment`);
+    client.send(message, `/app/party/${partyId}/update`);
 }

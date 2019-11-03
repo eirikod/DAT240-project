@@ -144,9 +144,7 @@ public class ImageController {
 	@MessageMapping("/party/{partyId}/addUser")
 	public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
-		System.out.println("FUCKKKKKKKKKKKKKKKKKKKKKKKKK YEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 		String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
-		System.out.println(partyId);
 		if (currentRoomId != null) {
 			SocketMessage leaveMessage = new SocketMessage();
 			leaveMessage.setType("LEAVE");
@@ -170,8 +168,6 @@ public class ImageController {
 			@ModelAttribute("selectedlabel") Object modelname,
 			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
 
-			System.out.println("NO NOT HERRRRRRE----------------------------------------------");
-
 			String name = modelname.toString() != null ? modelname.toString() : "cinema";
 
 			String[] files = labelReader.getImageFiles(name);
@@ -184,7 +180,7 @@ public class ImageController {
 
 			//TODO
 //				model.addObject("highestscore", player.getHigherScore());
-			//model.addObject("userId", userId);
+			model.addObject("userId", proposer.getId());
 			model.addObject("partyId", partyId);
 
 			//model.addObject("listlabels", imageLabels);
@@ -197,8 +193,8 @@ public class ImageController {
 			giveup = false;
 			score = 1000;
 
-			propSegment = new ArrayList<String>();
-			guesSegment = new ArrayList<String>();
+			propSegment = new ArrayList<>();
+			guesSegment = new ArrayList<>();
 
 			for (int i = 0; i < countTotalSegments; ++i) {
 				propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
@@ -208,108 +204,9 @@ public class ImageController {
 			return model;
 	}
 
-	@MessageMapping("/party/{partyId}/sendImageId")
-	public void updateProposerView(@DestinationVariable String partyId,
-									SocketMessage message){
-		System.out.println("update ---------------------------------------------------");
-		System.out.println(message);
-		Object id = message.getContent();
-		String str_id = (String) id;
-		System.out.println(id);
-		SocketMessage sockMess = new SocketMessage();
-		HashMap<String, String> content = new HashMap<String, String>();
-		String state = (Player.PlayerStatus.FINISHED).toString();
-		String score ="8";
-		String time = "12:23";
-
-		Party party = PartyManager.getParty(partyId);
-		Player proposer = party.getProposer();
-		String userId = (proposer.getId());
-		//String state = (proposer.getPlayerStatus()).toString();
-		content.put("state", state);
-		content.put("score", score);
-		content.put("time", time);
-		sockMess.setContent(content);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		proposer.sendData(sockMess, messageTemplate);
-//		messageTemplate.convertAndSend("/party/"+partyId+"/sendImageId/%s".format(userId), sockMess);
-		return;
-  }
-	/**
-	   * Proposer init, loads picture and player stats
-	   * @author Eirik
-	   * @param model
-	   * @param modelname
-	   * @param id
-	   * @return view
-	   */
-		@RequestMapping("/toto")
-		public ModelAndView imageGame(
-//				ModelAndView model,
-//				@ModelAttribute("selectedlabel") Object modelname,
-				@RequestParam(value = "id", required = false, defaultValue = "-1") String id,
-				@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
-
-				ModelAndView model = new ModelAndView("proposer");
-
-				System.out.println("imageGame");
-
-				Party party = PartyManager.getParty(partyId);
-				Player proposer = party.getProposer();
-				String userId = proposer.getId();
-
-				String name = "cinema";
-
-				String[] files = labelReader.getImageFiles(name);
-				String image_folder_name = getImageFolder(files);
-				ArrayList<String> imageLabels = getAllLabels(labelReader);
-
-				System.out.println("party id : " + partyId + "/ user id : " + userId);
-
-				model.addObject("highestscore", HIGHER_SCORE);
-				model.addObject("userId", userId);
-				model.addObject("partyId", partyId);
-				model.addObject("listlabels", imageLabels);
-
-				// finds number of segments per image
-				countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
-				countTotalSegments = countTotalSegments-1;
-				countRemainingSegments = countTotalSegments;
-				guessesLeft = 3;
-
-				return model;
-		}
-    @MessageMapping("/party/{partyId}/sendGuess")
-    public void sendGuess(@DestinationVariable String partyId, SocketMessage message){
-        System.out.println("update ---------------------------------------------------");
-        System.out.println(message.getContent());
-        String str_id = (String) message.getContent();
-        SocketMessage sockMess = new SocketMessage();
-
-        String state = (Player.PlayerStatus.FINISHED).toString();
-        String score ="8";
-        String time = "12:23";
-
-        Player proposer = PartyManager.getParty(partyId).getProposer();
-
-        HashMap<String, String> content = new HashMap<>();
-        content.put("state", state);
-        content.put("score", score);
-        content.put("time", time);
-        content.put("segment", str_id);
-        sockMess.setContent(content);
-
-        messageTemplate.convertAndSend("/channel/update/" + proposer.getId(), sockMess);
-    }
-
     @MessageMapping("/party/{partyId}/update")
-    public void requestSegment(@DestinationVariable String partyId, SocketMessage message) {
-        PartyManager.getParty(partyId).receiveUpdateFromFront(message);
+    public void receiveSocketUpdate(@DestinationVariable String partyId, SocketMessage message) {
+        PartyManager.getParty(partyId).receiveUpdateFromFront(message, messageTemplate);
     }
 
 	/**
@@ -331,39 +228,6 @@ public class ImageController {
 		model.addObject("partyId", partyId);
 		return model;
 	}
-
-
-	/**
-	 * Adds the chosen segment to the guessers view
-	 * @author Eirik
-	 * @param id
-	 * @param name
-	 * @return redirect
-	 */
-
-    @RequestMapping(value = "/proposer", method = RequestMethod.POST)
-    public ModelAndView newSegment(ModelAndView model,
-    		@ModelAttribute ("selectedlabel") String name,
-    		@RequestParam (value="id", required=false, defaultValue="-1") String id) {
-    	if (!id.equals("-1") && (guessesLeft == 0 || giveup)) {
-    		String[] files = labelReader.getImageFiles(name);
-    		String image_folder_name = getImageFolder(files);
-    		guesSegment.add("images/scattered_images/" + image_folder_name + "/" + id  + ".png");
-    		model.addObject("listimagesproposed", guesSegment);
-
-    		guessesLeft = 3;
-    		giveup = false;
-    		model.addObject("infotext", "NEW SEGMENT ADDED");
-    		model.addObject("proposerinfo", "added new segment");
-        } else {
-        	model.addObject("proposerinfo", "wait your turn");
-        }
-    	model.addObject("listimages", propSegment);
-		model.addObject("listimagesproposed", guesSegment);
-    	return model;
-    }
-
-    private int count=0;
 
 
 //    /**
@@ -420,49 +284,6 @@ public class ImageController {
 		}
 		model.addObject("listimages", propSegment);
 		
-		return model;
-	}
-    
-	/**
-	 * Guesser view, processes guesses and if ready for new segment
-	 * @author Eirik
-	 * @param model
-	 * @param name
-	 * @param guess
-	 * @return
-	 */
-	@RequestMapping(value = "/guesser", method = RequestMethod.POST)
-	public ModelAndView newGuess (ModelAndView model,
-			@ModelAttribute ("selectedlabel") String name,
-			@RequestParam (value = "SubmittedGuess", required = false, defaultValue = "-1") String guess,
-			// implement boolean button
-			@RequestParam (value = "nextround", defaultValue = "false") boolean nextround) {
-		model.addObject("guessesleft", "Guesses left: " + guessesLeft);
-		if (!guess.equals("-1") && guessesLeft > 0) {
-			--guessesLeft;
-
-			// add animation eg. shaking guess if wrong?
-			if (guess.equals(image)) {
-				model.addObject("infotext", "YOU WIN");
-				model.addObject("proposerinfo", "YOU WIN");
-				//TODO boolean hidden field activate "YOU WIN"
-				//TODO stop timer and calculate score
-				// return scoreboard?
-			} else {
-				// user gives up round, waits for new segment
-				if (nextround == true) {
-					giveup = true;
-					guessesLeft = 0;
-					model.addObject("infotext", "GIVING UP, WAIT FOR NEW SEGMENT");
-					model.addObject("proposerinfo", "choose new segment");
-				}
-			}
-		} else {
-			// proposer picks a new segment
-			model.addObject("infotext", "OUT OF GUESSES, WAIT FOR NEW SEGMENT");
-			model.addObject("proposerinfo", "choose new segment");
-		}
-		model.addObject("listimagesproposed", guesSegment);
 		return model;
 	}
 

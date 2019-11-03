@@ -13,7 +13,9 @@
 	<script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script src="js/structures/socket-connector.js"></script>
+	<script src="js/structures/enum.js"></script>
+	<script src="js/game.js"></script>
+	<script src="js/structures/socket-connector.js"></script>
 	<script th:inline="javascript">
 		let label = /*[[${selectedlabel}]]*/ 'default';
 	</script>
@@ -137,19 +139,6 @@
 	    	<div class="label_game">
 	    		<h1>GUESS WHAT?</h1>
 	    	</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="col-sm">
-		<div class="container">
-			<form action="proposer" method="GET">
-			    <select  id="dropOperator" name="selectedlabel" class="browser-default custom-select custom-select-lg mb-3">
-				    <option value="0">Select an image </option>
-				    <option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
-			    </select>
-			    <input type="submit" class="btn btn-outline-success" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			</form>
 		</div>
 	</div>
 </div>

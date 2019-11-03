@@ -57,10 +57,15 @@ function sendImageId(id) {
     console.log(id);
     console.log("sendImageId used");
     const message = {
-        content: id
+        content: {
+            segment: id,
+            role: PLAYER_ROLES.PROPOSER
+        },
+        type: "SEND_SEGMENT",
+        sender: userId
     };
 //	client.send(message, `app/party/queueUp`);
-    client.send(message, `/app/party/${partyId}/sendImageId`);
+    client.send(message, `/app/party/${partyId}/update`);
 }
 
 /**

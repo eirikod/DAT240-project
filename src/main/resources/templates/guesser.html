@@ -9,9 +9,11 @@
 	<script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script src="js/structures/socket-connector.js"></script>
+	<script src="js/structures/enum.js"></script>
+	<script src="js/game.js"></script>
+	<script src="js/structures/socket-connector.js"></script>
     <script type="text/javascript" th:src="@{/js/guesser.js}"></script>
-    
+
     <script>
 		//Start dato, tid etc.  --> key: startDate
 		// save time when timer was started and measure difference
@@ -175,14 +177,10 @@ text-align:left;
 		</div>
 		
 		
-		<div class="col-4">	 	
-			 <form action="guesser" method="POST">
-
-			<input type="text" id="guess" name="SubmittedGuess" placeholder="Your guess:"><br>
-			<input type="submit" id="submitGuess" value="SUBMIT">
+		<div class="col-4">
+			<input type="text" id="guess" name="submittedGuess" placeholder="Your guess:"><br>
+			<input type="button" id="submitGuess" value="SUBMIT">
 			<input type="button" id="submitNewSegment" value="NEW SEGMENT"><br>
-
-			</form>
 		</div>
 		
 </div>
