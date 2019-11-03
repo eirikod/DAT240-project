@@ -2,6 +2,7 @@ package no.uis.party;
 
 import no.uis.players.Player;
 import no.uis.repositories.ScoreBoardRepository;
+import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -77,6 +78,10 @@ public class Party {
      * @author Alan Rostem
      */
     public void onFinished() {
+
+    }
+
+    public void receiveUpdateFromFront(SocketMessage message) {
 
     }
 

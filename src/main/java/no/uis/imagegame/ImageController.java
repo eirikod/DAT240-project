@@ -310,13 +310,9 @@ public class ImageController {
         messageTemplate.convertAndSend("/channel/update/" + proposer.getId(), sockMess);
     }
 
-    @MessageMapping("/party/{partyId}/requestSegment")
+    @MessageMapping("/party/{partyId}/update")
     public void requestSegment(@DestinationVariable String partyId, SocketMessage message) {
-        Player proposer = QueueController.getPartyManager().getParty(partyId).getProposer();
-        System.out.println("Guesser from party " + partyId + " requested a new segment!");
-        SocketMessage msg = new SocketMessage();
-        msg.setContent("segmentRequest");
-        messageTemplate.convertAndSend("/channel/update/" + proposer.getId(), msg);
+        QueueController.getPartyManager().getParty(partyId).receiveUpdateFromFront(message);
     }
 
 	/**
@@ -412,8 +408,8 @@ public class ImageController {
 //		Party party = partyManager.getParty(partyId);
 //		Player guesser = party.getGuesser();
 //		String userId = Long.toString(guesser.getId());
-		model.addObject("userId", USER_ID);
-		model.addObject("partyId", PARTY_ID);
+		model.addObject("userId", partyManager.getParty(partyId).getGuesser().getId());
+		model.addObject("partyId", partyId);
 		
 		String name = modelname.toString() != null ? modelname.toString() : "cinema";
 		String[] files = labelReader.getImageFiles(name);
@@ -423,7 +419,7 @@ public class ImageController {
 		countTotalSegments = countTotalSegments-1;
 		countRemainingSegments = countTotalSegments;
 		guessesLeft = 3;
-		propSegment = new ArrayList<String>();
+		propSegment = new ArrayList<>();
 		for (int i = 0; i < countTotalSegments; ++i) {
 			propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
 		}

@@ -1,5 +1,9 @@
 package no.uis.websocket;
 
+import com.google.gson.Gson;
+
+import java.util.Map;
+
 public class SocketMessage {
 
     public enum MessageType {
@@ -32,5 +36,9 @@ public class SocketMessage {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public Map contentToMap() {
+        return new Gson().fromJson((String) content, Map.class);
     }
 }

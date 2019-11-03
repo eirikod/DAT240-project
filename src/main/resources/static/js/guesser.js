@@ -54,7 +54,7 @@ function sendGuess(guess) {
         content: guess
     };
 //	client.send(message, `app/party/queueUp`);
-    client.send(message, `/app/party/${partyId}/sendGuess`);
+    client.send(message, `/app/party/${partyId}/update`);
 }
 
 /**
@@ -156,9 +156,12 @@ function submitGuess() {
     console.log(guess);
     console.log("submitGuess used");
     const message = {
-        content: guess
+        content: JSON.stringify({
+            guess: guess,
+            role: "GUESSER"
+        }),
     };
-    client.send(message, `/app/party/${partyId}/sendGuess`);
+    client.send(message, `/app/party/${partyId}/update`);
 }
 
 function submitNewSegment() {
