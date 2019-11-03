@@ -89,7 +89,6 @@ public class Player {
     public void sendData(SocketMessage message, SimpMessageSendingOperations messageSendingOperations) {
         messageSendingOperations.convertAndSend("/channel/update/" + getId(),
                 message);
-        //System.out.println("We sent a message to " + getUsername());
     }
 
     public void update(SimpMessageSendingOperations messageSendingOperations) {

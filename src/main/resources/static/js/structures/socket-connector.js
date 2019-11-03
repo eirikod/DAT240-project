@@ -1,7 +1,9 @@
+
 /**
  * Composed class containing all socket functionality in abstract form
  */
 class SocketConnector {
+
     constructor(endpoint = '/ws') {
         this.connected = false;
         this.subscriptions = {};

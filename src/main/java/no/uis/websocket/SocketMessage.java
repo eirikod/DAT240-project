@@ -1,5 +1,10 @@
 package no.uis.websocket;
 
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class SocketMessage {
 
     public enum MessageType {
@@ -32,5 +37,14 @@ public class SocketMessage {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public Map contentToMap() {
+        try {
+            return new Gson().fromJson((String) content, Map.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap();
+        }
     }
 }

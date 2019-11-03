@@ -2,12 +2,15 @@ package no.uis.party;
 
 import no.uis.players.Player;
 import no.uis.repositories.ScoreBoardRepository;
+import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -80,6 +83,49 @@ public class Party {
 
     }
 
+    enum GameMessageType {
+        SEND_GUESS(),
+        REQUEST_SEGMENT(),
+        SEND_SEGMENT(),
+        ;
+    }
+
+    public void receiveUpdateFromFront(SocketMessage message, SimpMessageSendingOperations smos) {
+        System.out.println("FrontMsgUpdate ---------------------------------------------------");
+        SocketMessage sockMess = new SocketMessage();
+
+        String state = (Player.PlayerStatus.FINISHED).toString();
+        String score = "8";
+        String time = "12:23";
+
+        HashMap<String, String> content = new HashMap<>();
+        sockMess.setContent(content);
+
+        content.put("state", state);
+        content.put("score", score);
+        content.put("time", time);
+
+        switch (message.getType()) {
+            case "SEND_GUESS":
+                content.put("guess", (String) message.contentToMap().get("guess"));
+                // content.put("state", getProposer().getPlayerStatus().toString());
+                getProposer().sendData(sockMess, smos);
+                break;
+            case "REQUEST_SEGMENT":
+                content.put("requestSegment", "true");
+                getProposer().sendData(sockMess, smos);
+                // content.put("state", getProposer().getPlayerStatus().toString());
+                break;
+            case "SEND_SEGMENT":
+                content.put("segment", (String) ((Map) message.contentToMap()).get("segment"));
+                // content.put("state", getGuesser().getPlayerStatus().toString());
+                getGuesser().sendData(sockMess, smos);
+                break;
+            default:
+                System.out.println("Invalid message type received on party: " + getId());
+        }
+    }
+
     /**
      * Sets a proposer to the party.
      *
@@ -103,7 +149,6 @@ public class Party {
     /**
      * Sets a proposer to the party.
      *
-     * @param proposer Player
      * @author Alan Rostem
      */
     public Player getProposer() {
@@ -113,13 +158,12 @@ public class Party {
     /**
      * Sets a guesser to the party.
      *
-     * @param guesser Player
      * @author Alan Rostem
      */
     public Player getGuesser() {
-        return(this.guesser);
+        return (this.guesser);
     }
-    
+
     /**
      * Retrieve the current state of the party.
      *
