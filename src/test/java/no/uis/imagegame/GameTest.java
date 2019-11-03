@@ -11,6 +11,7 @@ public class GameTest {
 	
 	/**
 	 * Testing init of new game
+	 * @author Eirik & Markus
 	 */
 	@Test
 	public void newGame_instantiate() {
