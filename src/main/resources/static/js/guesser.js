@@ -15,7 +15,15 @@ const msg = {
     msgPartyFinished: "YOU WIN"
 };
 
+const nbChance = {
+	    1: "You have 3 chances",
+	    2: "You have 2 chances",
+	    3: "last chance"
+	};
+
 var imageId = 0;
+
+var guessChance = 3;
 
 /*
  * funtion trigerred on websocket connexion
@@ -25,7 +33,9 @@ client.onConnect = function () {
     client.send({sender: "", type: 'JOIN'}, route);
 };
 
-var state = PLAYER_STATES.PLAYING;
+var state = PLAYER_STATES.WAITING;
+
+console.log(state);
 
 var score = "0";
 
@@ -93,18 +103,29 @@ function updateState() {
 
     switch (state) {
         case PLAYER_STATES.PLAYING:
-            console.log("my turn");
             $("#proposerPopUp").text(msg.msgMyTurn);
+            console.log($("#submitGuess"));
+            $("#submitGuess")[0].disabled=false;
+            $("#submitNewSegment")[0].disabled=false;
+            document.getElementById("submitGuess").disabled = false; 
+            document.getElementById("submitNewSegment").disabled = false;
+            $("#guessChance").text(3);
+            guessChance=3;
             break;
 
         case PLAYER_STATES.WAITING:
             console.log("Not my turn");
             $("#proposerPopUp").text(msg.msgNotMyTurn);
+            $("#submitGuess").className="myButton";
+            $("#submitGuess")[0].disabled=true;
+            $("#submitNewSegment")[0].disabled=true;
             break;
 
         case PLAYER_STATES.FINISHED:
             console.log("Party finished");
             $("#proposerPopUp").text(msg.msgPartyFinished);
+            document.getElementById("submitGuess").disabled = true; 
+            document.getElementById("submitNewSegment").disabled = true; 
             break;
 
         default:
@@ -152,6 +173,13 @@ function submitGuess() {
         type: MSG_TYPES.SEND_GUESS
     };
     client.send(message, `/app/party/${partyId}/update`);
+    guessChance --;
+    console.log(guessChance);
+    if(guessChance===0){
+    	state = PLAYER_STATES.WAITING;
+        updateState();
+    }
+    $("#guessChance").text(guessChance);
 }
 
 function submitNewSegment() {
@@ -166,4 +194,6 @@ function submitNewSegment() {
         sender: userId
     };
     client.send(message, `/app/party/${partyId}/update`);
+    state = PLAYER_STATES.WAITING;
+    updateState();
 }
