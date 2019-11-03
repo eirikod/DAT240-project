@@ -17,17 +17,17 @@ import java.util.Map;
  * @author Alan Rostem
  */
 public class PartyManager {
-    private ArrayDeque<Player> proposerQueue = new ArrayDeque<>();
-    private ArrayDeque<Player> guesserQueue = new ArrayDeque<>();
-    private HashMap<String, Party> parties = new HashMap<>();
+    static private ArrayDeque<Player> proposerQueue = new ArrayDeque<>();
+    static private ArrayDeque<Player> guesserQueue = new ArrayDeque<>();
+    static private HashMap<String, Party> parties = new HashMap<>();
 
-    private HashMap<String, Player> activePlayers = new HashMap<>();
+    static private HashMap<String, Player> activePlayers = new HashMap<>();
 
-    private Party currentOpenParty;
-    private Player currentlyWaitingProposer;
-    private Player currentlyWaitingGuesser;
+    static private Party currentOpenParty;
+    static private Player currentlyWaitingProposer;
+    static private Player currentlyWaitingGuesser;
 
-    public boolean isPlayerActive(String username) {
+    static public boolean isPlayerActive(String username) {
         return activePlayers.containsKey(username);
     }
 
@@ -37,11 +37,11 @@ public class PartyManager {
      * @return Party
      * @author Alan Rostem
      */
-    private void openParty() {
+    static private void openParty() {
         currentOpenParty = new Party();
     }
 
-    public Party getParty(String id) {
+    static public Party getParty(String id) {
         return parties.get(id);
     }
 
@@ -51,7 +51,7 @@ public class PartyManager {
      * @return boolean
      * @author Alan Rostem
      */
-    public boolean isThereAnOpenParty() {
+    static public boolean isThereAnOpenParty() {
         return currentOpenParty != null;
     }
 
@@ -60,7 +60,7 @@ public class PartyManager {
      *
      * @author Alan Rostem
      */
-    public void update(SimpMessageSendingOperations messagingTemplate) {
+    static public void update(SimpMessageSendingOperations messagingTemplate) {
         if (!isThereAnOpenParty()) {
             openParty();
             System.out.println("Party opened: " + currentOpenParty.getId() + ". Parties created: " + parties.size());
@@ -105,7 +105,7 @@ public class PartyManager {
             }
         }
         // Update all parties and remove those that are finished
-        for (Map.Entry<String, Party> pair: parties.entrySet()) {
+        for (Map.Entry<String, Party> pair : parties.entrySet()) {
             Party party = pair.getValue();
             party.update(messagingTemplate);
             if (party.getStatus() == FINISHED_GAME) {
@@ -122,7 +122,7 @@ public class PartyManager {
      * @return Player
      * @author Alan Rostem
      */
-    public Player getCurrentlyWaitingGuesser() {
+    static public Player getCurrentlyWaitingGuesser() {
         return currentlyWaitingGuesser;
     }
 
@@ -132,7 +132,7 @@ public class PartyManager {
      * @return Player
      * @author Alan Rostem
      */
-    public Player getCurrentlyWaitingProposer() {
+    static public Player getCurrentlyWaitingProposer() {
         return currentlyWaitingProposer;
     }
 
@@ -141,11 +141,11 @@ public class PartyManager {
      *
      * @return int
      */
-    public int getPartyCount() {
+    static public int getPartyCount() {
         return parties.size();
     }
 
-    public boolean isQueueNotEmpty(Player.PlayerType type) {
+    static public boolean isQueueNotEmpty(Player.PlayerType type) {
         switch (type) {
             case PROPOSER:
                 return proposerQueue.size() > 0;
@@ -162,7 +162,7 @@ public class PartyManager {
      * @param guesser Player with PlayerType GUESSER
      * @author Alan Rostem
      */
-    private void queueUpGuesser(Player guesser) {
+    static private void queueUpGuesser(Player guesser) {
         guesserQueue.add(guesser);
         System.out.println("We queued a guesser named " + guesser.getUsername() + "! Queue count: " + guesserQueue.size());
     }
@@ -173,7 +173,7 @@ public class PartyManager {
      * @param proposer Player with PlayerType GUESSER
      * @author Alan Rostem
      */
-    private void queueUpProposer(Player proposer) {
+    static private void queueUpProposer(Player proposer) {
         proposerQueue.add(proposer);
         System.out.println("We queued a proposer named " + proposer.getUsername() + "! Queue count: " + proposerQueue.size());
     }
@@ -185,7 +185,7 @@ public class PartyManager {
      * @author Alan Rostem
      * @see no.uis.players.Player.PlayerType
      */
-    public void queueUpPlayer(Player player) {
+    static public void queueUpPlayer(Player player) {
         switch (player.getPlayerType()) {
             case PROPOSER:
                 queueUpProposer(player);
@@ -200,7 +200,7 @@ public class PartyManager {
         }
     }
 
-    public Player getActivePlayer(String username) {
+    static public Player getActivePlayer(String username) {
         return activePlayers.get(username);
     }
 }

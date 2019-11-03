@@ -19,11 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
-
-import static java.lang.String.format;
 
 @Controller
 public class QueueController {
@@ -41,10 +38,6 @@ public class QueueController {
     QueueController() {
         TickExecution updater = new TickExecution(1000L, this::update);
         updater.execute();
-    }
-
-    public static PartyManager getPartyManager() {
-        return partyManager;
     }
 
     private void update() {
@@ -70,17 +63,6 @@ public class QueueController {
                 partyManager.queueUpPlayer(player);
             }
         }
-    }
-
-    @RequestMapping("/imageGameTest")
-    public String testRedirectParty(Model model,
-                                    @RequestParam String partyId,
-                                    @RequestParam String otherPlayerName,
-                                    @RequestParam String username) {
-        model.addAttribute("partyId", partyId);
-        model.addAttribute("username", username);
-        model.addAttribute("otherPlayerName", otherPlayerName);
-        return "imageGameTest";
     }
 
     //WelcomePage controller example

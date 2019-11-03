@@ -32,4 +32,6 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java'
 	runtimeOnly 'org.hibernate:hibernate-core'
 	runtimeOnly 'org.hibernate:hibernate-entitymanager'
+
+	compile 'com.google.code.gson:gson:2.7'
 }

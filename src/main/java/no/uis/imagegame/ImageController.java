@@ -1,5 +1,8 @@
 package no.uis.imagegame;
 import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 
 import static java.lang.String.format;
@@ -7,35 +10,23 @@ import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.HtmlUtils;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import no.uis.party.PartyManager;
 import no.uis.party.Party;
 import no.uis.party.QueueController;
 import no.uis.players.Player;
-import no.uis.players.User;
-import no.uis.websocket.SocketMessage;
 import no.uis.players.Player.PlayerType;
 import no.uis.repositories.PlayerRepository;
 
@@ -99,7 +90,7 @@ public class ImageController {
 	@MessageMapping("/party/{partyId}/respToGuesser")
 	public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
-    	Party party = QueueController.getPartyManager().getParty(partyId);
+    	Party party = PartyManager.getParty(partyId);
 
     	SocketMessage msg = new SocketMessage();
     	msg.setSender(party.getProposer().getId());
@@ -108,9 +99,46 @@ public class ImageController {
 		HashMap<String, Object> guesserContent = new HashMap<>();
 		guesserContent.put("role", "GUESSER");
 		guesserContent.put("partyId", "" + partyId);
-		guesserContent.put("selectedlabel", chatMessage.getContent());
+		String hashedLabel = "";
+		try {
+			hashedLabel = (String) chatMessage.getContent();
+			//hashedLabel = generateHashedImageLabel((String) chatMessage.getContent());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		guesserContent.put("selectedlabel", hashedLabel);
 		msg.setContent(guesserContent);
 		party.getGuesser().sendData(msg, messageTemplate);
+	}
+
+	private static String generateHashedImageLabel(String input)
+	{
+		String generatedPassword = null;
+		byte[] salt = new byte[0];
+		try {
+			SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+			salt = new byte[16];
+			sr.nextBytes(salt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			md.update(salt);
+			byte[] bytes = md.digest(input.getBytes());
+			StringBuilder sb = new StringBuilder();
+			for(int i=0; i< bytes.length ;i++)
+			{
+				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+			}
+			generatedPassword = sb.toString();
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			e.printStackTrace();
+		}
+		return generatedPassword;
 	}
 
 	@MessageMapping("/party/{partyId}/addUser")
@@ -151,8 +179,7 @@ public class ImageController {
 			
 //			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
-			PartyManager partyManager = QueueController.getPartyManager();
-			Party party = partyManager.getParty(partyId);
+			Party party = PartyManager.getParty(partyId);
 			Player proposer = party.getProposer();
 
 			//TODO
@@ -190,13 +217,12 @@ public class ImageController {
 		String str_id = (String) id;
 		System.out.println(id);
 		SocketMessage sockMess = new SocketMessage();
-		HashMap content = new HashMap();
+		HashMap<String, String> content = new HashMap<String, String>();
 		String state = (Player.PlayerStatus.FINISHED).toString();
 		String score ="8";
 		String time = "12:23";
 
-		PartyManager partyManager = QueueController.getPartyManager();
-		Party party = partyManager.getParty(partyId);
+		Party party = PartyManager.getParty(partyId);
 		Player proposer = party.getProposer();
 		String userId = (proposer.getId());
 		//String state = (proposer.getPlayerStatus()).toString();
@@ -212,33 +238,6 @@ public class ImageController {
 		}
 		proposer.sendData(sockMess, messageTemplate);
 //		messageTemplate.convertAndSend("/party/"+partyId+"/sendImageId/%s".format(userId), sockMess);
-		return;
-  }
-	@MessageMapping(ADDR_CALLBACK_IMAGE)
-	public void update(SocketMessage message){
-		System.out.println("update ---------------------------------------------------");
-		System.out.println(message);
-		Object id = message.getContent();
-		String str_id = (String) id;
-		System.out.println(id);
-		SocketMessage sockMess = new SocketMessage();
-		HashMap content = new HashMap();
-		String state = (Player.PlayerStatus.FINISHED).toString();
-		String score ="8";
-		String time = "12:23";
-		content.put("state", state);
-		content.put("score", score);
-		content.put("time", time);
-		String segmentId = "14";
-		content.put("segment", segmentId);
-		sockMess.setContent(content);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		messageTemplate.convertAndSend(ADDR_FRONT_IMAGE_CALLBACK, sockMess);
 		return;
   }
 	/**
@@ -260,8 +259,7 @@ public class ImageController {
 
 				System.out.println("imageGame");
 
-				PartyManager partyManager = QueueController.getPartyManager();
-				Party party = partyManager.getParty(partyId);
+				Party party = PartyManager.getParty(partyId);
 				Player proposer = party.getProposer();
 				String userId = proposer.getId();
 
@@ -286,6 +284,33 @@ public class ImageController {
 
 				return model;
 		}
+    @MessageMapping("/party/{partyId}/sendGuess")
+    public void sendGuess(@DestinationVariable String partyId, SocketMessage message){
+        System.out.println("update ---------------------------------------------------");
+        System.out.println(message.getContent());
+        String str_id = (String) message.getContent();
+        SocketMessage sockMess = new SocketMessage();
+
+        String state = (Player.PlayerStatus.FINISHED).toString();
+        String score ="8";
+        String time = "12:23";
+
+        Player proposer = PartyManager.getParty(partyId).getProposer();
+
+        HashMap<String, String> content = new HashMap<>();
+        content.put("state", state);
+        content.put("score", score);
+        content.put("time", time);
+        content.put("segment", str_id);
+        sockMess.setContent(content);
+
+        messageTemplate.convertAndSend("/channel/update/" + proposer.getId(), sockMess);
+    }
+
+    @MessageMapping("/party/{partyId}/update")
+    public void requestSegment(@DestinationVariable String partyId, SocketMessage message) {
+        PartyManager.getParty(partyId).receiveUpdateFromFront(message);
+    }
 
 	/**
 	 *  Lets user choose a picture
@@ -297,8 +322,7 @@ public class ImageController {
 			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
 		ModelAndView model = new ModelAndView("proposerImageSelection");
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
-		PartyManager partyManager = QueueController.getPartyManager();
-		Party party = partyManager.getParty(partyId);
+		Party party = PartyManager.getParty(partyId);
 
 		Player guesser = party.getProposer();
 		String userId = guesser.getId();
@@ -376,12 +400,11 @@ public class ImageController {
 		
 		ModelAndView model = new ModelAndView("guesser");
 		
-		PartyManager partyManager = QueueController.getPartyManager();
 //		Party party = partyManager.getParty(partyId);
 //		Player guesser = party.getGuesser();
 //		String userId = Long.toString(guesser.getId());
-		model.addObject("userId", USER_ID);
-		model.addObject("partyId", PARTY_ID);
+		model.addObject("userId", PartyManager.getParty(partyId).getGuesser().getId());
+		model.addObject("partyId", partyId);
 		
 		String name = modelname.toString() != null ? modelname.toString() : "cinema";
 		String[] files = labelReader.getImageFiles(name);
@@ -391,7 +414,7 @@ public class ImageController {
 		countTotalSegments = countTotalSegments-1;
 		countRemainingSegments = countTotalSegments;
 		guessesLeft = 3;
-		propSegment = new ArrayList<String>();
+		propSegment = new ArrayList<>();
 		for (int i = 0; i < countTotalSegments; ++i) {
 			propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
 		}
