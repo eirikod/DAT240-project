@@ -7,6 +7,7 @@ import java.util.*;
 
 import static java.lang.String.format;
 import no.uis.websocket.SocketMessage;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -17,10 +18,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import no.uis.party.PartyManager;
@@ -92,6 +90,8 @@ public class ImageController {
 						SimpMessageHeaderAccessor headerAccessor) {
     	Party party = PartyManager.getParty(partyId);
 
+
+
     	SocketMessage msg = new SocketMessage();
     	msg.setSender(party.getProposer().getId());
 		msg.setType("JOIN_PARTY");
@@ -108,6 +108,7 @@ public class ImageController {
 		}
 
 		guesserContent.put("selectedlabel", hashedLabel);
+		party.getGame().setImage(hashedLabel);
 		msg.setContent(guesserContent);
 		party.getGuesser().sendData(msg, messageTemplate);
 	}

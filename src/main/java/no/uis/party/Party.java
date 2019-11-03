@@ -1,5 +1,6 @@
 package no.uis.party;
 
+import no.uis.imagegame.GameLogic;
 import no.uis.players.Player;
 import no.uis.repositories.ScoreBoardRepository;
 import no.uis.websocket.SocketMessage;
@@ -24,6 +25,7 @@ public class Party {
     private Player guesser;
     private Player proposer;
     private PartyStatus currentStatus;
+    private GameLogic game = new GameLogic();
 
     @Autowired
     private ScoreBoardRepository scoreBoardRepository;
@@ -38,10 +40,16 @@ public class Party {
         if (proposer != null) {
             proposer.update(messagingTemplate);
         }
+
+        game.update();
     }
 
     public String getId() {
         return id;
+    }
+
+    public GameLogic getGame() {
+        return game;
     }
 
     /**
@@ -71,7 +79,7 @@ public class Party {
      * @author Alan Rostem
      */
     public void onReady() {
-
+        game.addPlayers(guesser, proposer);
     }
 
     /**
@@ -94,6 +102,8 @@ public class Party {
         System.out.println("FrontMsgUpdate ---------------------------------------------------");
         SocketMessage sockMess = new SocketMessage();
 
+        game.receiveUpdatesFromFront(this, message);
+
         String score = "8";
         String time = "12:23";
 
@@ -103,14 +113,9 @@ public class Party {
 
         content.put("score", score);
         content.put("time", time);
+        content.put("gameState", game.getCurrentState().toString());
 
         switch (message.getType()) {
-            case "SEND_GUESS":
-                content.put("guess", message.contentToMap().get("guess"));
-                content.put("state", getProposer().getPlayerStatus().toString());
-                sockMess.setSender(getGuesser().getId());
-                getProposer().sendData(sockMess, smos);
-                break;
             case "REQUEST_SEGMENT":
                 content.put("requestSegment", "true");
                 content.put("state", getProposer().getPlayerStatus().toString());
@@ -122,6 +127,12 @@ public class Party {
                 content.put("state", getGuesser().getPlayerStatus().toString());
                 sockMess.setSender(getProposer().getId());
                 getGuesser().sendData(sockMess, smos);
+                break;
+            case "SEND_GUESS":
+                content.put("guess", message.contentToMap().get("guess"));
+                content.put("state", getProposer().getPlayerStatus().toString());
+                sockMess.setSender(getGuesser().getId());
+                getProposer().sendData(sockMess, smos);
                 break;
             default:
                 System.out.println("Invalid message type received on party: " + getId());
