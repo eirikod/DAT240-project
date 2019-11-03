@@ -201,28 +201,28 @@ public class Party {
         }
     }
 
-    public int play(Player player,HashMap<String, Object> msg) {
-    	if (this.playerTurn != player) {
-    		return SR.SR_BAD_PLAYER;
-    	}
-    	if (player.getPlayerType()==Player.PlayerType.GUESSER) {
-    		playGuesser(msg);
-    		return SR.SR_OK;
-    	}
-    	else if(player.getPlayerType()==Player.PlayerType.PROPOSER) {
-    		playGuesser(msg);
-    		return SR.SR_OK;
-    	}
-    	else {
-    		return SR.SR_KO;
-    	}
-    }
-    private void playGuesser(Player player, HashMap<String, Object> msg) {
-    	
-    }
-    
-    private void playProposer(Player player, HashMap<String, Object> msg) {
-    	ImageId = msg.get("");
-    	if (this.imageIds.contains(imageId));
-    }
+//    public int play(Player player,HashMap<String, Object> msg) {
+//    	if (this.playerTurn != player) {
+//    		return SR.SR_BAD_PLAYER;
+//    	}
+//    	if (player.getPlayerType()==Player.PlayerType.GUESSER) {
+//    		playGuesser(msg);
+//    		return SR.SR_OK;
+//    	}
+//    	else if(player.getPlayerType()==Player.PlayerType.PROPOSER) {
+//    		playGuesser(msg);
+//    		return SR.SR_OK;
+//    	}
+//    	else {
+//    		return SR.SR_KO;
+//    	}
+//    }
+//    private void playGuesser(Player player, HashMap<String, Object> msg) {
+//    	
+//    }
+//    
+//    private void playProposer(Player player, HashMap<String, Object> msg) {
+//    	ImageId = msg.get("");
+//    	if (this.imageIds.contains(imageId));
+//    }
 }
