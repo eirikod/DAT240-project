@@ -2,6 +2,7 @@ package no.uis.websocket;
 
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SocketMessage {
@@ -39,6 +40,11 @@ public class SocketMessage {
     }
 
     public Map contentToMap() {
-        return new Gson().fromJson((String) content, Map.class);
+        try {
+            return new Gson().fromJson((String) content, Map.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap();
+        }
     }
 }

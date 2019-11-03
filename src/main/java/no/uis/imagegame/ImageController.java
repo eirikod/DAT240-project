@@ -184,7 +184,7 @@ public class ImageController {
 
 			//TODO
 //				model.addObject("highestscore", player.getHigherScore());
-			//model.addObject("userId", userId);
+			model.addObject("userId", proposer.getId());
 			model.addObject("partyId", partyId);
 
 			//model.addObject("listlabels", imageLabels);
@@ -284,32 +284,10 @@ public class ImageController {
 
 				return model;
 		}
-    @MessageMapping("/party/{partyId}/sendGuess")
-    public void sendGuess(@DestinationVariable String partyId, SocketMessage message){
-        System.out.println("update ---------------------------------------------------");
-        System.out.println(message.getContent());
-        String str_id = (String) message.getContent();
-        SocketMessage sockMess = new SocketMessage();
-
-        String state = (Player.PlayerStatus.FINISHED).toString();
-        String score ="8";
-        String time = "12:23";
-
-        Player proposer = PartyManager.getParty(partyId).getProposer();
-
-        HashMap<String, String> content = new HashMap<>();
-        content.put("state", state);
-        content.put("score", score);
-        content.put("time", time);
-        content.put("segment", str_id);
-        sockMess.setContent(content);
-
-        messageTemplate.convertAndSend("/channel/update/" + proposer.getId(), sockMess);
-    }
 
     @MessageMapping("/party/{partyId}/update")
     public void requestSegment(@DestinationVariable String partyId, SocketMessage message) {
-        PartyManager.getParty(partyId).receiveUpdateFromFront(message);
+        PartyManager.getParty(partyId).receiveUpdateFromFront(message, messageTemplate);
     }
 
 	/**
