@@ -40,6 +40,9 @@ public class SocketMessage {
     }
 
     public Map contentToMap() {
+        if (content instanceof Map) {
+            return (Map) content;
+        }
         try {
             return new Gson().fromJson((String) content, Map.class);
         } catch (Exception e) {

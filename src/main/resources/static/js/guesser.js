@@ -43,7 +43,8 @@ function sendGuess(guess) {
     console.log("sendImageId used");
     const message = {
         content: {
-            guess: guess
+            guess: guess,
+            role: PLAYER_ROLES.GUESSER
         },
         type: "SEND_GUESS"
     };

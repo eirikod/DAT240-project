@@ -9,7 +9,7 @@ public class Player {
     private String username;
 
     private PlayerType type;
-    private PlayerStatus status;
+    private PlayerStatus status = PlayerStatus.WAITING;
     private GameStatus gameStatus = GameStatus.INACTIVE;
     private int score;
 

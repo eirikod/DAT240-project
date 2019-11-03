@@ -94,31 +94,33 @@ public class Party {
         System.out.println("FrontMsgUpdate ---------------------------------------------------");
         SocketMessage sockMess = new SocketMessage();
 
-        String state = (Player.PlayerStatus.FINISHED).toString();
         String score = "8";
         String time = "12:23";
 
         HashMap<String, String> content = new HashMap<>();
         sockMess.setContent(content);
+        sockMess.setType(message.getType());
 
-        content.put("state", state);
         content.put("score", score);
         content.put("time", time);
 
         switch (message.getType()) {
             case "SEND_GUESS":
                 content.put("guess", (String) message.contentToMap().get("guess"));
-                // content.put("state", getProposer().getPlayerStatus().toString());
+                content.put("state", getProposer().getPlayerStatus().toString());
+                sockMess.setSender(getGuesser().getId());
                 getProposer().sendData(sockMess, smos);
                 break;
             case "REQUEST_SEGMENT":
                 content.put("requestSegment", "true");
+                content.put("state", getProposer().getPlayerStatus().toString());
+                sockMess.setSender(getGuesser().getId());
                 getProposer().sendData(sockMess, smos);
-                // content.put("state", getProposer().getPlayerStatus().toString());
                 break;
             case "SEND_SEGMENT":
-                content.put("segment", (String) ((Map) message.contentToMap()).get("segment"));
-                // content.put("state", getGuesser().getPlayerStatus().toString());
+                content.put("segment", (String) message.contentToMap().get("segment"));
+                content.put("state", getGuesser().getPlayerStatus().toString());
+                sockMess.setSender(getProposer().getId());
                 getGuesser().sendData(sockMess, smos);
                 break;
             default:
