@@ -68,7 +68,7 @@ function subscribe(user_id, party_id) {
     userId = user_id;
     partyId = party_id;
     console.log(user_id);
-    client.addStompListener(`/channel/update/${userId}`, update);
+    client.addStompListener(`/channel/update/${user_id}`, update);
     console.log("Subscribe ends--------------------");
 }
 
@@ -150,7 +150,7 @@ $(function () {
 });
 
 function submitGuess() {
-    console.log($("#guess"));
+    console.log($("#guess").val());
     var guess = $("#guess").val();
     imageId = guess;
     console.log(guess);
@@ -167,5 +167,5 @@ function submitNewSegment() {
     const message = {
         content: "newSegment"
     };
-    client.send(message, `/app/party/${partyId}/sendGuess`);
+    client.send(message, `/app/party/${partyId}/requestSegment`);
 }
