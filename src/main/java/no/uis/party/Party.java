@@ -97,7 +97,7 @@ public class Party {
         String score = "8";
         String time = "12:23";
 
-        HashMap<String, String> content = new HashMap<>();
+        HashMap<String, Object> content = new HashMap<>();
         sockMess.setContent(content);
         sockMess.setType(message.getType());
 
@@ -106,7 +106,7 @@ public class Party {
 
         switch (message.getType()) {
             case "SEND_GUESS":
-                content.put("guess", (String) message.contentToMap().get("guess"));
+                content.put("guess", message.contentToMap().get("guess"));
                 content.put("state", getProposer().getPlayerStatus().toString());
                 sockMess.setSender(getGuesser().getId());
                 getProposer().sendData(sockMess, smos);
@@ -118,7 +118,7 @@ public class Party {
                 getProposer().sendData(sockMess, smos);
                 break;
             case "SEND_SEGMENT":
-                content.put("segment", (String) message.contentToMap().get("segment"));
+                content.put("segment", message.contentToMap().get("segment"));
                 content.put("state", getGuesser().getPlayerStatus().toString());
                 sockMess.setSender(getProposer().getId());
                 getGuesser().sendData(sockMess, smos);

@@ -61,7 +61,8 @@ function sendImageId(id) {
             segment: id,
             role: PLAYER_ROLES.PROPOSER
         },
-        type: "SEND_SEGMENT"
+        type: "SEND_SEGMENT",
+        sender: userId
     };
 //	client.send(message, `app/party/queueUp`);
     client.send(message, `/app/party/${partyId}/update`);

@@ -15,7 +15,7 @@ const msg = {
     msgPartyFinished: "YOU WIN"
 };
 
-var imageId = 5;
+var imageId = 0;
 
 /*
  * funtion trigerred on websocket connexion
@@ -44,7 +44,8 @@ function sendGuess(guess) {
     const message = {
         content: {
             guess: guess,
-            role: PLAYER_ROLES.GUESSER
+            role: PLAYER_ROLES.GUESSER,
+            sender: userId
         },
         type: "SEND_GUESS"
     };
@@ -74,10 +75,11 @@ function subscribe(user_id, party_id) {
  */
 function update(msg) {
     console.log(msg);
-    imgSegmnent = msg.content.segment;
+    imageId = msg.content.segment;
     state = msg.content.state;
     score = msg.content.score;
     time = msg.content.time;
+
     updateState();
     updateFeatures();
     printImageSegment();
@@ -143,7 +145,7 @@ function submitGuess() {
     console.log(guess);
     console.log("submitGuess used");
     const message = {
-        content: JSON.stringify({
+        content: ({
             guess: guess,
             role: PLAYER_ROLES.GUESSER
         }),
@@ -156,11 +158,12 @@ function submitNewSegment() {
     console.log(guess);
     console.log("submitNewSegment used");
     const message = {
-        content: JSON.stringify({
+        content: ({
             requestSegment: true,
-            role: PLAYER_ROLES.GUESSER
+            role: PLAYER_ROLES.GUESSER,
         }),
-        type: MSG_TYPES.REQUEST_SEGMENT
+        type: MSG_TYPES.REQUEST_SEGMENT,
+        sender: userId
     };
     client.send(message, `/app/party/${partyId}/update`);
 }
