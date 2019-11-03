@@ -40,10 +40,6 @@ public class QueueController {
         updater.execute();
     }
 
-    public static PartyManager getPartyManager() {
-        return partyManager;
-    }
-
     private void update() {
         partyManager.update(messagingTemplate);
     }
@@ -67,17 +63,6 @@ public class QueueController {
                 partyManager.queueUpPlayer(player);
             }
         }
-    }
-
-    @RequestMapping("/imageGameTest")
-    public String testRedirectParty(Model model,
-                                    @RequestParam String partyId,
-                                    @RequestParam String otherPlayerName,
-                                    @RequestParam String username) {
-        model.addAttribute("partyId", partyId);
-        model.addAttribute("username", username);
-        model.addAttribute("otherPlayerName", otherPlayerName);
-        return "imageGameTest";
     }
 
     //WelcomePage controller example

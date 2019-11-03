@@ -90,7 +90,7 @@ public class ImageController {
 	@MessageMapping("/party/{partyId}/respToGuesser")
 	public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
 						SimpMessageHeaderAccessor headerAccessor) {
-    	Party party = QueueController.getPartyManager().getParty(partyId);
+    	Party party = PartyManager.getParty(partyId);
 
     	SocketMessage msg = new SocketMessage();
     	msg.setSender(party.getProposer().getId());
@@ -179,8 +179,7 @@ public class ImageController {
 			
 //			ArrayList<String> imageLabels = getAllLabels(labelReader);
 
-			PartyManager partyManager = QueueController.getPartyManager();
-			Party party = partyManager.getParty(partyId);
+			Party party = PartyManager.getParty(partyId);
 			Player proposer = party.getProposer();
 
 			//TODO
@@ -223,8 +222,7 @@ public class ImageController {
 		String score ="8";
 		String time = "12:23";
 
-		PartyManager partyManager = QueueController.getPartyManager();
-		Party party = partyManager.getParty(partyId);
+		Party party = PartyManager.getParty(partyId);
 		Player proposer = party.getProposer();
 		String userId = (proposer.getId());
 		//String state = (proposer.getPlayerStatus()).toString();
@@ -261,8 +259,7 @@ public class ImageController {
 
 				System.out.println("imageGame");
 
-				PartyManager partyManager = QueueController.getPartyManager();
-				Party party = partyManager.getParty(partyId);
+				Party party = PartyManager.getParty(partyId);
 				Player proposer = party.getProposer();
 				String userId = proposer.getId();
 
@@ -298,7 +295,7 @@ public class ImageController {
         String score ="8";
         String time = "12:23";
 
-        Player proposer = QueueController.getPartyManager().getParty(partyId).getProposer();
+        Player proposer = PartyManager.getParty(partyId).getProposer();
 
         HashMap<String, String> content = new HashMap<>();
         content.put("state", state);
@@ -312,7 +309,7 @@ public class ImageController {
 
     @MessageMapping("/party/{partyId}/update")
     public void requestSegment(@DestinationVariable String partyId, SocketMessage message) {
-        QueueController.getPartyManager().getParty(partyId).receiveUpdateFromFront(message);
+        PartyManager.getParty(partyId).receiveUpdateFromFront(message);
     }
 
 	/**
@@ -325,8 +322,7 @@ public class ImageController {
 			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
 		ModelAndView model = new ModelAndView("proposerImageSelection");
 		ArrayList<String> imageLabels = getAllLabels(labelReader);
-		PartyManager partyManager = QueueController.getPartyManager();
-		Party party = partyManager.getParty(partyId);
+		Party party = PartyManager.getParty(partyId);
 
 		Player guesser = party.getProposer();
 		String userId = guesser.getId();
@@ -404,11 +400,10 @@ public class ImageController {
 		
 		ModelAndView model = new ModelAndView("guesser");
 		
-		PartyManager partyManager = QueueController.getPartyManager();
 //		Party party = partyManager.getParty(partyId);
 //		Player guesser = party.getGuesser();
 //		String userId = Long.toString(guesser.getId());
-		model.addObject("userId", partyManager.getParty(partyId).getGuesser().getId());
+		model.addObject("userId", PartyManager.getParty(partyId).getGuesser().getId());
 		model.addObject("partyId", partyId);
 		
 		String name = modelname.toString() != null ? modelname.toString() : "cinema";
