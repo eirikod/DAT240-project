@@ -196,6 +196,7 @@
     <div class="row">
         <div class="col-8">
             <div>
+            	<h3 id="proposerPopUp">your turn</h3>
             </div>
             <div style="position: relative;">
                 <div th:each="image,iter : ${listimages}" class="alpha-mask">
@@ -207,11 +208,9 @@
             <div class="row">
                 <div th:each="image,iter : ${listimages}" class="alpha-mask">
                     <div>
-                        <!-- 				 		<form action="/proposer" method="POST"> -->
                         <input name="id" th:value="${iter.index}" type="hidden"/>
                         <input name="selectedlabel" th:value="${selectedlabel}" type="hidden"/>
                         <input class="myButton" th:value="${iter.index}" type="submit">
-                        <!-- 				 		</form>		 -->
                     </div>
                     <br>
                 </div>
