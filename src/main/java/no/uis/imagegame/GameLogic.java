@@ -6,8 +6,11 @@ import no.uis.backend_pseudo_game.dummy.DummyPlayer.PlayerType;
 import no.uis.party.Party;
 import no.uis.players.Player;
 import no.uis.websocket.SocketMessage;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +22,11 @@ import java.util.Scanner;
  * @author Eirik & Markus
  */
 public class GameLogic {
-
     ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
             "src/main/resources/static/label/image_mapping.csv");
 
     private static final int MAX_GUESSES = 3;
+    private static final int LOSS_INTERVAL = 10; // Seconds
 
     private String image;
     private ArrayList<String> proposerSegments;
@@ -37,7 +40,7 @@ public class GameLogic {
     private GameState currentState = GameState.WAITING_TO_START;
     private boolean finished = false;
     private int time = 0;
-
+    private int remainingPoints = 1000;
 
     public enum GameState {
         WAITING_TO_START,
@@ -76,11 +79,11 @@ public class GameLogic {
         this.proposer = proposer;
     }
 
-    public void setImage(String image) {
+    public void setImage(String image, int imageCount) {
         this.image = image;
         guesserSegments = new ArrayList<>();
         proposerSegments = new ArrayList<>();
-        for (int i = 0; i < labelReader.getImageFiles(image).length; ++i) {
+        for (int i = 0; i < imageCount; ++i) {
             proposerSegments.add(Integer.toString(i));
         }
         System.out.println("Segment count for " + image + ": " + proposerSegments.size());
@@ -151,6 +154,11 @@ public class GameLogic {
     public void update() {
         if (currentState == GameState.PLAYING) {
             time++;
+
+            if (time % LOSS_INTERVAL == 0) {
+                remainingPoints--;
+            }
+
             if (guesserSegments.size() == proposerSegments.size()) {
                 currentState = GameState.LOST;
                 guesser.setPlayerStatus(Player.PlayerStatus.FINISHED);
@@ -167,8 +175,8 @@ public class GameLogic {
      * @author Eirik & Markus
      */
     public int getScore() {
-        int score = (int) (((float)guesserSegments.size() / (float)proposerSegments.size()) * 1000f);
-        System.out.println("Your score is " + score + "/100");
+        int score = (int) ((1f - (float)guesserSegments.size() / (float)proposerSegments.size()) * remainingPoints);
+        System.out.println("Your score is " + score + "/1000");
         return score;
     }
 

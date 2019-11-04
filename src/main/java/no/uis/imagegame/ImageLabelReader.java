@@ -1,5 +1,7 @@
 package no.uis.imagegame;
 
+import org.springframework.core.io.Resource;
+
 import java.io.*;
 import java.util.*;
 
@@ -43,7 +45,7 @@ public class ImageLabelReader {
 			labelScanner.close();
 		}
 		catch (FileNotFoundException e) {
-			e.printStackTrace();;
+			e.printStackTrace();
 		}
 	}
      	
@@ -70,5 +72,10 @@ public class ImageLabelReader {
 			return imageFiles;
 		}
 		return null;
+	}
+
+	public int getImageSegmentCount(String label) {
+
+		return -1;
 	}
 }
