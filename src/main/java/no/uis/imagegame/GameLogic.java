@@ -29,14 +29,12 @@ public class GameLogic {
     private ArrayList<String> proposerSegments;
     private ArrayList<String> guesserSegments;
 
-    private boolean isCorrect = false;
-    private boolean lost = false;
-    private int currentGuesses = 0;
     private Player proposer;
     private Player guesser;
     private GameState currentState = GameState.WAITING_TO_START;
     private boolean finished = false;
     private int time = 0;
+    private int currentGuesses = 0;
     private int remainingPoints = 1000;
 
     public String getImageName() {
@@ -62,6 +60,7 @@ public class GameLogic {
             guesser.setPlayerStatus(Player.PlayerStatus.PLAYING);
             proposer.setPlayerStatus(Player.PlayerStatus.WAITING);
             chooseSegment((String) message.contentToMap().get("segment"));
+            time = 0;
         });
 
         responseMapping.put("SEND_GUESS", (party, message) -> {
@@ -93,21 +92,7 @@ public class GameLogic {
     }
 
     /**
-     * starts the game, continues until correct answer or lost
-     *
      * @author Eirik & Markus
-     */
-    public void play() {
-        while (!isCorrect && !lost) {
-            nextRound();
-        }
-        getScore();
-    }
-
-    /**
-     * @return false if out of guesses/gives up, true if right answer
-     * @author Eirik & Markus
-     * @see play()
      */
     public void nextRound() {
         currentGuesses = 0;
@@ -125,7 +110,7 @@ public class GameLogic {
         if (currentGuesses == MAX_GUESSES) {
             nextRound();
         }
-        return isCorrect = guess.equals(this.image);
+        return guess.equals(this.image);
     }
 
     /**
@@ -155,7 +140,9 @@ public class GameLogic {
 
     public void update() {
         if (currentState == GameState.PLAYING) {
-            time++;
+            if (proposer.getPlayerStatus() != Player.PlayerStatus.PLAYING) {
+                time++;
+            }
 
             if (time % LOSS_INTERVAL == 0) {
                 remainingPoints--;
