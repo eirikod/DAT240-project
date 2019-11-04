@@ -172,6 +172,10 @@ public class GameLogic {
         return time;
     }
 
+    public ArrayList<String> getGuesserSegments() {
+        return guesserSegments;
+    }
+
     public GameState getCurrentState() {
         return currentState;
     }
