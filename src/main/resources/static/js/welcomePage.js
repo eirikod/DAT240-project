@@ -14,7 +14,10 @@ client.onConnect = () => {
             let url = "http://localhost:8080/" + role +
                 "?username=" + username + "&partyId=" + data.content.partyId;
             if (role === "guesser") {
-                url += "&selectedlabel=" + data.content.selectedlabel;
+                let form = document.getElementById("guesserForm");
+                let partyIdInput = document.getElementById("partyIdInput");
+                partyIdInput.value = data.content.partyId;
+                form.submit();
             }
 
             window.location.replace(url);
