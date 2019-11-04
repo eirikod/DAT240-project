@@ -1,6 +1,7 @@
 package no.uis.party;
 
 import no.uis.players.Player;
+import no.uis.repositories.ScoreBoardRepository;
 import no.uis.websocket.SocketMessage;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -60,7 +61,7 @@ public class PartyManager {
      *
      * @author Alan Rostem
      */
-    static public void update(SimpMessageSendingOperations messagingTemplate) {
+    static public void update(SimpMessageSendingOperations messagingTemplate, ScoreBoardRepository scoreBoardRepository) {
         if (!isThereAnOpenParty()) {
             openParty();
             System.out.println("Party opened: " + currentOpenParty.getId() + ". Parties created: " + parties.size());
@@ -107,10 +108,14 @@ public class PartyManager {
         // Update all parties and remove those that are finished
         for (Map.Entry<String, Party> pair : parties.entrySet()) {
             Party party = pair.getValue();
-            party.update(messagingTemplate);
+            party.update(messagingTemplate, scoreBoardRepository);
             if (party.getStatus() == FINISHED_GAME) {
                 activePlayers.remove(party.getProposer().getUsername());
                 activePlayers.remove(party.getGuesser().getUsername());
+                System.out.println("Removed!" +
+                        isPlayerActive(party.getProposer().getUsername()) + " " +
+                        isPlayerActive(party.getGuesser().getUsername())
+                );
                 parties.remove(party.getId());
             }
         }

@@ -11,7 +11,7 @@ const client = new SocketConnector();
  */
 const msg = {
     msgMyTurn: "It's your turn",
-    msgNotMyTurn: "wait your turn",
+    msgNotMyTurn: "wait for your turn",
     msgPartyFinished: "congrats! You win!"
 };
 

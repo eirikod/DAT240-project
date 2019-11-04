@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 @Controller
@@ -33,7 +34,6 @@ public class QueueController {
     final static String CONST_PLAY_MODE = "listPlayMode";
     final static String CONST_PLAYER_MODE = "listPlayerMode";
     private static final String DESTINATION = "/party";
-    private static PartyManager partyManager = new PartyManager();
 
     QueueController() {
         TickExecution updater = new TickExecution(1000L, this::update);
@@ -41,7 +41,7 @@ public class QueueController {
     }
 
     private void update() {
-        partyManager.update(messagingTemplate);
+        PartyManager.update(messagingTemplate, scoreBoardRepository);
     }
 
     @Autowired
@@ -57,10 +57,10 @@ public class QueueController {
                 type = Player.PlayerType.GUESSER;
             }
             User user = repository.findByUsername(socketMessage.getSender());
-            if (!partyManager.isPlayerActive(user.getUsername())) {
+            if (!PartyManager.isPlayerActive(user.getUsername())) {
                 Player player = new Player(user.getId(), user.getUsername());
                 player.setPlayerType(type);
-                partyManager.queueUpPlayer(player);
+                PartyManager.queueUpPlayer(player);
             }
         }
     }
@@ -85,16 +85,15 @@ public class QueueController {
         model.addAttribute("username", username);
         model.addAttribute("id", id);
 
-        if (partyManager.isPlayerActive(username)) {
-            Player player = partyManager.getActivePlayer(username);
+        if (PartyManager.isPlayerActive(username)) {
+            Player player = PartyManager.getActivePlayer(username);
             if (player.getGameStatus() == Player.GameStatus.PLAYING) {
                 // TODO: Redirect them to the respective game page
                 //return "redirect:";
             }
         }
-        model.addAttribute("playerIsSearching", partyManager.isPlayerActive(username));
+        model.addAttribute("playerIsSearching", PartyManager.isPlayerActive(username));
 
-        makeScoresForTest();
         ArrayList<ScoreData> list = createTop5ScoreList();
         model.addAttribute("scoreBoard", list);
         return "welcomePage";
@@ -102,31 +101,24 @@ public class QueueController {
 
     public ArrayList<ScoreData> createTop5ScoreList() {
         TreeSet<ScoreData> scoreDataSorted = new TreeSet<>((t0, t1) -> t1.score - t0.score);
+        if (((List) scoreBoardRepository.findAll()).size() == 0) {
+            return new ArrayList<>();
+        }
         for (ScoreData scoreData : scoreBoardRepository.findAll()) {
             scoreDataSorted.add(scoreData);
         }
 
+        int max = 5;
         Iterator iterator = scoreDataSorted.iterator();
+        if (scoreDataSorted.size() < 5) {
+            max = scoreDataSorted.size();
+        }
 
         ArrayList<ScoreData> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < max; i++) {
             list.add(i, (ScoreData) iterator.next());
         }
         return list;
-    }
-
-    void makeScoresForTest() {
-        scoreBoardRepository.save(new ScoreData(1L, "pro_hello", "guess_yoyo", 696));
-        scoreBoardRepository.save(new ScoreData(2L, "nono", "ayyy", 890));
-        scoreBoardRepository.save(new ScoreData(3L, "ayyy", "lmao", 105550));
-        scoreBoardRepository.save(new ScoreData(4L, "blabla", "poop", 143200));
-        scoreBoardRepository.save(new ScoreData(5L, "pro_hello", "something", 43));
-        scoreBoardRepository.save(new ScoreData(6L, "something", "xD", 87));
-        scoreBoardRepository.save(new ScoreData(7L, "something", "xD", 5));
-        scoreBoardRepository.save(new ScoreData(8L, "something", "xD", 4));
-        scoreBoardRepository.save(new ScoreData(9L, "something", "xD", 3));
-        scoreBoardRepository.save(new ScoreData(10L, "something", "xD", 2));
-        scoreBoardRepository.save(new ScoreData(11L, "something", "xD", 1));
     }
 
 }

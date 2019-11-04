@@ -22,9 +22,6 @@ import java.util.Scanner;
  * @author Eirik & Markus
  */
 public class GameLogic {
-    ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
-            "src/main/resources/static/label/image_mapping.csv");
-
     private static final int MAX_GUESSES = 3;
     private static final int LOSS_INTERVAL = 10; // Seconds
 
@@ -41,6 +38,10 @@ public class GameLogic {
     private boolean finished = false;
     private int time = 0;
     private int remainingPoints = 1000;
+
+    public String getImageName() {
+        return image;
+    }
 
     public enum GameState {
         WAITING_TO_START,
@@ -67,6 +68,7 @@ public class GameLogic {
             if (checkAnswer((String) message.contentToMap().get("guess"))) {
                 guesser.setPlayerStatus(Player.PlayerStatus.FINISHED);
                 proposer.setPlayerStatus(Player.PlayerStatus.FINISHED);
+                currentState = GameState.WIN;
                 finished = true;
             }
         });
@@ -164,7 +166,6 @@ public class GameLogic {
                 guesser.setPlayerStatus(Player.PlayerStatus.FINISHED);
                 proposer.setPlayerStatus(Player.PlayerStatus.FINISHED);
                 finished = true;
-                System.out.println("LoST GAME WOOOOOOOOOOOO!!!!!!!!!!1111!!!111ONE!!!!");
             }
         }
     }

@@ -10,10 +10,10 @@ const client = new SocketConnector();
  * party state label
  */
 const msg = {
-    msgMyTurn: "choose new segment",
-    msgNotMyTurn: "Wait for segment",
+    msgMyTurn: "Make a guess!",
+    msgNotMyTurn: "Wait for a new segment...",
     msgPartyFinished: "congrats! You win!",
-    msgPartyLoose: "you loose, try again!"
+    msgPartyLoose: "you lost, try again!"
 };
 
 const nbChance = {
