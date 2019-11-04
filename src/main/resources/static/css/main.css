@@ -83,24 +83,19 @@ img
 }
 
 .beta-mask {
-  filter: contrast(50%);
-  opacity = 1;
+  filter: invert();
   top: 0px;
   position:absolute;
   left: 0px;
   padding: 5px;
-  mask-type: alpha;
 }
 
 .gamma-mask {
-  filter: contrast(100%);
-  opacity = 1;
+  filter: invert();
   top: 0px;
   position:absolute;
   left: 0px;
   padding: 5px;
-  mask-type: alpha;
-  disabled : true
 }
 
 .img-mask {

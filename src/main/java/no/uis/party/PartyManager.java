@@ -85,6 +85,10 @@ public class PartyManager {
 
             currentlyWaitingGuesser.setGameStatus(Player.GameStatus.PLAYING);
             currentlyWaitingProposer.setGameStatus(Player.GameStatus.PLAYING);
+
+            currentlyWaitingGuesser.setPlayerStatus(Player.PlayerStatus.WAITING);
+            currentlyWaitingProposer.setPlayerStatus(Player.PlayerStatus.PLAYING);
+
             currentlyWaitingGuesser = null; // Guesser no longer waiting
             currentlyWaitingProposer = null; // Proposer no longer waiting
 

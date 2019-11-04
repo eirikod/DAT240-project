@@ -41,9 +41,6 @@ public class ImageController {
     @Autowired
     private PlayerRepository playerRepository;
 
-    private ArrayList<String> propSegment;
-    private int countTotalSegments;
-
 
     /**
      * Send the server respond to the guesser view 
@@ -70,14 +67,8 @@ public class ImageController {
         HashMap<String, Object> guesserContent = new HashMap<>();
         guesserContent.put("role", "GUESSER");
         guesserContent.put("partyId", "" + partyId);
-        String hashedLabel = "";
-        try {
-            hashedLabel = (String) chatMessage.getContent();
-            //hashedLabel = generateHashedImageLabel((String) chatMessage.getContent());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        guesserContent.put("selectedlabel", hashedLabel);
+
+        guesserContent.put("selectedlabel", chatMessage.getContent());
         msg.setContent(guesserContent);
         party.getGuesser().sendData(msg, messageTemplate);
         
@@ -98,6 +89,7 @@ public class ImageController {
      * @return void
      * @author Allan & Gregoire
      */
+
     @MessageMapping("/party/{partyId}/addUser")
     public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                         SimpMessageHeaderAccessor headerAccessor) {
@@ -113,6 +105,8 @@ public class ImageController {
         messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
     }
 
+
+
     /**
      * Proposer init, loads picture and player stats
      *
@@ -124,11 +118,11 @@ public class ImageController {
      * @author Eirik & Gregoire
      */
     @RequestMapping("/proposer")
-	public ModelAndView showImage(ModelAndView model,
-			@ModelAttribute("selectedlabel") Object modelname,
-			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
-			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
- 
+    public ModelAndView showImage(ModelAndView model,
+                                  @ModelAttribute("selectedlabel") Object modelname,
+                                  @RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+                                  @RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
+
         String name = modelname.toString() != null ? modelname.toString() : "cinema";
 
         String[] files = labelReader.getImageFiles(name);
@@ -136,24 +130,21 @@ public class ImageController {
         Party party = PartyManager.getParty(partyId);
         Player proposer = party.getProposer();
 
-        //TODO
-//				model.addObject("highestscore", player.getHigherScore());
-			model.addObject("userId", proposer.getId());
-			model.addObject("partyId", partyId);
-			model.addObject("username", userName);
+        model.addObject("userId", proposer.getId());
+        model.addObject("partyId", partyId);
+        model.addObject("username", userName);
+
 
         // finds number of segments per image
-        countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
-        countTotalSegments = countTotalSegments - 1;
+        int countTotalSegments = -1 + Objects.requireNonNull(new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list()).length;
         PartyManager.getParty(partyId).getGame().setImage(name, countTotalSegments);
-
-        propSegment = new ArrayList<>();
+        ArrayList<String> imageSegments = new ArrayList<>();
 
         for (int i = 0; i < countTotalSegments; ++i) {
-            propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
+            imageSegments.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
         }
 
-        model.addObject("listimages", propSegment);
+        model.addObject("listimages", imageSegments);
         return model;
     }
 
@@ -203,29 +194,27 @@ public class ImageController {
      * @return model
      * @author Eirik & Gregoire
      */
-	@RequestMapping(value = "/guesser")
-	public ModelAndView showImageGuesser(
-			@ModelAttribute("selectedlabel") Object modelname,
-			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
-			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
+    @RequestMapping(value = "/guesser")
+    public ModelAndView showImageGuesser(
+            @RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+            @RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
 
         ModelAndView model = new ModelAndView("guesser");
         model.addObject("userId", PartyManager.getParty(partyId).getGuesser().getId());
         model.addObject("partyId", partyId);
         model.addObject("username", userName);
 
-        String name = modelname.toString() != null ? modelname.toString() : "cinema";
+        String name = PartyManager.getParty(partyId).getGame().getImageName();
         String[] files = labelReader.getImageFiles(name);
         String image_folder_name = getImageFolder(files);
         // finds number of segments per image
-        countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
-        countTotalSegments = countTotalSegments - 1;
-        propSegment = new ArrayList<>();
+        int countTotalSegments = -1 + Objects.requireNonNull(new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list()).length;
+        ArrayList<String> imageSegments = new ArrayList<>();
         for (int i = 0; i < countTotalSegments; ++i) {
-            propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
+            imageSegments.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
         }
-        model.addObject("listimages", propSegment);
 
+        model.addObject("listimages", imageSegments);
         return model;
     }
 
