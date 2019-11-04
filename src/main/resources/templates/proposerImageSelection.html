@@ -7,8 +7,6 @@
 <link
 	rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-	crossorigin="anonymous"
 >
 	<script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
@@ -47,8 +45,6 @@
 		border:4px solid PaleTurquoise;
 		}
 
-
-
 		.col-1 {width: 8.33%;}
 		.col-2 {width: 16.66%;}
 		.col-3 {width: 25%;}
@@ -62,103 +58,75 @@
 		.col-11 {width: 91.66%;}
 		.col-12 {width: 100%;}
 
-
 		body {
-  		background-color: #f0f9f8;
+	  		background-color: #f0f9f8;
 		}
 
     h1{
-    text-align: center;
+    	text-align: center;
     }
 
 	</style>
-
-
 </head>
 
-
-
 <body>
-
-
-<div class="header">
+	<div class="header">
+		<div class="row">
+	    	<div class="col-9"></div>
+	   	 	<div class="col-1">
+	    		<input type="button" id="home" value="Home">
+	   	 	</div>
+	   		<div class="col-2">
+	    		<a href="http://localhost:8080/">Disconnect </a>
+	     	</div>
+		</div>
+	</div>
 	<div class="row">
-    	<div class="col-9">
-    	</div>
-
-   	 	<div class="col-1">
-    		<input type="button" id="home" value="Home">
-   	 	</div>
-
-   		<div class="col-2">
-    	<a href="http://localhost:8080/">Disconnect </a>
-     	</div>
-
+		<div class="col-12">
+	    	<div class="label_game">
+	    		<h1>GUESS WHAT?</h1>
+	    	</div>
+		</div>
 	</div>
-
-</div>
-
-
-<div class="row">
-	<div class="col-12">
-    	<div class="label_game">
-    	<h1>GUESS WHAT?</h1>
-    	</div>
+	<div class= "row">
+	  <div class="col-12">
+	    <h1 style = "color: green;"> SELECT AN IMAGE LABEL TO START THE GAME</h1>
+	  </div>
 	</div>
-</div>
-
-<div class= "row">
-  <div class="col-12">
-    <h1 style = "color: green;"> SELECT AN IMAGE LABEL TO START THE GAME</h1>
-  </div>
-</div>
-
-
-<div class="row">
-  <div class="col-5"></div>
+	<div class="row">
+	<div class="col-5"></div>
 		<div class="col-5">
 			<form action="proposer" method="GET">
-			    <select  id="dropOperator" name="selectedlabel">
-			    <option value="0">Select an image </option>
-			    <option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
-			    </select>
+				<select  id="dropOperator" name="selectedlabel">
+					<option value="0">Select an image </option>
+					<option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
+				</select>
 				<input type="hidden" name="partyId" th:value="${partyId}">
 			    <input type="hidden" name="username" th:value="${username}">
 			    <input type="submit">
 			</form>
 		</div>
-</div>
-
-
-
-<div  class="container">
-
-
-	<div class="row">
-		<div class="col-8">
-			<div style="position: relative;">
-				<div th:each="image,iter : ${listimages}" class="alpha-mask">
-					<img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
+	</div>
+	<div  class="container">
+		<div class="row">
+			<div class="col-8">
+				<div style="position: relative;">
+					<div th:each="image,iter : ${listimages}" class="alpha-mask">
+						<img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
+					</div>
 				</div>
 			</div>
-		</div>
-   	</div>
-</div>
-
-<!-- 	A voir / vérifier si spring gère pas lui même les event -->
+	   	</div>
+	</div>
 	<script type="text/javascript">
 		document.addEventListener("mouseover", ({ target }) => {
-			console.log(target)
 			if (target.className === "myButton") {
-				console.log(target)
 				var element = document.getElementById(target.value).parentElement
-// 				var element = document.getElementById(target.children[0].innerText).parentElement
 				element.className = "beta-mask"
 			}
 		})
 		document.addEventListener("mouseout", ({ target }) => {
 			if (target.className === "myButton") {
-// 				var element = document.getElementById(target.children[0].innerText).parentElement
 				var element = document.getElementById(target.value).parentElement
 				element.className = "alpha-mask"
 			}
