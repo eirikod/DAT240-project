@@ -13,20 +13,34 @@ import no.uis.players.Player.PlayerType;
 
 import java.util.*;
 
+/**
+ * Main view controller. Handles login and registering.
+ */
 @Controller
 public class PlayerController {
 
     @Autowired
     private PlayerRepository playerRepository;
 
-    @Autowired
-    private ScoreBoardRepository scoreBoardRepository;
-
+    /**
+     * Main page.
+     *
+     * @author Alan Rostem
+     */
     @RequestMapping("/")
-    public String home(Model model) {
+    public String home() {
         return "loginPage";
     }
 
+    /**
+     * Redirection when registering. Validates the user input and acts upon it.
+     *
+     * @param model Model with attributes used to send data to the view and parse with Thymeleaf
+     * @param reg_username    Username input
+     * @param reg_password    Password input
+     * @param reg_confirmpass Password confirmation input
+     * @author Alan Rostem
+     */
     @RequestMapping("reg-post")
     public String register(Model model,
                            @RequestParam(value = "reg_username") String reg_username,
@@ -45,6 +59,13 @@ public class PlayerController {
         return "loginPage";
     }
 
+    /**
+     * Redirection when logging in. Validates user input and acts upon it.
+     *
+     * @param model Model with attributes used to send data to the view and parse with Thymeleaf
+     * @param login_username Username input
+     * @param login_password Password input
+     */
     @RequestMapping("login-post")
     public String login(Model model,
                         @RequestParam(value = "login_username") String login_username,
@@ -60,6 +81,12 @@ public class PlayerController {
         return "loginPage";
     }
 
+    /**
+     * Add a new user to the repository (database) and return it.
+     * @param username Username input
+     * @param password Password input
+     * @author Alan Rostem
+     */
     private User createUser(String username, String password) {
         User user = new User(username, password);
         System.out.println(user);
@@ -68,6 +95,10 @@ public class PlayerController {
         return user;
     }
 
+    /**
+     * Boolean check if a user exists. Used upon registration input validation
+     * @param username Username input
+     */
     private boolean userExists(String username) {
         return playerRepository.findByUsername(username) != null;
     }

@@ -23,7 +23,9 @@ import no.uis.party.Party;
 import no.uis.players.Player;
 import no.uis.repositories.PlayerRepository;
 
-
+/**
+ * Class controlling the front end view of the image game and receives user input from there.
+ */
 @Controller
 public class ImageController {
 
@@ -38,23 +40,17 @@ public class ImageController {
     @Autowired
     private SimpMessageSendingOperations messageTemplate;
 
-    @Autowired
-    private PlayerRepository playerRepository;
-
 
     /**
-     * Send the server respond to the guesser view 
+     * Sends a socket message to the guesser through the party ID when the proposer has
+     * chosen an image for starting the game. This tells the guesser what party they belong to.
      *
-     * @param partyId
-     * @param chatMessage
-     * @param headerAccessor
-     * @param id
-     * @return void
-     * @author Allan
+     * @param partyId     Destination variable indicating the socket message is sent to the specific party route.
+     * @param chatMessage Socket message containing the party ID.
+     * @author Alan Rostem
      */
     @MessageMapping("/party/{partyId}/respToGuesser")
-    public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
-                                 SimpMessageHeaderAccessor headerAccessor) {
+    public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage) {
         Party party = PartyManager.getParty(partyId);
         if (party == null) {
             return;
@@ -73,15 +69,13 @@ public class ImageController {
     }
 
     /**
-     * Initialize the websocket handler and send a response to the client subscription 
+     * Initialize the websocket handler and send a response to the client subscription
      *
-     * @param partyId
-     * @param chatMessage
-     * @param hhheaderAccessor
-     * @return void
-     * @author Allan & Gregoire
+     * @param partyId        Destination variable indicating the socket message is sent to the specific party route.
+     * @param chatMessage    Socket message containing the party ID.
+     * @param headerAccessor Automated object by SpringBoot to configure websocket sessions with
+     * @author Alan & Gregoire
      */
-
     @MessageMapping("/party/{partyId}/addUser")
     public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                         SimpMessageHeaderAccessor headerAccessor) {
@@ -97,15 +91,14 @@ public class ImageController {
     }
 
 
-
     /**
-     * Proposer init, loads picture and player stats
+     * Proposer init, loads image and sends it to the view.
      *
-     * @param model
-     * @param modelname: image name
-     * @param partyId
-     * @param userName
-     * @return view
+     * @param model Model with attributes used to send data to the view and parse with Thymeleaf
+     * @param modelname Image label name
+     * @param partyId   ID of the party the proposer belongs to
+     * @param userName  Name of the proposer used to display on the front. // TODO: Do we use it on the front?
+     * @return The configured model and view
      * @author Eirik & Gregoire
      */
     @RequestMapping("/proposer")
@@ -140,49 +133,51 @@ public class ImageController {
     }
 
     /**
-     * Receive the client message using update
+     * Receive the client socket message every time a player performs and action
+     * on the game page. The messages are send to the respective party and game logic
+     * is performed there.
      *
-     * @param partyId
-     * @param message
-     * @return void
-     * @author Allan & Gregoire
+     * @param partyId ID for the party the player belongs to
+     * @param message Socket message containing data sent by user
+     * @author Alan & Gregoire
      */
     @MessageMapping("/party/{partyId}/update")
     public void receiveSocketUpdate(@DestinationVariable String partyId, SocketMessage message) {
         PartyManager.getParty(partyId).receiveUpdateFromFront(message, messageTemplate);
     }
 
-	/**
-	 *  ProposerImageSelction View init ; allows the user choose a picture
-	 * @author Eirik & Gregoire
-	 * @param partyId
-	 * @param userName
-	 * @return model
-	 */
-	@RequestMapping("/proposerImageSelection")
-	public ModelAndView showLabels(
-			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
-			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
-		ModelAndView model = new ModelAndView("proposerImageSelection");
-		ArrayList<String> imageLabels = getAllLabels(labelReader);
-		Party party = PartyManager.getParty(partyId);
+    /**
+     * Proposer image selection view init; Allows the user choose a picture which
+     * then sends a message to the respective guesser of the party.
+     *
+     * @param partyId Respective ID of the party the proposer belongs to
+     * @param userName Username of the proposer
+     * @return Model and view with attributes used to send data to the view and parse with Thymeleaf
+     * @author Eirik & Gregoire
+     */
+    @RequestMapping("/proposerImageSelection")
+    public ModelAndView showLabels(
+            @RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+            @RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
+        ModelAndView model = new ModelAndView("proposerImageSelection");
+        ArrayList<String> imageLabels = getAllLabels(labelReader);
+        Party party = PartyManager.getParty(partyId);
 
-		Player guesser = party.getProposer();
-		String userId = guesser.getId();
-		model.addObject("listlabels", imageLabels);
-		model.addObject("userId", userId);
-		model.addObject("partyId", partyId);
-		model.addObject("username", userName);
-		return model;
-	}
+        Player guesser = party.getProposer();
+        String userId = guesser.getId();
+        model.addObject("listlabels", imageLabels);
+        model.addObject("userId", userId);
+        model.addObject("partyId", partyId);
+        model.addObject("username", userName);
+        return model;
+    }
 
     /**
-     * Guesser view init ; Allows the guesser playing
+     * Guesser game view; The game actions are applied by the guesser here.
      *
-     * @param modelname: image name
-     * @param partyId
-     * @param userName
-     * @return model
+     * @param partyId Respective ID of the party the proposer belongs to
+     * @param userName Name of the guesser
+     * @return Model and view with attributes used to send data to the view and parse with Thymeleaf
      * @author Eirik & Gregoire
      */
     @RequestMapping(value = "/guesser")
@@ -209,9 +204,10 @@ public class ImageController {
         return model;
     }
 
-	/**
-     * @param files
-     * @return image_folder_name
+    /**
+     * Retrieve the image folder name for an array of images.
+     * @param files Array of the file names
+     * @return String containing the image folder name
      */
     private String getImageFolder(String[] files) {
         String image_folder_name = "";
@@ -228,8 +224,10 @@ public class ImageController {
     }
 
     /**
-     * @param ilr
-     * @return labels
+     * Retrieve all the labels from an ImageLabelReader
+     * @param ilr The image label reader
+     * @return Array list of all the labels
+     * @see ImageLabelReader
      */
     private ArrayList<String> getAllLabels(ImageLabelReader ilr) {
         ArrayList<String> labels = new ArrayList<String>();

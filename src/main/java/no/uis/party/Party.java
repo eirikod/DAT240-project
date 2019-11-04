@@ -5,17 +5,8 @@ import no.uis.players.Player;
 import no.uis.players.ScoreData;
 import no.uis.repositories.ScoreBoardRepository;
 import no.uis.websocket.SocketMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.stereotype.Component;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 
@@ -25,8 +16,6 @@ import java.util.Random;
  * @author Alan Rostem
  */
 public class Party {
-
-    // TODO: Add controller logic when ready to merge with the front-end
     private String id = "" + Math.abs(new Random().nextLong());
     private Player guesser;
     private Player proposer;
@@ -34,16 +23,15 @@ public class Party {
     private GameLogic game = new GameLogic();
 
     /**
-     * Sequential update method
+     * Sequential update method that updates the game logic. Sends data to the players
+     * and saves to the scoreboard when a game has finished. This is executed via a TickExecution
+     *
+     * @param smos Messaging operation object to send data via websocket
+     * @param scoreBoardRepository The repository to store the score data
+     * @see no.uis.tools.TickExecution
+     * @author Alan Rostem
      */
-    public void update(SimpMessageSendingOperations messagingTemplate, ScoreBoardRepository scoreBoardRepository) {
-        if (guesser != null) {
-            guesser.update(messagingTemplate);
-        }
-        if (proposer != null) {
-            proposer.update(messagingTemplate);
-        }
-
+    public void update(SimpMessageSendingOperations smos, ScoreBoardRepository scoreBoardRepository) {
         game.update();
         if (game.isFinished()) {
             SocketMessage finishedMsg = new SocketMessage();
@@ -55,8 +43,8 @@ public class Party {
             content.put("gameState", game.getCurrentState().toString());
             content.put("state", "FINISHED");
 
-            getGuesser().sendData(finishedMsg, messagingTemplate);
-            getProposer().sendData(finishedMsg, messagingTemplate);
+            getGuesser().sendData(finishedMsg, smos);
+            getProposer().sendData(finishedMsg, smos);
             setStatus(PartyStatus.FINISHED_GAME);
 
             scoreBoardRepository.save(new ScoreData(
@@ -69,10 +57,21 @@ public class Party {
         }
     }
 
+    /**
+     * Retrieve the randomly generated party ID
+     *
+     * @author Alan Rostem
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Retrieve the game logic object
+     *
+     * @author Alan Rostem
+     * @see GameLogic
+     */
     public GameLogic getGame() {
         return game;
     }
@@ -108,23 +107,10 @@ public class Party {
     }
 
     /**
-     * Method called when the party state has been changed to FINISHED_GAME.
-     *
-     * @author Alan Rostem
+     * @param message Message containing data sent by a player
+     * @param smos    Messaging operation object to send data via websocket
      */
-    public void onFinished() {
-
-    }
-
-    enum GameMessageType {
-        SEND_GUESS(),
-        REQUEST_SEGMENT(),
-        SEND_SEGMENT(),
-        ;
-    }
-
     public void receiveUpdateFromFront(SocketMessage message, SimpMessageSendingOperations smos) {
-        System.out.println("FrontMsgUpdate ---------------------------------------------------");
         SocketMessage sockMess = new SocketMessage();
 
         game.receiveUpdatesFromFront(this, message);
@@ -217,38 +203,8 @@ public class Party {
      */
     public void setStatus(PartyStatus status) {
         currentStatus = status;
-        switch (status) {
-            case READY_TO_PLAY:
-                onReady();
-                break;
-            case FINISHED_GAME:
-                onFinished();
-                break;
+        if (status == PartyStatus.READY_TO_PLAY) {
+            onReady();
         }
     }
-
-//    public int play(Player player,HashMap<String, Object> msg) {
-//    	if (this.playerTurn != player) {
-//    		return SR.SR_BAD_PLAYER;
-//    	}
-//    	if (player.getPlayerType()==Player.PlayerType.GUESSER) {
-//    		playGuesser(msg);
-//    		return SR.SR_OK;
-//    	}
-//    	else if(player.getPlayerType()==Player.PlayerType.PROPOSER) {
-//    		playGuesser(msg);
-//    		return SR.SR_OK;
-//    	}
-//    	else {
-//    		return SR.SR_KO;
-//    	}
-//    }
-//    private void playGuesser(Player player, HashMap<String, Object> msg) {
-//    	
-//    }
-//    
-//    private void playProposer(Player player, HashMap<String, Object> msg) {
-//    	ImageId = msg.get("");
-//    	if (this.imageIds.contains(imageId));
-//    }
 }
