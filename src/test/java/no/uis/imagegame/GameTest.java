@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import no.uis.backend_pseudo_game.Game;
-import no.uis.backend_pseudo_game.dummy.DummyPlayer;
+import no.uis.players.Player;
+
 
 public class GameTest {
 	
@@ -15,12 +15,12 @@ public class GameTest {
 	 */
 	@Test
 	public void newGame_instantiate() {
-		DummyPlayer testPlayer1 = new DummyPlayer();
-		DummyPlayer testPlayer2 = new DummyPlayer();
-		Game testGame = new Game(testPlayer1, testPlayer2);
-		assertEquals(true, testPlayer1 instanceof DummyPlayer);
-		assertEquals(true, testPlayer2 instanceof DummyPlayer);
-		assertEquals(true, testGame instanceof Game);
+		Player testPlayer1 = new Player("Josephine", "PROPOSER");
+		Player testPlayer2 = new Player("Bernard", "GUESSER");
+		GameLogic testGame = new GameLogic();
+		assertEquals(true, testPlayer1 instanceof Player);
+		assertEquals(true, testPlayer2 instanceof Player);
+		assertEquals(true, testGame instanceof GameLogic);
 	}
 }
 

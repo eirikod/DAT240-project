@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,25 +25,25 @@ import no.uis.party.Party;
 import no.uis.party.PartyManager;
 import no.uis.party.QueueController;
 import no.uis.players.Player;
-
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class ImageControllerTest {
-
-	@Autowired
-	private MockMvc mvc;
-	
-	
-	
-	/**
-	 * testing GET index
-	 * @throws Exception
-	 * @author Eirik
-	 */
-	@Test
-	public void testIndex() throws Exception {
-
-	}
-		
-}
+//
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+//@AutoConfigureMockMvc
+//public class ImageControllerTest {
+//
+//	@Autowired
+//	private MockMvc mvc;
+//	
+//	
+//	
+//	/**
+//	 * testing GET index
+//	 * @throws Exception
+//	 * @author Eirik
+//	 */
+//	@Test
+//	public void testIndex() throws Exception {
+//
+//	}
+//		
+//}

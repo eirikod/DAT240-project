@@ -2,7 +2,7 @@
  * Javadoc style sheet
  */
 
-@import url('back_end/resources/fonts/dejavu.css');
+@import url('resources/fonts/dejavu.css');
 
 /*
  * Styles for individual HTML elements.
@@ -777,7 +777,7 @@ ul.ui-autocomplete  li {
     font-weight:bold;
 }
 #search {
-    background-image:url('back_end/resources/glass.png');
+    background-image:url('resources/glass.png');
     background-size:13px;
     background-repeat:no-repeat;
     background-position:2px 3px;
@@ -787,7 +787,7 @@ ul.ui-autocomplete  li {
 }
 #reset {
     background-color: rgb(255,255,255);
-    background-image:url('back_end/resources/x.png');
+    background-image:url('resources/x.png');
     background-position:center;
     background-repeat:no-repeat;
     background-size:12px;
