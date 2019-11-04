@@ -17,11 +17,11 @@ const msg = {
 };
 
 const nbChance = {
-		0: "",
-	    1: "last chance!",
-	    2: "2 chances remaining",
-	    3: "You have 3 chances"
-	};
+    0: "",
+    1: "Wrong again! Last chance!",
+    2: "Wrong! 2 chances remaining",
+    3: "You have 3 chances"
+};
 
 var imageId = 0;
 
@@ -98,27 +98,30 @@ function updateState() {
 
     switch (state) {
         case PLAYER_STATES.PLAYING:
+            stopTimer = false;
             $("#proposerPopUp").text(msg.msgMyTurn);
-            $("#submitGuess")[0].disabled=false;
-            $("#submitNewSegment")[0].disabled=false;
-            document.getElementById("submitGuess").disabled = false; 
+            $("#submitGuess")[0].disabled = false;
+            $("#submitNewSegment")[0].disabled = false;
+            document.getElementById("submitGuess").disabled = false;
             document.getElementById("submitNewSegment").disabled = false;
-            guessChance=3;
-            $("#guessRemaning")[0].innerText=nbChance[guessChance];
+            guessChance = 3;
+            $("#guessRemaning")[0].innerText = nbChance[guessChance];
             printImageSegment();
             break;
 
         case PLAYER_STATES.WAITING:
+            stopTimer = true;
             $("#proposerPopUp").text(msg.msgNotMyTurn);
-            $("#submitGuess").className="myButton";
-            $("#submitGuess")[0].disabled=true;
-            $("#submitNewSegment")[0].disabled=true;
-            $("#guessRemaning")[0].innerText=nbChance[guessChance];
+            $("#submitGuess").className = "myButton";
+            $("#submitGuess")[0].disabled = true;
+            $("#submitNewSegment")[0].disabled = true;
+            $("#guessRemaning")[0].innerText = nbChance[guessChance];
             break;
 
         case PLAYER_STATES.FINISHED:
+            stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyFinished);
-            document.getElementById("submitGuess").disabled = true; 
+            document.getElementById("submitGuess").disabled = true;
             document.getElementById("submitNewSegment").disabled = true;
             client.disconnect();
             $("#score").text(score);
@@ -166,11 +169,11 @@ function submitGuess() {
         type: MSG_TYPES.SEND_GUESS
     };
     client.send(message, `/app/party/${partyId}/update`);
-    guessChance --;
+    guessChance--;
     console.log("send a msg via web-socket---------");
-    $("#guessRemaning")[0].innerText=nbChance[guessChance];
-    if(guessChance===0){
-    	state = PLAYER_STATES.WAITING;
+    $("#guessRemaning")[0].innerText = nbChance[guessChance];
+    if (guessChance === 0) {
+        state = PLAYER_STATES.WAITING;
         updateState();
     }
 }
@@ -187,6 +190,6 @@ function submitNewSegment() {
     };
     client.send(message, `/app/party/${partyId}/update`);
     state = PLAYER_STATES.WAITING;
-    guessChance=0;
+    guessChance = 0;
     updateState();
 }

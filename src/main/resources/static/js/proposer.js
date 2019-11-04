@@ -101,14 +101,17 @@ function updateState() {
 
     switch (state) {
         case enumState.myTurn:
+            stopTimer = true;
             $("#proposerPopUp").text(msg.msgMyTurn);
             break;
 
         case enumState.waiting:
+            stopTimer = false;
             $("#proposerPopUp").text(msg.msgNotMyTurn);
             break;
 
         case enumState.finished:
+            stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyFinished);
             client.disconnect();
             break;
@@ -179,6 +182,7 @@ document.addEventListener("click", ({target}) => {
             target.className = "";
             myTurn = false;
             state = enumState.waiting;
+            time = 0;
             updateState();
         } else if (state === enumState.finished) {
             var element = document.getElementById(target.value).parentElement;
