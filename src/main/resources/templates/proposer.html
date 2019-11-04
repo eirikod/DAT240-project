@@ -36,26 +36,26 @@
             sessionStorage.setItem('startDate', startDate);  //key-value
         }
 
-		let time = 0;
+        let time = 0;
 
-		// setInterval(counter function, update timer)
-		var counter = setInterval(function () {
+        // setInterval(counter function, update timer)
+        var counter = setInterval(function () {
 
-			// getTime() method returns the number of milliseconds between midnight of January 1, 1970 and now
-			var now = new Date().getTime();
+            // getTime() method returns the number of milliseconds between midnight of January 1, 1970 and now
+            var now = new Date().getTime();
 
-			// Find the distance between now an the count down date (startDate) and this current time
-			time = Number(time) + 1;
-			var distance = time * 1000; //hvor mange millisekunder som har g�tt siden du starta og n�
+            // Find the distance between now an the count down date (startDate) and this current time
+            time = Number(time) + 1;
+            var distance = time * 1000; //hvor mange millisekunder som har g�tt siden du starta og n�
 
-			// Calculation for minutes and seconds
-			var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); // checks how many minutes in the distance
-			var seconds = Math.floor((distance % (1000 * 60)) / 1000); // checks how many seconds in the distance
-			let output = minutes + "m " + seconds + "s ";
-			if (minutes === 0) {
-				output = seconds + "s";
-			}
-			document.getElementById("timer").innerHTML = output;
+            // Calculation for minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); // checks how many minutes in the distance
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000); // checks how many seconds in the distance
+            let output = minutes + "m " + seconds + "s ";
+            if (minutes === 0) {
+                output = seconds + "s";
+            }
+            document.getElementById("timer").innerHTML = output;
 
         }, 1000); //runs the fuction every 1000ms = 1 s
 
@@ -150,6 +150,10 @@
             width: 100%;
         }
 
+		body {
+  		background-color: #f0f9f8;
+		}
+		
     </style>
 
 
@@ -196,7 +200,7 @@
     <div class="row">
         <div class="col-8">
             <div>
-            	<h3 id="proposerPopUp">your turn</h3>
+                <h3 id="proposerPopUp">your turn</h3>
             </div>
             <div style="position: relative;">
                 <div th:each="image,iter : ${listimages}" class="alpha-mask">
@@ -232,7 +236,7 @@
     <div class="col-2">
         <h> YOUR SCORE:</h>
         <div class="label_game">
-            <h2 id="score"> SCORE </h2>
+            <h2 id="score"> 1000 </h2>
         </div>
     </div>
 </div>

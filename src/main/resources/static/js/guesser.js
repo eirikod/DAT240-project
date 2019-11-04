@@ -10,10 +10,10 @@ const client = new SocketConnector();
  * party state label
  */
 const msg = {
-    msgMyTurn: "choose new segment",
-    msgNotMyTurn: "Wait for segment",
+    msgMyTurn: "Make a guess!",
+    msgNotMyTurn: "Wait for a new segment...",
     msgPartyFinished: "congrats! You win!",
-    msgPartyLoose: "you loose, try again!"
+    msgPartyLoose: "you lost, try again!"
 };
 
 const nbChance = {
@@ -119,7 +119,8 @@ function updateState() {
         case PLAYER_STATES.FINISHED:
             $("#proposerPopUp").text(msg.msgPartyFinished);
             document.getElementById("submitGuess").disabled = true; 
-            document.getElementById("submitNewSegment").disabled = true; 
+            document.getElementById("submitNewSegment").disabled = true;
+            client.disconnect();
             $("#score").text(score);
             $("#guessRemaning")[0].innerText=nbChance[0];
             break;

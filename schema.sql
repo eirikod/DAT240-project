@@ -20,4 +20,5 @@ CREATE TABLE [ScoreBoard] (
     proposername VARCHAR
     guessername VARCHAR
     score INTEGER
+    imagename VARCHAR
 );

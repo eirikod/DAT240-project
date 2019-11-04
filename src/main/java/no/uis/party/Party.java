@@ -2,10 +2,12 @@ package no.uis.party;
 
 import no.uis.imagegame.GameLogic;
 import no.uis.players.Player;
+import no.uis.players.ScoreData;
 import no.uis.repositories.ScoreBoardRepository;
 import no.uis.websocket.SocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,7 +25,7 @@ import java.util.Random;
  * @author Alan Rostem
  */
 public class Party {
-	
+
     // TODO: Add controller logic when ready to merge with the front-end
     private String id = "" + Math.abs(new Random().nextLong());
     private Player guesser;
@@ -31,13 +33,10 @@ public class Party {
     private PartyStatus currentStatus;
     private GameLogic game = new GameLogic();
 
-    @Autowired
-    private ScoreBoardRepository scoreBoardRepository;
-
     /**
      * Sequential update method
      */
-    public void update(SimpMessageSendingOperations messagingTemplate) {
+    public void update(SimpMessageSendingOperations messagingTemplate, ScoreBoardRepository scoreBoardRepository) {
         if (guesser != null) {
             guesser.update(messagingTemplate);
         }
@@ -59,6 +58,14 @@ public class Party {
             getGuesser().sendData(finishedMsg, messagingTemplate);
             getProposer().sendData(finishedMsg, messagingTemplate);
             setStatus(PartyStatus.FINISHED_GAME);
+
+            scoreBoardRepository.save(new ScoreData(
+                    getId(),
+                    getProposer().getUsername(),
+                    getGuesser().getUsername(),
+                    getGame().getScore(),
+                    getGame().getImageName()
+            ));
         }
     }
 

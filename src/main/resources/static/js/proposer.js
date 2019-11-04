@@ -11,7 +11,7 @@ const client = new SocketConnector();
  */
 const msg = {
     msgMyTurn: "It's your turn",
-    msgNotMyTurn: "wait your turn",
+    msgNotMyTurn: "wait for your turn",
     msgPartyFinished: "congrats! You win!"
 };
 
@@ -110,6 +110,7 @@ function updateState() {
 
         case enumState.finished:
             $("#proposerPopUp").text(msg.msgPartyFinished);
+            client.disconnect();
             break;
 
         default:
@@ -184,7 +185,7 @@ document.addEventListener("click", ({target}) => {
             updateState();
         } else if (state === enumState.finished) {
             var element = document.getElementById(target.value).parentElement;
-            sendImageId(target.value);
+            client.disconnect();
             target.disabled = true;
         } else {
             state = enumState.waiting;
