@@ -78,7 +78,7 @@ function sendImageId(id) {
             segment: id,
             role: PLAYER_ROLES.PROPOSER
         },
-        type: "SEND_SEGMENT",
+        type: MSG_TYPES.SEND_SEGMENT,
         sender: userId
     };
     client.send(message, `/app/party/${partyId}/update`);
@@ -144,17 +144,17 @@ function updateSegments() {
 function updateState() {
 
     switch (state) {
-        case enumState.myTurn:
+        case PLAYER_STATES.PLAYING:
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgMyTurn);
             break;
 
-        case enumState.waiting:
+        case PLAYER_STATES.WAITING:
             stopTimer = false;
             $("#proposerPopUp").text(msg.msgNotMyTurn);
             break;
 
-        case enumState.finished:
+        case PLAYER_STATES.FINISHED:
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyFinished);
             client.disconnect();

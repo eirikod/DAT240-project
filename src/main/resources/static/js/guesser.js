@@ -71,7 +71,7 @@ function sendGuess(guess) {
             role: PLAYER_ROLES.GUESSER,
             sender: userId
         },
-        type: "SEND_GUESS"
+        type: MSG_TYPES.SEND_GUESS
     };
     client.send(message, `/app/party/${partyId}/update`);
 }
@@ -259,10 +259,38 @@ function submitNewSegment() {
 }
 
 /**
- * Quit and go back to the welcome page
- * @author Grégoire Guillien
+ *send a surrend message to the back and return to the home page.
+ * @author Guillien Grégoire
  */
-function home() {
-    let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
-    window.location.replace(url);
+function home(){
+	const message = {
+	        content: {
+	        	partyId: partyId,
+	            role: PLAYER_ROLES.GUESSER,
+	            sender: userId
+	        },
+	        type: MSG_TYPES.QUIT
+	    };
+	client.send(message, `/app/party/${partyId}/update`);
+	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+	window.location.replace(url);
+}
+
+/**
+ *send a surrend message to the back and return to the login page.
+ * @author Guillien Grégoire
+ */
+function disconnect(){
+	const message = {
+	        content: {
+	        	partyId: partyId,
+	            role: PLAYER_ROLES.GUESSER,
+	            sender: userId
+	        },
+	        type: MSG_TYPES.QUIT
+	    };
+	client.send(message, `/app/party/${partyId}/update`);
+	let url = "http://localhost:8080/";
+	window.location.replace(url);
+
 }

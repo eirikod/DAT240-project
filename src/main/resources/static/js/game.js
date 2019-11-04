@@ -6,6 +6,7 @@ const MSG_TYPES = new Enum(
     "SEND_GUESS",
     "REQUEST_SEGMENT",
     "SEND_SEGMENT",
+    "QUIT"
 );
 
 /**
