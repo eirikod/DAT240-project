@@ -35,13 +35,18 @@ public class PartyManager {
     /**
      * Creates a new party and pushes them into the array list where we update them in the future.
      *
-     * @return Party
      * @author Alan Rostem
      */
     static private void openParty() {
         currentOpenParty = new Party();
     }
 
+    /**
+     * Retrieve a party by its ID
+     *
+     * @param id Party ID
+     * @author Alan Rostem
+     */
     static public Party getParty(String id) {
         return parties.get(id);
     }
@@ -57,9 +62,11 @@ public class PartyManager {
     }
 
     /**
-     * Method used to update the game sequentially. Party management core logic occurs here
+     * Method used to update the game sequentially. Party management core logic occurs here.
+     * Execution is performed sequentially by a TickExecution object.
      *
      * @author Alan Rostem
+     * @see no.uis.tools.TickExecution
      */
     static public void update(SimpMessageSendingOperations messagingTemplate, ScoreBoardRepository scoreBoardRepository) {
         if (!isThereAnOpenParty()) {
@@ -154,6 +161,14 @@ public class PartyManager {
         return parties.size();
     }
 
+    /**
+     * Check if a queue of a player type is not empty
+     *
+     * @param type Player type
+     * @return True if not empty
+     * @author Alan Rostem
+     * @see Player.PlayerType
+     */
     static public boolean isQueueNotEmpty(Player.PlayerType type) {
         switch (type) {
             case PROPOSER:
@@ -209,6 +224,12 @@ public class PartyManager {
         }
     }
 
+    /**
+     * Retrieve an active player (player that is queueing or playing) by its username
+     *
+     * @param username Name of the player
+     * @author Alan Rostem
+     */
     static public Player getActivePlayer(String username) {
         return activePlayers.get(username);
     }

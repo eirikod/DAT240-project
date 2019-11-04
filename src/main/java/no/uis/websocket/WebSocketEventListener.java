@@ -14,21 +14,33 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.HashMap;
 
+/**
+ * Spring component class which listens to socket events and logs out to the console.
+ * @author Alan Rostem
+ */
 @Component
 public class WebSocketEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
-    private static HashMap<String, Object> users = new HashMap<>();
 
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
+    /**
+     * Event listener for when a socket has been connected.
+     * @param event Automated Spring event object
+     * @author Alan Rostem
+     */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         logger.info("Received a new web socket connection.");
-        //users.put();
     }
 
+    /**
+     * Event listener for when a socket disconnects and erases it from the session.
+     * @param event Automated Spring event object
+     * @author Alan Rostem
+     */
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
