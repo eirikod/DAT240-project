@@ -12,7 +12,8 @@ const client = new SocketConnector();//Web socket client
 const msg = {
     msgMyTurn: "It's your turn",
     msgNotMyTurn: "wait for your turn",
-    msgPartyFinished: "congrats! You win!"
+    msgPartyFinished: "congrats! You win!",
+    msgPartyDeco: "Deconnection! You can come back to the home page"
 };
 
 /*
@@ -21,7 +22,8 @@ const msg = {
 const enumState = {
     myTurn: "PLAYING",
     waiting: "WAITING",
-    finished: "FINISHED"
+    finished: "FINISHED",
+    deconected: "DECONNECTION"
 };
 
 /*
@@ -140,6 +142,13 @@ function updateState() {
         case enumState.finished:
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyFinished);
+            client.disconnect();
+            break;
+            
+        case enumState.deconected:
+        	console.log("deconetcion!")
+            stopTimer = true;
+            $("#proposerPopUp").text(msg.msgPartyDeco);
             client.disconnect();
             break;
 

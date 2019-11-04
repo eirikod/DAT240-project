@@ -13,7 +13,8 @@ const msg = {
     msgMyTurn: "Make a guess!",
     msgNotMyTurn: "Wait for a new segment...",
     msgPartyFinished: "congrats! You win!",
-    msgPartyLoose: "you lost, try again!"
+    msgPartyLoose: "you lost, try again!",
+    msgPartyDeco: "Deconnection! You can come back to the home page"
 };
 
 const nbChance = {
@@ -146,6 +147,16 @@ function updateState() {
             $("#guessRemaning")[0].innerText=nbChance[0];
             break;
 
+        case "DECONNECTION":
+        	console.log("disconected");
+            stopTimer = true;
+            $("#proposerPopUp").text(msg.msgPartyDeco);
+            document.getElementById("submitGuess").disabled = true;
+            document.getElementById("submitNewSegment").disabled = true;
+            client.disconnect();
+            $("#score").text(score);
+            $("#guessRemaning")[0].innerText=nbChance[0];
+            break;
         default:
             break
 
