@@ -89,17 +89,17 @@ public class ImageController {
     @MessageMapping("/party/{partyId}/addUser")
     public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                         SimpMessageHeaderAccessor headerAccessor) {
-        String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
-        if (currentRoomId != null) {
-            SocketMessage leaveMessage = new SocketMessage();
-            leaveMessage.setType("LEAVE");
-            leaveMessage.setSender(chatMessage.getSender());
-            messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
-        }
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        
-        messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
-        
+//        String currentRoomId = (String) headerAccessor.getSessionAttributes().put("room_id", partyId);
+//        if (currentRoomId != null) {
+//            SocketMessage leaveMessage = new SocketMessage();
+//            leaveMessage.setType("LEAVE");
+//            leaveMessage.setSender(chatMessage.getSender());
+//            messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
+//        }
+//        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+//        
+//        messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
+//        
         Party party = PartyManager.getParty(partyId);
         if (party == null) {
             return;

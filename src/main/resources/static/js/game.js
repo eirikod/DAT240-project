@@ -15,7 +15,8 @@ const MSG_TYPES = new Enum(
 const PLAYER_STATES = new Enum(
     "PLAYING",
     "WAITING",
-    "FINISHED"
+    "FINISHED",
+    "DECONNECTION"
 );
 
 /**

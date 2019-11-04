@@ -73,6 +73,8 @@ public class GameLogic {
         });
 
         responseMapping.put("REQUEST_SEGMENT", (party, message) -> giveUp());
+    
+        
     }
 
     /**
@@ -159,7 +161,9 @@ public class GameLogic {
      */
     public void receiveUpdatesFromFront(Party party, SocketMessage message) {
         if (currentState == GameState.PLAYING) {
-            responseMapping.get(message.getType()).apply(party, message);
+        	if (responseMapping.containsKey(message.getType())) {
+        		responseMapping.get(message.getType()).apply(party, message);        		
+        	}
         }
     }
 

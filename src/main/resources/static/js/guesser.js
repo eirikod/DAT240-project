@@ -13,7 +13,8 @@ const msg = {
     msgMyTurn: "Make a guess!",
     msgNotMyTurn: "Wait for a new segment...",
     msgPartyFinished: "congrats! You win!",
-    msgPartyLoose: "you lost, try again!"
+    msgPartyLoose: "you lost, try again!",
+    msgPartyDeco: "Deconnection! You can come back to the home page"
 };
 
 /**
@@ -97,17 +98,17 @@ function subscribe(user_id, party_id) {
  */
 function update(msg) {
     console.log("Received a msg via web-socket---------------");
-    imageId = msg.content.segment;
+    if (msg.content.segment != null){
+    	imageId = msg.content.segment;    	
+    }
     state = msg.content.state;
     score = msg.content.score;
     time = Number(msg.content.time);
-    if (msg.content.segments != null) {
-        console.log("update segments");
-        segments = msg.content.segments;
-        updateSegments();
+    if(msg.content.segments !=null){
+    	console.log("update segments");
+    	segments = msg.content.segments;
+    	updateSegments();
     }
-
-
     updateState();
     updateFeatures();
 }
@@ -160,6 +161,16 @@ function updateState() {
             $("#guessRemaning")[0].innerText = nbChance[0];
             break;
 
+        case "DECONNECTION":
+        	console.log("disconected");
+            stopTimer = true;
+            $("#proposerPopUp").text(msg.msgPartyDeco);
+            document.getElementById("submitGuess").disabled = true;
+            document.getElementById("submitNewSegment").disabled = true;
+            client.disconnect();
+            $("#score").text(score);
+            $("#guessRemaning")[0].innerText=nbChance[0];
+            break;
         default:
             break
 
@@ -197,6 +208,9 @@ $(function () {
     });
     $("#home").click(function () {
         home();
+    });
+    $("#disconnect").click(function () {
+    	disconnect();
     });
 });
 

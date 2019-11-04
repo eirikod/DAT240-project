@@ -142,6 +142,11 @@ public class Party {
                 sockMess.setSender(getGuesser().getId());
                 getProposer().sendData(sockMess, smos);
                 break;
+            case "QUIT":
+            	setStatus(PartyStatus.FINISHED_GAME);
+            	content.put("state", "DECONNECTION");
+            	getGuesser().sendData(sockMess, smos);
+            	getProposer().sendData(sockMess, smos);
             default:
                 System.out.println("Invalid message type received on party: " + getId());
         }
