@@ -98,16 +98,16 @@ function subscribe(user_id, party_id) {
  */
 function update(msg) {
     console.log("Received a msg via web-socket---------------");
-    if (msg.content.segment != null){
-    	imageId = msg.content.segment;    	
+    if (msg.content.segment != null) {
+        imageId = msg.content.segment;
     }
     state = msg.content.state;
     score = msg.content.score;
     time = Number(msg.content.time);
-    if(msg.content.segments !=null){
-    	console.log("update segments");
-    	segments = msg.content.segments;
-    	updateSegments();
+    if (msg.content.segments != null) {
+        console.log("update segments");
+        segments = msg.content.segments;
+        updateSegments();
     }
     updateState();
     updateFeatures();
@@ -162,14 +162,14 @@ function updateState() {
             break;
 
         case "DECONNECTION":
-        	console.log("disconected");
+            console.log("disconected");
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyDeco);
             document.getElementById("submitGuess").disabled = true;
             document.getElementById("submitNewSegment").disabled = true;
             client.disconnect();
             $("#score").text(score);
-            $("#guessRemaning")[0].innerText=nbChance[0];
+            $("#guessRemaning")[0].innerText = nbChance[0];
             break;
         default:
             break
@@ -210,7 +210,7 @@ $(function () {
         home();
     });
     $("#disconnect").click(function () {
-    	disconnect();
+        disconnect();
     });
 });
 

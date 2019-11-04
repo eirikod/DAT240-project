@@ -1,4 +1,3 @@
-
 /**
  * Composed class containing all websocket functionality in abstract form.
  */

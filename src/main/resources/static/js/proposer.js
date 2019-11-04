@@ -121,20 +121,20 @@ function update(msg) {
  * Update the images segments picked if the page is reloaded
  * @author Guillien Grégoire
  */
-function updateSegments(){
-	segments.forEach(function(element){
-		console.log(element);
-		console.log(document.getElementById(element));
-		document.getElementById(element).className="beta-mask";
-		var lstBtn=document.getElementsByClassName("myButton");
-		for (let item of lstBtn) {
-		    console.log(item.id);
-		    if(item.value ===element){
-		    	console.log(item);
-		    	item.className="";
-		    }
-		}
-	});
+function updateSegments() {
+    segments.forEach(function (element) {
+        console.log(element);
+        console.log(document.getElementById(element));
+        document.getElementById(element).className = "beta-mask";
+        var lstBtn = document.getElementsByClassName("myButton");
+        for (let item of lstBtn) {
+            console.log(item.id);
+            if (item.value === element) {
+                console.log(item);
+                item.className = "";
+            }
+        }
+    });
 }
 
 /**
@@ -159,10 +159,10 @@ function updateState() {
             $("#proposerPopUp").text(msg.msgPartyFinished);
             client.disconnect();
             break;
-            
+
         case enumState.deconected:
-        	state=enumState.finished;
-        	console.log("deconetcion!")
+            state = enumState.finished;
+            console.log("deconetcion!")
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyDeco);
             client.disconnect();
@@ -199,7 +199,7 @@ $(function () {
         home();
     });
     $("#disconnect").click(function () {
-    	disconnect();
+        disconnect();
     });
 });
 
@@ -261,34 +261,34 @@ document.addEventListener("click", ({target}) => {
  * Quit and go back to the welcome page
  * @author Grégoire Guillien
  */
-function home(){
-	const message = {
-	        content: {
-	        	partyId: partyId,
-	            role: PLAYER_ROLES.GUESSER,
-	            sender: userId
-	        },
-	        type: "QUIT"
-	    };
-	client.send(message, `/app/party/${partyId}/update`);
-	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
-	window.location.replace(url);
+function home() {
+    const message = {
+        content: {
+            partyId: partyId,
+            role: PLAYER_ROLES.GUESSER,
+            sender: userId
+        },
+        type: "QUIT"
+    };
+    client.send(message, `/app/party/${partyId}/update`);
+    let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+    window.location.replace(url);
 }
 
 /**
  *send a surrend message to the back and return to the login page.
  * @author Guillien Grégoire
  */
-function disconnect(){
-	const message = {
-	        content: {
-	        	partyId: partyId,
-	            role: PLAYER_ROLES.GUESSER,
-	            sender: userId
-	        },
-	        type: "QUIT"
-	    };
-	client.send(message, `/app/party/${partyId}/update`);
-	let url = "http://localhost:8080/";
-	window.location.replace(url);
+function disconnect() {
+    const message = {
+        content: {
+            partyId: partyId,
+            role: PLAYER_ROLES.GUESSER,
+            sender: userId
+        },
+        type: "QUIT"
+    };
+    client.send(message, `/app/party/${partyId}/update`);
+    let url = "http://localhost:8080/";
+    window.location.replace(url);
 }
