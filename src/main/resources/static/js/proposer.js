@@ -11,8 +11,8 @@ const client = new SocketConnector();
  */
 const msg = {
     msgMyTurn: "It's your turn",
-    msgNotMyTurn: "wait your turn",
-    msgPartyFinished: "you loose"
+    msgNotMyTurn: "wait for your turn",
+    msgPartyFinished: "congrats! You win!"
 };
 
 /*
@@ -52,7 +52,6 @@ updateState();
  * @author Grégoire Guillien
  */
 function sendImageId(id) {
-    console.log(id);
     console.log("sendImageId used");
     const message = {
         content: {
@@ -73,12 +72,10 @@ function sendImageId(id) {
  * @author Guillien Grégoire
  */
 function subscribe(user_id, party_id) {
-    console.log("Subscribe begins--------------------");
     userId = user_id;
     partyId = party_id;
-    console.log(user_id);
     client.addStompListener(`/channel/update/${userId}`, update);
-    console.log("Subscribe ends--------------------");
+    console.log("Subscribe to the websocket--------------------");
 }
 
 
@@ -88,15 +85,12 @@ function subscribe(user_id, party_id) {
  * @author Guillien Grégoire
  */
 function update(msg) {
-    console.log("update appele");
-    console.log(msg);
+    console.log("receive a message via the websocket");
     state = msg.content.state;
     score = msg.content.score;
     time = Number(msg.content.time);
-    console.log(state);
     updateState();
     updateFeatures();
-    //TODO
 }
 
 /**
@@ -107,17 +101,14 @@ function updateState() {
 
     switch (state) {
         case enumState.myTurn:
-            console.log("my turn");
             $("#proposerPopUp").text(msg.msgMyTurn);
             break;
 
         case enumState.waiting:
-            console.log("Not my turn");
             $("#proposerPopUp").text(msg.msgNotMyTurn);
             break;
 
         case enumState.finished:
-            console.log("Party finished");
             $("#proposerPopUp").text(msg.msgPartyFinished);
             break;
 
@@ -138,10 +129,6 @@ function updateFeatures() {
  * @author Grégoire Guillien
  */
 $(function () {
-    $("form").on('submit', function (e) {
-        console.log(e);
-        //     e.preventDefault();
-    });
     $("#disconnect").click(function () {
         disconnect();
     });
@@ -184,9 +171,7 @@ document.addEventListener("mouseout", ({target}) => {
  */
 document.addEventListener("click", ({target}) => {
     if (target.className === "myButton") {
-        console.log("tour de jeu", myTurn);
         if (state === enumState.myTurn) {
-            console.log(target);
             var element = document.getElementById(target.value).parentElement;
             sendImageId(target.value);
             target.disabled = true;

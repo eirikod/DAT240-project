@@ -10,20 +10,22 @@ const client = new SocketConnector();
  * party state label
  */
 const msg = {
-    msgMyTurn: "choose new segment",
-    msgNotMyTurn: "Wait for segment",
-    msgPartyFinished: "YOU WIN"
+    msgMyTurn: "Make a guess!",
+    msgNotMyTurn: "Wait for a new segment...",
+    msgPartyFinished: "congrats! You win!",
+    msgPartyLoose: "you lost, try again!"
 };
 
 const nbChance = {
-	    1: "You have 3 chances",
-	    2: "You have 2 chances",
-	    3: "last chance"
+		0: "",
+	    1: "last chance!",
+	    2: "2 chances remaining",
+	    3: "You have 3 chances"
 	};
 
 var imageId = 0;
 
-var guessChance = 3;
+var guessChance = 0;
 
 /*
  * funtion trigerred on websocket connexion
@@ -35,8 +37,6 @@ client.onConnect = function () {
 
 var state = PLAYER_STATES.WAITING;
 
-console.log(state);
-
 var score = "0";
 
 updateState();
@@ -47,8 +47,7 @@ updateState();
  * @author Grégoire Guillien
  */
 function sendGuess(guess) {
-    console.log(guess);
-    console.log("sendImageId used");
+    console.log("send the guess via websocket----------");
     const message = {
         content: {
             guess: guess,
@@ -67,12 +66,11 @@ function sendGuess(guess) {
  * @author Guillien Grégoire
  */
 function subscribe(user_id, party_id) {
-    console.log("Subscribe begins--------------------");
     userId = user_id;
     partyId = party_id;
     console.log(user_id);
     client.addStompListener(`/channel/update/${user_id}`, update);
-    console.log("Subscribe ends--------------------");
+    console.log("Subscribed ro the web-socket--------------------");
 }
 
 
@@ -82,7 +80,7 @@ function subscribe(user_id, party_id) {
  * @author Guillien Grégoire
  */
 function update(msg) {
-    console.log(msg);
+    console.log("Received a msg via web-socket---------------");
     imageId = msg.content.segment;
     state = msg.content.state;
     score = msg.content.score;
@@ -90,7 +88,6 @@ function update(msg) {
 
     updateState();
     updateFeatures();
-    printImageSegment();
 }
 
 /**
@@ -102,28 +99,28 @@ function updateState() {
     switch (state) {
         case PLAYER_STATES.PLAYING:
             $("#proposerPopUp").text(msg.msgMyTurn);
-            console.log($("#submitGuess"));
             $("#submitGuess")[0].disabled=false;
             $("#submitNewSegment")[0].disabled=false;
             document.getElementById("submitGuess").disabled = false; 
             document.getElementById("submitNewSegment").disabled = false;
-            $("#guessChance").text(3);
             guessChance=3;
+            $("#guessRemaning")[0].innerText=nbChance[guessChance];
+            printImageSegment();
             break;
 
         case PLAYER_STATES.WAITING:
-            console.log("Not my turn");
             $("#proposerPopUp").text(msg.msgNotMyTurn);
             $("#submitGuess").className="myButton";
             $("#submitGuess")[0].disabled=true;
             $("#submitNewSegment")[0].disabled=true;
+            $("#guessRemaning")[0].innerText=nbChance[guessChance];
             break;
 
         case PLAYER_STATES.FINISHED:
-            console.log("Party finished");
             $("#proposerPopUp").text(msg.msgPartyFinished);
             document.getElementById("submitGuess").disabled = true; 
             document.getElementById("submitNewSegment").disabled = true; 
+            $("#score").text(score);
             break;
 
         default:
@@ -158,11 +155,8 @@ $(function () {
 });
 
 function submitGuess() {
-    console.log($("#guess").val());
     var guess = $("#guess").val();
     imageId = guess;
-    console.log(guess);
-    console.log("submitGuess used");
     const message = {
         content: ({
             guess: guess,
@@ -172,17 +166,16 @@ function submitGuess() {
     };
     client.send(message, `/app/party/${partyId}/update`);
     guessChance --;
-    console.log(guessChance);
+    console.log("send a msg via web-socket---------");
+    $("#guessRemaning")[0].innerText=nbChance[guessChance];
     if(guessChance===0){
     	state = PLAYER_STATES.WAITING;
         updateState();
     }
-    $("#guessChance").text(guessChance);
 }
 
 function submitNewSegment() {
-    console.log(guess);
-    console.log("submitNewSegment used");
+    console.log("send a msg via web-socket---------");
     const message = {
         content: ({
             requestSegment: true,
@@ -193,5 +186,6 @@ function submitNewSegment() {
     };
     client.send(message, `/app/party/${partyId}/update`);
     state = PLAYER_STATES.WAITING;
+    guessChance=0;
     updateState();
 }

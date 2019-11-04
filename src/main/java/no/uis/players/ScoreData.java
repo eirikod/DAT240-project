@@ -10,7 +10,7 @@ import javax.persistence.Table;
 public class ScoreData {
     @Id
     @Column(name = "id")
-    public Long id;
+    public String id;
 
     @Column(name = "proposername")
     public String proposerName;
@@ -21,19 +21,23 @@ public class ScoreData {
     @Column(name = "score")
     public Integer score;
 
+    @Column(name ="imagename")
+    public String imagename;
+
     public ScoreData() {
 
     }
 
-    public ScoreData(Long partyId, String proposerName, String guesserName, Integer score) {
+    public ScoreData(String partyId, String proposerName, String guesserName, Integer score, String imagename) {
         this.id = partyId;
         this.proposerName = proposerName;
         this.guesserName = guesserName;
         this.score = score;
+        this.imagename = imagename;
     }
 
     @Override
     public String toString() {
-        return proposerName + " & " + guesserName + ". Scored " + score + ".";
+        return proposerName + " & " + guesserName + " cored " + score + " on image " + imagename + ".";
     }
 }
