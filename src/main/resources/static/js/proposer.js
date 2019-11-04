@@ -25,7 +25,7 @@ const enumState = {
 };
 
 /*
- * funtion trigerred on websocket connexion
+ * funtion used on websocket connexion
  * @author Gregoire
  */
 client.onConnect = function () {
@@ -82,7 +82,7 @@ function subscribe(user_id, party_id) {
 
 
 /**
- *callback
+ *callback called by the back-end
  * @param msg - object or string
  * @author Guillien Grégoire
  */
@@ -100,6 +100,10 @@ function update(msg) {
     updateFeatures();
 }
 
+/**
+ *update the images segments picked if the page is reloaded
+ * @author Guillien Grégoire
+ */
 function updateSegments(){
 	segments.forEach(function(element){
 		console.log(element);
@@ -145,6 +149,10 @@ function updateState() {
     }
 }
 
+/**
+ *update optionnal features
+ * @author Guillien Grégoire
+ */
 function updateFeatures() {
     $("#time").text(time);
     $("#score").text(score);
@@ -164,6 +172,9 @@ $(function () {
     });
     $("#home").click(function () {
         home();
+    });
+    $("#disconnect").click(function () {
+    	disconnect();
     });
 });
 
@@ -221,7 +232,38 @@ document.addEventListener("click", ({target}) => {
     }
 })
 
+/**
+ *send a surrend message to the back and return to the home page.
+ * @author Guillien Grégoire
+ */
 function home(){
+	const message = {
+	        content: {
+	        	partyId: partyId,
+	            role: PLAYER_ROLES.GUESSER,
+	            sender: userId
+	        },
+	        type: "QUIT"
+	    };
+	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+	window.location.replace(url);
+}
+
+/**
+ *send a surrend message to the back and return to the login page.
+ * @author Guillien Grégoire
+ */
+function disconnect(){
+	const message = {
+	        content: {
+	        	partyId: partyId,
+	            role: PLAYER_ROLES.GUESSER,
+	            sender: userId
+	        },
+	        type: "QUIT"
+	    };
+	client.send(message, `/app/party/${partyId}/update`);
+	let url = "http://localhost:8080/";
 	window.location.replace(url);
 }

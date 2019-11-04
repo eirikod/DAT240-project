@@ -77,7 +77,7 @@
 	    		<input type="button" id="home" value="Home">
 	   	 	</div>
 	   		<div class="col-2">
-	    		<a href="http://localhost:8080/">Disconnect </a>
+	    		<input type="button" id="disconnect" value="Disconnect">
 	     	</div>
 		</div>
 	</div>
@@ -149,10 +149,27 @@
 		    $("#home").click(function () {
 		        home();
 		    });
+		    $("#disconnect").click(function () {
+		    	disconnect();
+		    });
 		});
-		function home(){
-			let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
-			window.location.replace(url);
-		}
+        
+        /**
+         *send a surrend message to the back and return to the home page.
+         * @author Guillien Grégoire
+         */
+        function home(){
+        	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+        	window.location.replace(url);
+        }
+
+        /**
+         *send a surrend message to the back and return to the login page.
+         * @author Guillien Grégoire
+         */
+        function disconnect(){
+        	let url = "http://localhost:8080/";
+        	window.location.replace(url);
+        }
     </script> 
 </body>

@@ -28,7 +28,8 @@ var imageId = 0;
 var guessChance = 0;
 
 /*
- * funtion trigerred on websocket connexion
+ * funtion used on websocket connexion
+ * @author Grégoire Guillien
  */
 client.onConnect = function () {
     route = `/app/party/${partyId}/addUser`;
@@ -81,22 +82,25 @@ function subscribe(user_id, party_id) {
  */
 function update(msg) {
     console.log("Received a msg via web-socket---------------");
-    imageId = msg.content.segment;
+    if (msg.content.segment != null){
+    	imageId = msg.content.segment;    	
+    }
     state = msg.content.state;
     score = msg.content.score;
-    time = Number(msg.content.time);    
+    time = Number(msg.content.time);
     if(msg.content.segments !=null){
     	console.log("update segments");
     	segments = msg.content.segments;
     	updateSegments();
     }
-
-
     updateState();
     updateFeatures();
 }
 
-
+/**
+ *update the image segments printed
+ * @author Guillien Grégoire
+ */
 function updateSegments(){
 	segments.forEach(function(element){
 		console.log(element);
@@ -148,12 +152,20 @@ function updateState() {
     }
 }
 
+/**
+ *update the optionnal features
+ * @author Guillien Grégoire
+ */
 function updateFeatures() {
     $("#time").text(time);
     $("#score").text(score);
 
 }
 
+/**
+ *print an image segment
+ * @author Guillien Grégoire
+ */
 function printImageSegment() {
     document.getElementById(imageId).style.visibility = "visible";
 }
@@ -174,8 +186,15 @@ $(function () {
     $("#home").click(function () {
         home();
     });
+    $("#disconnect").click(function () {
+    	disconnect();
+    });
 });
 
+/**
+ *send the guess to the back and update the view
+ * @author Guillien Grégoire
+ */
 function submitGuess() {
     var guess = $("#guess").val();
     imageId = guess;
@@ -196,6 +215,10 @@ function submitGuess() {
     }
 }
 
+/**
+ *ask for an other segment to the back and update the view
+ * @author Guillien Grégoire
+ */
 function submitNewSegment() {
     console.log("send a msg via web-socket---------");
     const message = {
@@ -212,7 +235,38 @@ function submitNewSegment() {
     updateState();
 }
 
+/**
+ *send a surrend message to the back and return to the home page.
+ * @author Guillien Grégoire
+ */
 function home(){
+	const message = {
+	        content: {
+	        	partyId: partyId,
+	            role: PLAYER_ROLES.GUESSER,
+	            sender: userId
+	        },
+	        type: "QUIT"
+	    };
+	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+	window.location.replace(url);
+}
+
+/**
+ *send a surrend message to the back and return to the login page.
+ * @author Guillien Grégoire
+ */
+function disconnect(){
+	const message = {
+	        content: {
+	        	partyId: partyId,
+	            role: PLAYER_ROLES.GUESSER,
+	            sender: userId
+	        },
+	        type: "QUIT"
+	    };
+	client.send(message, `/app/party/${partyId}/update`);
+	let url = "http://localhost:8080/";
 	window.location.replace(url);
 }
