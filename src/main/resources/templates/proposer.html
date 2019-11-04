@@ -5,10 +5,8 @@
     <title>proposer page</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
     <link
-            rel="stylesheet"
-            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-            crossorigin="anonymous"
+		rel="stylesheet"
+		href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     >
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
@@ -20,20 +18,17 @@
         let label = /*[[${selectedlabel}]]*/ 'default';
     </script>
     <script type="text/javascript" th:src="@{/js/proposer.js}"></script>
-
+    
     <style>
-
         * {
             box-sizing: border-box;
         }
-
 
         .row::after {
             content: "";
             clear: both;
             display: table;
         }
-
 
         [class*="col-"] {
             float: left;
@@ -53,7 +48,6 @@
         .border_around {
             border: 4px solid PaleTurquoise;
         }
-
 
         .col-1 {
             width: 8.33%;
@@ -108,103 +102,93 @@
         }
 
     </style>
-
-
 </head>
 
-
 <body>
-
-
-<div class="header">
-    <div class="row">
-        <div class="col-11">
-        </div>
-
-        <div class="col-1">
-            <input type="button" id="home" value="Home">
-        </div>
-        <div class="col-2">
-        	<a href="http://localhost:8080/">Disconnect </a>
-        </div>
-    </div>
-</div>
-
-<!-- CHANGE GAME NAME -->
-<div class="row">
-    <div class="col-4">
-        <div class="container">
-            <div class="label_game">
-                <h1>GUESS WHAT?</h1>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-7">
-        <h>IMAGE NAME:</h>
-        <div class="label_game">
-            <h2 th:text="${selectedlabel}"></h2>
-            <h2 th:text="${proposerinfo}"></h2>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="col-8">
-            <div>
-                <h3 id="proposerPopUp">your turn</h3>
-            </div>
-            <div style="position: relative;">
-                <div th:each="image,iter : ${listimages}" class="alpha-mask">
-                    <img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="row">
-                <div th:each="image,iter : ${listimages}" class="alpha-mask">
-                    <div>
-                        <input name="id" th:value="${iter.index}" type="hidden"/>
-                        <input name="selectedlabel" th:value="${selectedlabel}" type="hidden"/>
-                        <input class="myButton" th:value="${iter.index}" type="submit">
-                    </div>
-                    <br>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-7">
-        <button id="endPlayRound" class="btn btn-default" type="submit"></button>
-    </div>
-    <div class="col-3">
-        <h> TIME:</h>
-        <div class="label_game">
-            <h2 id="timer"></h2>
-        </div>
-    </div>
-
-    <div class="col-2">
-        <h> YOUR SCORE:</h>
-        <div class="label_game">
-            <h2 id="score"> 1000 </h2>
-        </div>
-    </div>
-</div>
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    //Thimeleaf attribute
-    var userId = /*[[${userId}]]*/ 'default';
-
-    var partyId = /*[[${partyId}]]*/ 'default';
-
-    subscribe(userId, partyId);
-
-    var username = /*[[${username}]]*/ 'default';
-
-    /*]]>*/
-</script>
-<script src="js/timer.js"></script>
+	<div class="header">
+		<div class="row">
+			<div class="col-11"></div>
+			<div class="col-1">
+				<input type="button" id="home" value="Home">
+			</div>
+		    <div class="col-2">
+		        <a href="http://localhost:8080/">Disconnect</a>
+			</div>
+	    </div>
+	</div>
+	<div class="row">
+	    <div class="col-4">
+	        <div class="container">
+	            <div class="label_game">
+	                <h1>GUESS WHAT?</h1>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<div class="row">
+	    <div class="col-7">
+	        <h>IMAGE NAME:</h>
+	        <div class="label_game">
+	            <h2 th:text="${selectedlabel}"></h2>
+	            <h2 th:text="${proposerinfo}"></h2>
+	        </div>
+	    </div>
+	</div>
+	<div class="container">
+	    <div class="row">
+	        <div class="col-8">
+	            <div>
+	                <h3 id="proposerPopUp">your turn</h3>
+	            </div>
+	            <div style="position: relative;">
+	                <div th:each="image,iter : ${listimages}" class="alpha-mask">
+	                    <img th:id="${iter.index}" th:attr="src=@{|${image}|}" onerror="this.style.display='none'"/>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="col-4">
+	            <div class="row">
+	                <div th:each="image,iter : ${listimages}" class="alpha-mask">
+	                    <div>
+	                        <input name="id" th:value="${iter.index}" type="hidden"/>
+	                        <input name="selectedlabel" th:value="${selectedlabel}" type="hidden"/>
+	                        <input class="myButton" th:value="${iter.index}" type="submit">
+	                    </div>
+	                    <br>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<div class="row">
+	    <div class="col-7">
+	        <button id="endPlayRound" class="btn btn-default" type="submit"></button>
+	    </div>
+	    <div class="col-3">
+	        <h> TIME:</h>
+	        <div class="label_game">
+	            <h2 id="timer"></h2>
+	        </div>
+	    </div>
+	    <div class="col-2">
+	        <h> YOUR SCORE:</h>
+	        <div class="label_game">
+	            <h2 id="score"> 1000 </h2>
+	        </div>
+	    </div>
+	</div>
+	<script th:inline="javascript">
+	    /*<![CDATA[*/
+	    //Thimeleaf attribute
+	    var userId = /*[[${userId}]]*/ 'default';
+	
+	    var partyId = /*[[${partyId}]]*/ 'default';
+	
+	    subscribe(userId, partyId);
+	
+	    var username = /*[[${username}]]*/ 'default';
+	
+	    /*]]>*/
+	</script>
+	<script src="js/timer.js"></script>
 </body>

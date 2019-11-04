@@ -4,7 +4,7 @@
  *
  */
 
-const client = new SocketConnector();
+const client = new SocketConnector();//Web socket client
 
 /*
  * party state label
@@ -26,12 +26,14 @@ const enumState = {
 
 /*
  * funtion trigerred on websocket connexion
+ * @author Gregoire
  */
 client.onConnect = function () {
     console.log("----------------------------------------------")
     route = `/app/party/${partyId}/respToGuesser`;
     console.log(route);
-    client.send({sender: "", content: `${label}`, type: 'JOIN'}, route);
+    client.send({sender: `${userId}`, content: `${label}`, type: 'JOIN'}, route);
+    console.log("pass")
 };
 
 var userId = "";
@@ -44,7 +46,7 @@ var state = enumState.myTurn;
 
 var score = "0";
 
-updateState();
+updateState();//initialize the page state
 
 /**
  *Send the image's id to the back-end using the web-socket channel
@@ -89,8 +91,29 @@ function update(msg) {
     state = msg.content.state;
     score = msg.content.score;
     time = Number(msg.content.time);
+    if(msg.content.segments !=null){
+    	console.log("update segments");
+    	segments = msg.content.segments;
+    	updateSegments();
+    }
     updateState();
     updateFeatures();
+}
+
+function updateSegments(){
+	segments.forEach(function(element){
+		console.log(element);
+		console.log(document.getElementById(element));
+		document.getElementById(element).className="beta-mask";
+		var lstBtn=document.getElementsByClassName("myButton");
+		for (let item of lstBtn) {
+		    console.log(item.id);
+		    if(item.value ===element){
+		    	console.log(item);
+		    	item.className="";
+		    }
+		}
+	});
 }
 
 /**
@@ -166,7 +189,7 @@ document.addEventListener("mouseover", ({target}) => {
 document.addEventListener("mouseout", ({target}) => {
     if (target.className === "myButton") {
         var element = document.getElementById(target.value).parentElement
-        element.className = "alpha-mask"
+        element.className = "alpha-mask";
     }
 })
 

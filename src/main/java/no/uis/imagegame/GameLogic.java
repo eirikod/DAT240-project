@@ -26,8 +26,8 @@ public class GameLogic {
     private static final int LOSS_INTERVAL = 10; // Seconds
 
     private String image;
-    private ArrayList<String> proposerSegments;
-    private ArrayList<String> guesserSegments;
+    private ArrayList<String> proposerSegments=new ArrayList<>();
+    private ArrayList<String> guesserSegments=new ArrayList<>();
 
     private Player proposer;
     private Player guesser;
@@ -128,6 +128,7 @@ public class GameLogic {
     public void chooseSegment(String segmentID) {
         if (!guesserSegments.contains(segmentID)) {
             guesserSegments.add(segmentID);
+            System.out.println(guesserSegments.size());
             System.out.println(segmentID + " added to the guesser segments");
         }
     }
@@ -176,6 +177,10 @@ public class GameLogic {
         return guesserSegments;
     }
 
+    public ArrayList<String> getProposerSegments() {
+        return proposerSegments;
+    }
+    
     public GameState getCurrentState() {
         return currentState;
     }
