@@ -77,11 +77,6 @@ public class ImageController {
         proposerContent.put("state", party.getProposer().getPlayerStatus());
         proposerContent.put("score", party.getGame().getScore());
         proposerContent.put("time", party.getGame().getTime());
-        try {
-        	System.out.println(party.getGame().getGuesserSegments().size());
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
         proposerContent.put("segments", party.getGame().getGuesserSegments());
         msg.setContent(proposerContent);
         party.getProposer().sendData(msg, messageTemplate);
@@ -110,6 +105,24 @@ public class ImageController {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         
         messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
+        
+        Party party = PartyManager.getParty(partyId);
+        if (party == null) {
+            return;
+        }
+        SocketMessage msg = new SocketMessage();
+        msg.setSender(party.getProposer().getId());
+        msg.setType("JOIN_PARTY");
+        
+        HashMap<String, Object> guesserContent = new HashMap<>();
+        guesserContent.put("state", party.getGuesser().getPlayerStatus());
+        guesserContent.put("score", party.getGame().getScore());
+        guesserContent.put("time", party.getGame().getTime());
+        guesserContent.put("segments", party.getGame().getGuesserSegments());
+        
+        msg.setContent(guesserContent);
+        party.getGuesser().sendData(msg, messageTemplate);
+        
     }
 
 

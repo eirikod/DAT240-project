@@ -84,10 +84,24 @@ function update(msg) {
     imageId = msg.content.segment;
     state = msg.content.state;
     score = msg.content.score;
-    time = Number(msg.content.time);
+    time = Number(msg.content.time);    
+    if(msg.content.segments !=null){
+    	console.log("update segments");
+    	segments = msg.content.segments;
+    	updateSegments();
+    }
+
 
     updateState();
     updateFeatures();
+}
+
+
+function updateSegments(){
+	segments.forEach(function(element){
+		console.log(element);
+		document.getElementById(element).style.visibility = "visible";		
+	});
 }
 
 /**
