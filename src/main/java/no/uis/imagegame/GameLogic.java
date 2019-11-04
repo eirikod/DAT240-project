@@ -148,7 +148,7 @@ public class GameLogic {
                 remainingPoints--;
             }
 
-            if (guesserSegments.size() == proposerSegments.size()) {
+            if (guesserSegments.size() == proposerSegments.size() || remainingPoints == 0) {
                 currentState = GameState.LOST;
                 guesser.setPlayerStatus(Player.PlayerStatus.FINISHED);
                 proposer.setPlayerStatus(Player.PlayerStatus.FINISHED);
@@ -170,6 +170,10 @@ public class GameLogic {
 
     public int getTime() {
         return time;
+    }
+
+    public ArrayList<String> getGuesserSegments() {
+        return guesserSegments;
     }
 
     public GameState getCurrentState() {
