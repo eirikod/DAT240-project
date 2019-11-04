@@ -81,6 +81,7 @@ public class ImageController {
      * @return void
      * @author Allan & Gregoire
      */
+
     @MessageMapping("/party/{partyId}/addUser")
     public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                         SimpMessageHeaderAccessor headerAccessor) {
@@ -94,6 +95,8 @@ public class ImageController {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
     }
+
+
 
     /**
      * Proposer init, loads picture and player stats
@@ -124,7 +127,7 @@ public class ImageController {
 
 
         // finds number of segments per image
-        int countTotalSegments = -1 + new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
+        int countTotalSegments = -1 + Objects.requireNonNull(new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list()).length;
         PartyManager.getParty(partyId).getGame().setImage(name, countTotalSegments);
         ArrayList<String> imageSegments = new ArrayList<>();
 
@@ -196,7 +199,7 @@ public class ImageController {
         String[] files = labelReader.getImageFiles(name);
         String image_folder_name = getImageFolder(files);
         // finds number of segments per image
-        int countTotalSegments = -1 + new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
+        int countTotalSegments = -1 + Objects.requireNonNull(new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list()).length;
         ArrayList<String> imageSegments = new ArrayList<>();
         for (int i = 0; i < countTotalSegments; ++i) {
             imageSegments.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
