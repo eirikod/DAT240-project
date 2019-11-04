@@ -1,15 +1,11 @@
 package no.uis.imagegame;
 
 import java.io.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.*;
 
 import static java.lang.String.format;
 
 import no.uis.websocket.SocketMessage;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,32 +15,17 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import no.uis.party.PartyManager;
 import no.uis.party.Party;
-import no.uis.party.QueueController;
 import no.uis.players.Player;
-import no.uis.players.Player.PlayerType;
 import no.uis.repositories.PlayerRepository;
 
 
 @Controller
 public class ImageController {
-
-    //Static parameters
-    final static int HIGHER_SCORE = 100;
-
-    final static String CONST_PLAY_MODE = "listPlayMode";
-    final static String CONST_PLAYER_MODE = "listPlayerMode";
-
-    final static String ADDR_CALLBACK_IMAGE = "/party/20/sendGuess";
-    final static String ADDR_FRONT_IMAGE_CALLBACK = "/channel/update/54";
-
-    final static String USER_ID = "54";
-    final static String PARTY_ID = "20";
 
     //Load list of images in my scattered_images folder
     @Value("classpath:/static/images/scattered_images/*")
@@ -60,34 +41,20 @@ public class ImageController {
     @Autowired
     private PlayerRepository playerRepository;
 
-    private int score;
-    private int guessesLeft;
-
-    //    private Player proposer;
-//    private Player guesser;
-    private String image;
     private ArrayList<String> propSegment;
-    private ArrayList<String> guesSegment;
-    private ArrayList<String> chosenSegments;
     private int countTotalSegments;
-    private boolean giveup;
-    //    display remaining segments in frontend?
-    private int countRemainingSegments;
+
 
     /**
-     * Returns player to correct view
+     * Send the server respond to the guesser view 
      *
-     * @param model
-     * @param player
-     * @return players view
-     * @author Eirik
+     * @param partyId
+     * @param chatMessage
+     * @param headerAccessor
+     * @param id
+     * @return void
+     * @author Allan
      */
-    @RequestMapping("/game")
-    public String Game(Model model,
-                       @RequestParam(value = "player", required = true) Player player) {
-        return (player.getPlayerType() == PlayerType.GUESSER ? "guesser" : "proposerImageSelection");
-    }
-
     @MessageMapping("/party/{partyId}/respToGuesser")
     public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                                  SimpMessageHeaderAccessor headerAccessor) {
@@ -116,31 +83,15 @@ public class ImageController {
         party.getGuesser().sendData(msg, messageTemplate);
     }
 
-    private static String generateHashedImageLabel(String input) {
-        String generatedPassword = null;
-        byte[] salt = new byte[0];
-        try {
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            salt = new byte[16];
-            sr.nextBytes(salt);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.update(salt);
-            byte[] bytes = md.digest(input.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++) {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            generatedPassword = sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return generatedPassword;
-    }
-
+    /**
+     * Initialize the websocket handler and send a response to the client subscription 
+     *
+     * @param partyId
+     * @param chatMessage
+     * @param hhheaderAccessor
+     * @return void
+     * @author Allan & Gregoire
+     */
     @MessageMapping("/party/{partyId}/addUser")
     public void addUser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                         SimpMessageHeaderAccessor headerAccessor) {
@@ -159,10 +110,11 @@ public class ImageController {
      * Proposer init, loads picture and player stats
      *
      * @param model
-     * @param modelname
-     * @param id
+     * @param modelname: image name
+     * @param partyId
+     * @param userName
      * @return view
-     * @author Eirik
+     * @author Eirik & Gregoire
      */
     @RequestMapping("/proposer")
 	public ModelAndView showImage(ModelAndView model,
@@ -174,9 +126,6 @@ public class ImageController {
 
         String[] files = labelReader.getImageFiles(name);
         String image_folder_name = getImageFolder(files);
-
-//			ArrayList<String> imageLabels = getAllLabels(labelReader);
-
         Party party = PartyManager.getParty(partyId);
         Player proposer = party.getProposer();
 
@@ -186,19 +135,12 @@ public class ImageController {
 			model.addObject("partyId", partyId);
 			model.addObject("username", userName);
 
-        //model.addObject("listlabels", imageLabels);
-
         // finds number of segments per image
         countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
         countTotalSegments = countTotalSegments - 1;
-        countRemainingSegments = countTotalSegments;
         PartyManager.getParty(partyId).getGame().setImage(name, countTotalSegments);
-        guessesLeft = 0;
-        giveup = false;
-        score = 1000;
 
         propSegment = new ArrayList<>();
-        guesSegment = new ArrayList<>();
 
         for (int i = 0; i < countTotalSegments; ++i) {
             propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
@@ -208,14 +150,24 @@ public class ImageController {
         return model;
     }
 
+    /**
+     * Receive the client message using update
+     *
+     * @param partyId
+     * @param message
+     * @return void
+     * @author Allan & Gregoire
+     */
     @MessageMapping("/party/{partyId}/update")
     public void receiveSocketUpdate(@DestinationVariable String partyId, SocketMessage message) {
         PartyManager.getParty(partyId).receiveUpdateFromFront(message, messageTemplate);
     }
 
 	/**
-	 *  Lets user choose a picture
-	 * @author Eirik
+	 *  ProposerImageSelction View init ; allows the user choose a picture
+	 * @author Eirik & Gregoire
+	 * @param partyId
+	 * @param userName
 	 * @return model
 	 */
 	@RequestMapping("/proposerImageSelection")
@@ -236,13 +188,13 @@ public class ImageController {
 	}
 
     /**
-     * Guesser init, loads available segments
+     * Guesser view init ; Allows the guesser playing
      *
-     * @param model
-     * @param name
-     * @param id
+     * @param modelname: image name
+     * @param partyId
+     * @param userName
      * @return model
-     * @author Eirik
+     * @author Eirik & Gregoire
      */
 	@RequestMapping(value = "/guesser")
 	public ModelAndView showImageGuesser(
@@ -251,10 +203,6 @@ public class ImageController {
 			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
 
         ModelAndView model = new ModelAndView("guesser");
-
-//		Party party = partyManager.getParty(partyId);
-//		Player guesser = party.getGuesser();
-//		String userId = Long.toString(guesser.getId());
         model.addObject("userId", PartyManager.getParty(partyId).getGuesser().getId());
         model.addObject("partyId", partyId);
         model.addObject("username", userName);
@@ -265,8 +213,6 @@ public class ImageController {
         // finds number of segments per image
         countTotalSegments = new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list().length;
         countTotalSegments = countTotalSegments - 1;
-        countRemainingSegments = countTotalSegments;
-        guessesLeft = 3;
         propSegment = new ArrayList<>();
         for (int i = 0; i < countTotalSegments; ++i) {
             propSegment.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
@@ -276,6 +222,10 @@ public class ImageController {
         return model;
     }
 
+	/**
+     * @param files
+     * @return image_folder_name
+     */
     private String getImageFolder(String[] files) {
         String image_folder_name = "";
         for (String file : files) {
@@ -290,7 +240,10 @@ public class ImageController {
         return image_folder_name;
     }
 
-    //private methode returning all of the images label
+    /**
+     * @param ilr
+     * @return labels
+     */
     private ArrayList<String> getAllLabels(ImageLabelReader ilr) {
         ArrayList<String> labels = new ArrayList<String>();
         for (Resource r : resources) {
