@@ -112,11 +112,11 @@
 
         <!-- CHANGE THE LINKS BELOW -->
         <div class="col-1">
-            <a href="http://localhost:8080/welcomePage">Home</a>
+            <input type="button" id="home" value="Home">
         </div>
 
         <div class="col-2">
-            <a href="https://www.w3schools.com">Disconnect </a>
+            <a href="http://localhost:8080/" >Disconnect </a>
         </div>
 
     </div>
@@ -204,14 +204,12 @@
         /*<![CDATA[*/
         //Thimeleaf attribute
         var userId = /*[[${userId}]]*/ 'default';
-        console.log("user id : ");
-        console.log(userId);
 
         var partyId = /*[[${partyId}]]*/ 'default';
-        console.log("partyId : ");
-        console.log(partyId);
 
         subscribe(userId, partyId);
+        
+        var username = /*[[${username}]]*/ 'default';
 
         /*]]>*/
     </script>

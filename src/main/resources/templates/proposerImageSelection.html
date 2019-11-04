@@ -13,12 +13,6 @@
 	<script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script type="text/javascript" th:src="@{/js/game.js}"></script>
-
-
-
-
-
 
 	<style>
 
@@ -88,12 +82,20 @@
 
 
 <div class="header">
-  <div class="row">
-    <div class="col-11"></div>
-    <div class="col-1">
-        <a href="http://localhost:8080/welcomePage">HOME</a>
-    </div>
-  </div>
+	<div class="row">
+    	<div class="col-9">
+    	</div>
+
+   	 	<div class="col-1">
+    		<input type="button" id="home" value="Home">
+   	 	</div>
+
+   		<div class="col-2">
+    	<a href="http://localhost:8080/">Disconnect </a>
+     	</div>
+
+	</div>
+
 </div>
 
 
@@ -121,6 +123,7 @@
 			    <option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
 			    </select>
 				<input type="hidden" name="partyId" th:value="${partyId}">
+			    <input type="hidden" name="username" th:value="${username}">
 			    <input type="submit">
 			</form>
 		</div>
@@ -139,15 +142,8 @@
 				</div>
 			</div>
 		</div>
-
-
-
-
+   	</div>
 </div>
-
-
-</div>
-
 
 <!-- 	A voir / vérifier si spring gère pas lui même les event -->
 	<script type="text/javascript">
@@ -170,14 +166,25 @@
 		setTimeout(() => {
 			fetch(`http://localhost:8080/showImage?selectedlabel=${window.location.search}`).then(response => console.log(response))
 		}, 10000)
-
 	</script>
+	<script th:inline="javascript">
+        /*<![CDATA[*/
+        //Thimeleaf attribute
+        var userId = /*[[${userId}]]*/ 'default';
+
+        var username = /*[[${username}]]*/ 'default';
 
 
-
-
-
-
-
-
+        /*]]>*/
+        
+        $(function () {
+		    $("#home").click(function () {
+		        home();
+		    });
+		});
+		function home(){
+			let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+			window.location.replace(url);
+		}
+    </script> 
 </body>

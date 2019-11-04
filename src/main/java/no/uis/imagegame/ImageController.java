@@ -165,10 +165,11 @@ public class ImageController {
      * @author Eirik
      */
     @RequestMapping("/proposer")
-    public ModelAndView showImage(ModelAndView model,
-                                  @ModelAttribute("selectedlabel") Object modelname,
-                                  @RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
-
+	public ModelAndView showImage(ModelAndView model,
+			@ModelAttribute("selectedlabel") Object modelname,
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
+ 
         String name = modelname.toString() != null ? modelname.toString() : "cinema";
 
         String[] files = labelReader.getImageFiles(name);
@@ -181,8 +182,9 @@ public class ImageController {
 
         //TODO
 //				model.addObject("highestscore", player.getHigherScore());
-        model.addObject("userId", proposer.getId());
-        model.addObject("partyId", partyId);
+			model.addObject("userId", proposer.getId());
+			model.addObject("partyId", partyId);
+			model.addObject("username", userName);
 
         //model.addObject("listlabels", imageLabels);
 
@@ -211,46 +213,27 @@ public class ImageController {
         PartyManager.getParty(partyId).receiveUpdateFromFront(message, messageTemplate);
     }
 
-    /**
-     * Lets user choose a picture
-     *
-     * @return model
-     * @author Eirik
-     */
-    @RequestMapping("/proposerImageSelection")
-    public ModelAndView showLabels(
-            @RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
-        ModelAndView model = new ModelAndView("proposerImageSelection");
-        ArrayList<String> imageLabels = getAllLabels(labelReader);
-        Party party = PartyManager.getParty(partyId);
+	/**
+	 *  Lets user choose a picture
+	 * @author Eirik
+	 * @return model
+	 */
+	@RequestMapping("/proposerImageSelection")
+	public ModelAndView showLabels(
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
+		ModelAndView model = new ModelAndView("proposerImageSelection");
+		ArrayList<String> imageLabels = getAllLabels(labelReader);
+		Party party = PartyManager.getParty(partyId);
 
-        Player guesser = party.getProposer();
-        String userId = guesser.getId();
-        model.addObject("listlabels", imageLabels);
-        model.addObject("userId", userId);
-        model.addObject("partyId", partyId);
-        return model;
-    }
-
-
-//    /**
-//     * Guesser init, loads available segments
-//     * @author Eirik
-//     * @param model
-//     * @param name
-//     * @param id
-//     * @return model
-//     */
-//	@RequestMapping(value = "/guesser")
-//	public ModelAndView showImageGuesser(ModelAndView model,
-//			@ModelAttribute ("selectedlabel") String name,
-//			@RequestParam (value="SubmittedGuess", required=false, defaultValue="-1") String guess,
-//			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
-//		model.addObject("listimagesproposed", guesSegment);
-//		model.addObject("infotext", "WAIT FOR SEGMENT");
-//		
-//		return model;
-//	}
+		Player guesser = party.getProposer();
+		String userId = guesser.getId();
+		model.addObject("listlabels", imageLabels);
+		model.addObject("userId", userId);
+		model.addObject("partyId", partyId);
+		model.addObject("username", userName);
+		return model;
+	}
 
     /**
      * Guesser init, loads available segments
@@ -261,10 +244,11 @@ public class ImageController {
      * @return model
      * @author Eirik
      */
-    @RequestMapping(value = "/guesser")
-    public ModelAndView showImageGuesser(
-            @ModelAttribute("selectedlabel") Object modelname,
-            @RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId) {
+	@RequestMapping(value = "/guesser")
+	public ModelAndView showImageGuesser(
+			@ModelAttribute("selectedlabel") Object modelname,
+			@RequestParam(value = "partyId", required = false, defaultValue = "-1") String partyId,
+			@RequestParam(value = "username", required = false, defaultValue = "-1") String userName) {
 
         ModelAndView model = new ModelAndView("guesser");
 
@@ -273,6 +257,7 @@ public class ImageController {
 //		String userId = Long.toString(guesser.getId());
         model.addObject("userId", PartyManager.getParty(partyId).getGuesser().getId());
         model.addObject("partyId", partyId);
+        model.addObject("username", userName);
 
         String name = modelname.toString() != null ? modelname.toString() : "cinema";
         String[] files = labelReader.getImageFiles(name);

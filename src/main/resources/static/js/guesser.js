@@ -125,6 +125,7 @@ function updateState() {
             document.getElementById("submitNewSegment").disabled = true;
             client.disconnect();
             $("#score").text(score);
+            $("#guessRemaning")[0].innerText=nbChance[0];
             break;
 
         default:
@@ -155,6 +156,9 @@ $(function () {
     });
     $("#submitNewSegment").click(function () {
         submitNewSegment();
+    });
+    $("#home").click(function () {
+        home();
     });
 });
 
@@ -192,4 +196,9 @@ function submitNewSegment() {
     state = PLAYER_STATES.WAITING;
     guessChance = 0;
     updateState();
+}
+
+function home(){
+	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+	window.location.replace(url);
 }

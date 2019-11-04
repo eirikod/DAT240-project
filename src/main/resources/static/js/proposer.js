@@ -139,6 +139,9 @@ $(function () {
     $("#endPlayRound").click(function () {
         sendNotif();
     });
+    $("#home").click(function () {
+        home();
+    });
 });
 
 /**
@@ -194,3 +197,8 @@ document.addEventListener("click", ({target}) => {
         }
     }
 })
+
+function home(){
+	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
+	window.location.replace(url);
+}
