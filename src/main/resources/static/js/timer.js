@@ -1,4 +1,12 @@
-// setInterval(counter function, update timer)
+/**
+ * @namespace timer
+ */
+
+/**
+ *  Sets the time counter
+ * @memberOf timer
+ * @type {number}
+ */
 var counter = setInterval(function () {
 
     // getTime() method returns the number of milliseconds between midnight of January 1, 1970 and now
@@ -21,7 +29,10 @@ var counter = setInterval(function () {
 }, 1000); //runs the fuction every 1000ms = 1 s
 
 
-// function to stop the timer when the game is done
+/**
+ * Function to stop the timer when the game is done
+ * @memberOf timer
+ */
 function StopTimer() {
     clearInterval(counter);
 }
