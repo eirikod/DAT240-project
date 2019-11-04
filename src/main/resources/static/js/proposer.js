@@ -62,7 +62,7 @@ function sendImageId(id) {
             segment: id,
             role: PLAYER_ROLES.PROPOSER
         },
-        type: "SEND_SEGMENT",
+        type: MSG_TYPES.SEND_SEGMENT,
         sender: userId
     };
 //	client.send(message, `app/party/queueUp`);
@@ -129,17 +129,17 @@ function updateSegments(){
 function updateState() {
 
     switch (state) {
-        case enumState.myTurn:
+        case PLAYER_STATES.PLAYING:
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgMyTurn);
             break;
 
-        case enumState.waiting:
+        case PLAYER_STATES.WAITING:
             stopTimer = false;
             $("#proposerPopUp").text(msg.msgNotMyTurn);
             break;
 
-        case enumState.finished:
+        case PLAYER_STATES.FINISHED:
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyFinished);
             client.disconnect();
@@ -253,7 +253,7 @@ function home(){
 	            role: PLAYER_ROLES.GUESSER,
 	            sender: userId
 	        },
-	        type: "QUIT"
+	        type: MSG_TYPES.QUIT
 	    };
 	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
@@ -271,7 +271,7 @@ function disconnect(){
 	            role: PLAYER_ROLES.GUESSER,
 	            sender: userId
 	        },
-	        type: "QUIT"
+	        type: MSG_TYPES.QUIT
 	    };
 	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/";

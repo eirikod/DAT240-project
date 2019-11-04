@@ -56,7 +56,7 @@ function sendGuess(guess) {
             role: PLAYER_ROLES.GUESSER,
             sender: userId
         },
-        type: "SEND_GUESS"
+        type: MSG_TYPES.SEND_GUESS
     };
     client.send(message, `/app/party/${partyId}/update`);
 }
@@ -257,7 +257,7 @@ function home(){
 	            role: PLAYER_ROLES.GUESSER,
 	            sender: userId
 	        },
-	        type: "QUIT"
+	        type: MSG_TYPES.QUIT
 	    };
 	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/welcomePage" + "?username=" + username + "&id=" + userId;
@@ -275,7 +275,7 @@ function disconnect(){
 	            role: PLAYER_ROLES.GUESSER,
 	            sender: userId
 	        },
-	        type: "QUIT"
+	        type: MSG_TYPES.QUIT
 	    };
 	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/";
