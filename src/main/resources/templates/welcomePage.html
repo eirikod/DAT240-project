@@ -109,7 +109,6 @@
 			
             <form action="welcomePage" method="POST">
 				<select id="dropOperator" name="selectedPlayModelabel" class="browser-default custom-select custom-select-lg mb-3">
-                	<option value="0">Select the player role</option>
                   	<option th:each="label : ${listPlayMode}" th:value="${label}" th:text="${label}"></option>
                	</select>
             </form>

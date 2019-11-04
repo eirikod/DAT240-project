@@ -96,7 +96,6 @@
 		<div class="col-5">
 			<form action="proposer" method="GET">
 				<select  id="dropOperator" name="selectedlabel">
-					<option value="0">Select an image </option>
 					<option th:each="label : ${listlabels}" th:value="${label}" th:text="${label}"></option>
 				</select>
 				<input type="hidden" name="partyId" th:value="${partyId}">

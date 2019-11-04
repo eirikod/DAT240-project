@@ -86,4 +86,5 @@ $(function () {
             searching = true;
         }
     });
+    $("#dropOperator").val("GUESSER");
 });
