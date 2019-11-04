@@ -1,3 +1,7 @@
+/**
+ * Message type enum config
+ * @type {Enum}
+ */
 const MSG_TYPES = new Enum(
     "SEND_GUESS",
     "REQUEST_SEGMENT",
@@ -5,6 +9,10 @@ const MSG_TYPES = new Enum(
     "QUIT"
 );
 
+/**
+ * Player game state enum config
+ * @type {Enum}
+ */
 const PLAYER_STATES = new Enum(
     "PLAYING",
     "WAITING",
@@ -12,22 +20,23 @@ const PLAYER_STATES = new Enum(
     "DECONNECTION"
 );
 
+/**
+ * Player role enum config
+ * @type {Enum}
+ */
 const PLAYER_ROLES = new Enum(
     "PROPOSER",
     "GUESSER",
 );
 
-//Start dato, tid etc.  --> key: startDate
-// save time when timer was started and measure difference
-
-var startDate = sessionStorage.getItem('startDate');
-
-if (startDate) {
-    startDate = new Date(startDate);
-} else {
-    startDate = new Date();
-    sessionStorage.setItem('startDate', startDate);  //key-value
-}
-
+/**
+ * Time variable that gets incremented on the front and updated every time we receive messages from the back
+ * @type {number}
+ */
 let time = 0;
+
+/**
+ * Control variable to stop the front end timer when the guesser is not playing
+ * @type {boolean}
+ */
 let stopTimer = false;

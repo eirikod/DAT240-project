@@ -16,7 +16,6 @@ public class Player {
     private PlayerType type;
     private PlayerStatus status = PlayerStatus.WAITING;
     private GameStatus gameStatus = GameStatus.INACTIVE;
-    private int score;
 
     /**
      * Enumerator to indicate the role of the player

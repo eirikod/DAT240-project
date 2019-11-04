@@ -7,7 +7,7 @@
 const client = new SocketConnector();
 
 /*
- * party state label
+ * Party state label
  */
 const msg = {
     msgMyTurn: "Make a guess!",
@@ -17,6 +17,10 @@ const msg = {
     msgPartyDeco: "Deconnection! You can come back to the home page"
 };
 
+/**
+ * Chance count label
+ * @type {{"0": string, "1": string, "2": string, "3": string}}
+ */
 const nbChance = {
     0: "",
     1: "Wrong again! Last chance!",
@@ -24,28 +28,39 @@ const nbChance = {
     3: "You have 3 chances"
 };
 
+/**
+ * Image segment ID received from the back used to show which segment
+ * @type {number}
+ */
 var imageId = 0;
 
+/**
+ * Index used to show which guess label for what amount of guesses left
+ * @type {number}
+ */
 var guessChance = 0;
 
-/*
- * funtion used on websocket connexion
- * @author Grégoire Guillien
- */
 client.onConnect = function () {
     route = `/app/party/${partyId}/addUser`;
     client.send({sender: "", type: 'JOIN'}, route);
 };
 
+/**
+ * Player game state received from the back
+ */
 var state = PLAYER_STATES.WAITING;
 
+/**
+ * Score display variable
+ * @type {string}
+ */
 var score = "0";
 
 updateState();
 
 /**
- *Send the image's id to the back-end using the web-socket channel
- * @param id - image's id
+ * Send the guess to the back via the websocket channel
+ * @param guess {string} - Given guess by the guesser
  * @author Grégoire Guillien
  */
 function sendGuess(guess) {
@@ -62,9 +77,9 @@ function sendGuess(guess) {
 }
 
 /**
- *Subscribe to the websocket
- * @param userId - Id of the user
- * @param partyId - Id of the party
+ * Subscribe to the websocket
+ * @param user_id - Id of the user
+ * @param party_id - Id of the party
  * @author Guillien Grégoire
  */
 function subscribe(user_id, party_id) {
@@ -77,7 +92,7 @@ function subscribe(user_id, party_id) {
 
 
 /**
- *callback
+ * Callback method for the /channel/update/{userId} destination subscription
  * @param msg - object or string
  * @author Guillien Grégoire
  */
@@ -99,18 +114,17 @@ function update(msg) {
 }
 
 /**
- *update the image segments printed
- * @author Guillien Grégoire
+ * Update all the selected segments received from the back
  */
-function updateSegments(){
-	segments.forEach(function(element){
-		console.log(element);
-		document.getElementById(element).style.visibility = "visible";		
-	});
+function updateSegments() {
+    segments.forEach(function (element) {
+        console.log(element);
+        document.getElementById(element).style.visibility = "visible";
+    });
 }
 
 /**
- *update the state feature
+ * Update the page based on the state received from the back.
  * @author Guillien Grégoire
  */
 function updateState() {
@@ -144,7 +158,7 @@ function updateState() {
             document.getElementById("submitNewSegment").disabled = true;
             client.disconnect();
             $("#score").text(score);
-            $("#guessRemaning")[0].innerText=nbChance[0];
+            $("#guessRemaning")[0].innerText = nbChance[0];
             break;
 
         case "DECONNECTION":
@@ -164,8 +178,8 @@ function updateState() {
 }
 
 /**
- *update the optionnal features
- * @author Guillien Grégoire
+ * Update score and timer on the page
+ * @author Grégoire Guillien
  */
 function updateFeatures() {
     $("#time").text(time);
@@ -174,17 +188,15 @@ function updateFeatures() {
 }
 
 /**
- *print an image segment
- * @author Guillien Grégoire
+ * Set the image segment to visible
+ * @author Grégoire Guillien
  */
 function printImageSegment() {
     document.getElementById(imageId).style.visibility = "visible";
 }
 
 /**
- *Manage the 'click' events
- * @param String - trigger event
- * @param target - html object
+ * Manage the 'click' events
  * @author Grégoire Guillien
  */
 $(function () {
@@ -203,8 +215,8 @@ $(function () {
 });
 
 /**
- *send the guess to the back and update the view
- * @author Guillien Grégoire
+ * Send the guess from the input field to the back
+ * @author Grégoire Guillien
  */
 function submitGuess() {
     var guess = $("#guess").val();
@@ -227,8 +239,8 @@ function submitGuess() {
 }
 
 /**
- *ask for an other segment to the back and update the view
- * @author Guillien Grégoire
+ * Send a message to the back asking for a new segment
+ * @author Grégoire Guillien
  */
 function submitNewSegment() {
     console.log("send a msg via web-socket---------");
@@ -280,4 +292,5 @@ function disconnect(){
 	client.send(message, `/app/party/${partyId}/update`);
 	let url = "http://localhost:8080/";
 	window.location.replace(url);
+
 }

@@ -7,7 +7,7 @@
 const client = new SocketConnector();//Web socket client
 
 /*
- * party state label
+ * Player game state labels for display.
  */
 const msg = {
     msgMyTurn: "It's your turn",
@@ -17,7 +17,7 @@ const msg = {
 };
 
 /*
- * Enum statement
+ * Enum for the player game state
  */
 const enumState = {
     myTurn: "PLAYING",
@@ -26,10 +26,6 @@ const enumState = {
     deconected: "DECONNECTION"
 };
 
-/*
- * funtion used on websocket connexion
- * @author Gregoire
- */
 client.onConnect = function () {
     console.log("----------------------------------------------")
     route = `/app/party/${partyId}/respToGuesser`;
@@ -38,20 +34,40 @@ client.onConnect = function () {
     console.log("pass")
 };
 
+/**
+ * User ID given by the back
+ * @type {string}
+ */
 var userId = "";
 
+/**
+ * Party ID given by the back
+ * @type {string}
+ */
 var partyId = "";
 
+/**
+ * Control variable for sending messages when it is the proposers turn
+ * @type {boolean}
+ */
 var myTurn = true;
 
+/**
+ * Player game state
+ * @type {string}
+ */
 var state = enumState.myTurn;
 
+/**
+ * Score display variable
+ * @type {string}
+ */
 var score = "0";
 
 updateState();//initialize the page state
 
 /**
- *Send the image's id to the back-end using the web-socket channel
+ * Send the image's id to the back-end using the web-socket channel
  * @param id - image's id
  * @author Grégoire Guillien
  */
@@ -65,14 +81,13 @@ function sendImageId(id) {
         type: MSG_TYPES.SEND_SEGMENT,
         sender: userId
     };
-//	client.send(message, `app/party/queueUp`);
     client.send(message, `/app/party/${partyId}/update`);
 }
 
 /**
- *Subscribe to the websocket
- * @param userId - Id of the user
- * @param partyId - Id of the party
+ * Subscribe to the websocket
+ * @param user_id - Id of the user
+ * @param party_id - Id of the party
  * @author Guillien Grégoire
  */
 function subscribe(user_id, party_id) {
@@ -84,7 +99,7 @@ function subscribe(user_id, party_id) {
 
 
 /**
- *callback called by the back-end
+ * Callback method for the /channel/update/{userId} destination subscription
  * @param msg - object or string
  * @author Guillien Grégoire
  */
@@ -93,17 +108,17 @@ function update(msg) {
     state = msg.content.state;
     score = msg.content.score;
     time = Number(msg.content.time);
-    if(msg.content.segments !=null){
-    	console.log("update segments");
-    	segments = msg.content.segments;
-    	updateSegments();
+    if (msg.content.segments != null) {
+        console.log("update segments");
+        segments = msg.content.segments;
+        updateSegments();
     }
     updateState();
     updateFeatures();
 }
 
 /**
- *update the images segments picked if the page is reloaded
+ * Update the images segments picked if the page is reloaded
  * @author Guillien Grégoire
  */
 function updateSegments(){
@@ -123,7 +138,7 @@ function updateSegments(){
 }
 
 /**
- *update the state feature
+ * Update the page based on the state received from the back.
  * @author Guillien Grégoire
  */
 function updateState() {
@@ -160,8 +175,8 @@ function updateState() {
 }
 
 /**
- *update optionnal features
- * @author Guillien Grégoire
+ * Update score and timer on the page
+ * @author Grégoire Guillien
  */
 function updateFeatures() {
     $("#time").text(time);
@@ -170,7 +185,7 @@ function updateFeatures() {
 }
 
 /**
- *Fonctions managing events on id html object
+ * Functions managing events on id html object
  * @author Grégoire Guillien
  */
 $(function () {
@@ -189,7 +204,7 @@ $(function () {
 });
 
 /**
- *Manage the 'mouseover' events
+ * Manage the 'mouseover' events
  * @param String - trigger event
  * @param target - html object
  * @author Grégoire Guillien
@@ -202,20 +217,20 @@ document.addEventListener("mouseover", ({target}) => {
 })
 
 /**
- *Manage the 'mouseout' events
+ * Manage the 'mouseout' events
  * @param String - trigger event
  * @param target - html object
  * @author Grégoire Guillien
  */
 document.addEventListener("mouseout", ({target}) => {
     if (target.className === "myButton") {
-        var element = document.getElementById(target.value).parentElement
+        var element = document.getElementById(target.value).parentElement;
         element.className = "alpha-mask";
     }
-})
+});
 
 /**
- *Manage the 'click' events
+ * Manage the 'click' events
  * @param String - trigger event
  * @param target - html object
  * @author Grégoire Guillien
@@ -240,11 +255,11 @@ document.addEventListener("click", ({target}) => {
             updateState();
         }
     }
-})
+});
 
 /**
- *send a surrend message to the back and return to the home page.
- * @author Guillien Grégoire
+ * Quit and go back to the welcome page
+ * @author Grégoire Guillien
  */
 function home(){
 	const message = {

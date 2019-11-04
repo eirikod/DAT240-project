@@ -1,7 +1,8 @@
-//import { SocketConnector } from 'socket-connector';
-
 const client = new SocketConnector();
 
+/**
+ * Add listeners for what role the user has selected and redirect to the respective page
+ */
 client.onConnect = () => {
     client.send(makeMessage(userId, "JOIN"), `/app/update/${userId}/registerUserUpdates`);
     client.subscribe(`/channel/update/${userId}`, data => {
@@ -25,6 +26,13 @@ client.onConnect = () => {
     });
 };
 
+/**
+ * Create a message with the correct format
+ * @param content
+ * @param type
+ * @returns {{sender: *, type: *, content: *}}
+ * @author Alan Rostem
+ */
 function makeMessage(content, type = "MSG") {
     return {
         content: content,
@@ -33,18 +41,9 @@ function makeMessage(content, type = "MSG") {
     };
 }
 
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
-    setConnected(false);
-    console.log("Disconnected");
-}
-
 
 /**
- *
- * @param void
+ * Send data to the back about the selected role
  * @author Grégoire Guillien
  */
 function sendPartyParameters() {
@@ -52,17 +51,25 @@ function sendPartyParameters() {
     client.send(makeMessage($("#dropOperator").val()), "/app/party/queueUp");
 }
 
+/**
+ * Display the searching loader wheel
+ * @author Grégoire Guillien
+ */
 function researchParty() {
     $("#loader")[0].style = "visibility:;";
     $("#search")[0].style = "visibility: hidden";
     $("#searching-text")[0].style = "visibility:; text-align: center;";
 }
 
+/**
+ * Control variable given by the back to check if the player is already active
+ * @type {boolean}
+ * @author Alan Rostem
+ */
 let searching = false;
 
 /**
- *Event management
- * @param void
+ * Click event management
  * @author Grégoire Guillien
  */
 $(function () {
