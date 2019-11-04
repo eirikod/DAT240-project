@@ -6,7 +6,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 /**
  * Player object created when a user has logged in and queued for a game.
  *
- * @author Alan Rostem
+ * @author Alan Rostem & Markus
  */
 public class Player {
     private String id;
