@@ -146,6 +146,7 @@ function updateState() {
             break;
             
         case enumState.deconected:
+        	state=enumState.finished;
         	console.log("deconetcion!")
             stopTimer = true;
             $("#proposerPopUp").text(msg.msgPartyDeco);
