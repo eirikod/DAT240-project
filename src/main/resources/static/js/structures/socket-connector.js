@@ -1,9 +1,11 @@
 
 /**
- * Composed class containing all socket functionality in abstract form
+ * Composed class containing all websocket functionality in abstract form.
  */
 class SocketConnector {
-
+    /**
+     * @param endpoint {string} - Endpoint, defaulted to "/ws"
+     */
     constructor(endpoint = '/ws') {
         this.connected = false;
         this.subscriptions = {};
@@ -24,9 +26,9 @@ class SocketConnector {
     }
 
     /**
-     *
+     * Send arbitrary data to the server with a given destination.
      * @param data {object} - Data to be sent to the server
-     * @param route {string} - Routing URL
+     * @param route {string} - Destination URL
      * @author Alan Rostem
      */
     send(data, route) {
@@ -57,7 +59,7 @@ class SocketConnector {
     }
 
     /**
-     * TODO: Add docs
+     * Subscribe to a destination with a callback.
      * @param destination
      * @param callback
      */
@@ -78,7 +80,7 @@ class SocketConnector {
     }
 
     /**
-     * TODO: Add docs
+     * Unsubscribe from an existing destination
      * @param destination
      */
     unsubscribe(destination) {
