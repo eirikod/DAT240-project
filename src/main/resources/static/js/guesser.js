@@ -119,7 +119,8 @@ function updateState() {
         case PLAYER_STATES.FINISHED:
             $("#proposerPopUp").text(msg.msgPartyFinished);
             document.getElementById("submitGuess").disabled = true; 
-            document.getElementById("submitNewSegment").disabled = true; 
+            document.getElementById("submitNewSegment").disabled = true;
+            client.disconnect();
             $("#score").text(score);
             break;
 

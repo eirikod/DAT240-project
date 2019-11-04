@@ -92,7 +92,9 @@ public class ImageController {
     public void respondToGuesser(@DestinationVariable String partyId, @Payload SocketMessage chatMessage,
                                  SimpMessageHeaderAccessor headerAccessor) {
         Party party = PartyManager.getParty(partyId);
-
+        if (party == null) {
+            return;
+        }
 
         SocketMessage msg = new SocketMessage();
         msg.setSender(party.getProposer().getId());
