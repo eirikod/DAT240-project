@@ -23,8 +23,6 @@ public class GameLogic {
     ImageLabelReader labelReader = new ImageLabelReader("src/main/resources/static/label/label_mapping.csv",
             "src/main/resources/static/label/image_mapping.csv");
 
-    Scanner sc = new Scanner(System.in);
-
     private static final int MAX_GUESSES = 3;
 
     private String image;
@@ -38,6 +36,7 @@ public class GameLogic {
     private Player guesser;
     private GameState currentState = GameState.WAITING_TO_START;
     private boolean finished = false;
+    private int time = 0;
 
 
     public enum GameState {
@@ -69,7 +68,7 @@ public class GameLogic {
             }
         });
 
-        responseMapping.put("REQUEST_SEGMENT", (party, message) -> nextRound());
+        responseMapping.put("REQUEST_SEGMENT", (party, message) -> giveUp());
     }
 
     public void addPlayers(Player guesser, Player proposer) {
@@ -79,11 +78,12 @@ public class GameLogic {
 
     public void setImage(String image) {
         this.image = image;
-        proposerSegments = new ArrayList<>();
         guesserSegments = new ArrayList<>();
-        for (int i = 0; i < 49; ++i) {
+        proposerSegments = new ArrayList<>();
+        for (int i = 0; i < labelReader.getImageFiles(image).length; ++i) {
             proposerSegments.add(Integer.toString(i));
         }
+        System.out.println("Segment count for " + image + ": " + proposerSegments.size());
         currentState = GameState.PLAYING;
     }
 
@@ -124,12 +124,10 @@ public class GameLogic {
     }
 
     /**
-     * @return true if player gives up round
      * @author Eirik & Markus
      */
-    public boolean giveUp() {
-        System.out.println("Give up? y/n");
-        return (sc.nextLine().equals("y"));
+    public void giveUp() {
+        nextRound();
     }
 
     /**
@@ -152,6 +150,7 @@ public class GameLogic {
 
     public void update() {
         if (currentState == GameState.PLAYING) {
+            time++;
             if (guesserSegments.size() == proposerSegments.size()) {
                 currentState = GameState.LOST;
                 guesser.setPlayerStatus(Player.PlayerStatus.FINISHED);
@@ -168,9 +167,13 @@ public class GameLogic {
      * @author Eirik & Markus
      */
     public int getScore() {
-        int score = lost ? 0 : (proposerSegments.size() - guesserSegments.size()) * 2;
+        int score = (int) (((float)guesserSegments.size() / (float)proposerSegments.size()) * 1000f);
         System.out.println("Your score is " + score + "/100");
         return score;
+    }
+
+    public int getTime() {
+        return time;
     }
 
     public GameState getCurrentState() {

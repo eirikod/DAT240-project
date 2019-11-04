@@ -46,6 +46,20 @@ public class Party {
         }
 
         game.update();
+        if (game.isFinished()) {
+            SocketMessage finishedMsg = new SocketMessage();
+            finishedMsg.setSender("server");
+            HashMap<String, Object> content = new HashMap<>();
+            finishedMsg.setContent(content);
+            content.put("score", game.getScore());
+            content.put("time", game.getTime());
+            content.put("gameState", game.getCurrentState().toString());
+            content.put("state", "FINISHED");
+
+            getGuesser().sendData(finishedMsg, messagingTemplate);
+            getProposer().sendData(finishedMsg, messagingTemplate);
+            setStatus(PartyStatus.FINISHED_GAME);
+        }
     }
 
     public String getId() {
@@ -108,15 +122,12 @@ public class Party {
 
         game.receiveUpdatesFromFront(this, message);
 
-        String score = "8";
-        String time = "12:23";
-
         HashMap<String, Object> content = new HashMap<>();
         sockMess.setContent(content);
         sockMess.setType(message.getType());
 
-        content.put("score", score);
-        content.put("time", time);
+        content.put("score", game.getScore());
+        content.put("time", game.getTime());
         content.put("gameState", game.getCurrentState().toString());
 
         switch (message.getType()) {

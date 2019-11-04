@@ -29,8 +29,6 @@ var state = PLAYER_STATES.PLAYING;
 
 var score = "0";
 
-var time = "00:00";
-
 updateState();
 
 /**
@@ -78,7 +76,7 @@ function update(msg) {
     imageId = msg.content.segment;
     state = msg.content.state;
     score = msg.content.score;
-    time = msg.content.time;
+    time = Number(msg.content.time);
 
     updateState();
     updateFeatures();

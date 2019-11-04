@@ -1,224 +1,261 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="ISO-8859-1">
-<title>Guesser Page</title>
-<link th:href="@{/css/main.css}" rel="stylesheet">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="ISO-8859-1">
+    <title>Guesser Page</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-	<script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-	<script src="js/structures/enum.js"></script>
-	<script src="js/game.js"></script>
-	<script src="js/structures/socket-connector.js"></script>
+    <script src="js/structures/enum.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/structures/socket-connector.js"></script>
     <script type="text/javascript" th:src="@{/js/guesser.js}"></script>
 
     <script>
-		//Start dato, tid etc.  --> key: startDate
-		// save time when timer was started and measure difference
-		
-		var startDate = sessionStorage.getItem('startDate');
-		
-		if (startDate) {
-		    startDate = new Date(startDate);
-		} else {
-		    startDate = new Date();
-		    sessionStorage.setItem('startDate', startDate);  //key-value
-		}
-		
-		// setInterval(counter function, update timer)
-		var counter = setInterval(function() {
-		
-		    // getTime() method returns the number of milliseconds between midnight of January 1, 1970 and now
-		    var now = new Date().getTime();
-		
-		    // Find the distance between now an the count down date (startDate) and this current time
-		    var distance = now - startDate.getTime(); //hvor mange millisekunder som har gått siden du starta og nå
-		
-		    // Calculation for minutes and seconds
-		    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); // checks how many minutes in the distance
-		    var seconds = Math.floor((distance % (1000 * 60)) / 1000); // checks how many seconds in the distance
-		
-		    document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";},   1000); //runs the fuction every 1000ms = 1 s
-		
-		    
-		// function to stop the timer when the game is done
-		function StopTimer(){
-		  clearInterval(counter);
-		}
-	
-	</script>    
-    
-    
-<style>
+        //Start dato, tid etc.  --> key: startDate
+        // save time when timer was started and measure difference
 
-* {
-  box-sizing: border-box;
-}
+        var startDate = sessionStorage.getItem('startDate');
+
+        if (startDate) {
+            startDate = new Date(startDate);
+        } else {
+            startDate = new Date();
+            sessionStorage.setItem('startDate', startDate);  //key-value
+        }
+
+        let time = 0;
+
+        // setInterval(counter function, update timer)
+        var counter = setInterval(function () {
+
+            // getTime() method returns the number of milliseconds between midnight of January 1, 1970 and now
+            var now = new Date().getTime();
+
+            // Find the distance between now an the count down date (startDate) and this current time
+			time = Number(time) + 1;
+			var distance = time * 1000; //hvor mange millisekunder som har gått siden du starta og nå
+
+            // Calculation for minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); // checks how many minutes in the distance
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000); // checks how many seconds in the distance
+			let output = minutes + "m " + seconds + "s ";
+			if (minutes === 0) {
+				output = seconds + "s";
+			}
+			document.getElementById("timer").innerHTML = output;
+        }, 1000); //runs the fuction every 1000ms = 1 s
 
 
-.row::after {
-  content: "";
-  clear: both;
-  display: table;
-}
+        // function to stop the timer when the game is done
+        function StopTimer() {
+            clearInterval(counter);
+        }
+
+    </script>
 
 
-[class*="col-"] {
-  float: left;
-  padding: 15px;
-  
-}
+    <style>
 
-.header{
-background-color:PaleTurquoise;
-}
-
-.label_game{
-color:black;
-border:4px solid PaleTurquoise;
-text-align:left;
-}
+        * {
+            box-sizing: border-box;
+        }
 
 
-
-.col-1 {width: 8.33%;}
-.col-2 {width: 16.66%;}
-.col-3 {width: 25%;}
-.col-4 {width: 33.33%;}
-.col-5 {width: 41.66%;}
-.col-6 {width: 50%;}
-.col-7 {width: 58.33%;}
-.col-8 {width: 66.66%;}
-.col-9 {width: 75%;}
-.col-10 {width: 83.33%;}
-.col-11 {width: 91.66%;}
-.col-12 {width: 100%;}
-
-</style>
+        .row::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
 
 
+        [class*="col-"] {
+            float: left;
+            padding: 15px;
 
+        }
+
+        .header {
+            background-color: PaleTurquoise;
+        }
+
+        .label_game {
+            color: black;
+            border: 4px solid PaleTurquoise;
+            text-align: left;
+        }
+
+
+        .col-1 {
+            width: 8.33%;
+        }
+
+        .col-2 {
+            width: 16.66%;
+        }
+
+        .col-3 {
+            width: 25%;
+        }
+
+        .col-4 {
+            width: 33.33%;
+        }
+
+        .col-5 {
+            width: 41.66%;
+        }
+
+        .col-6 {
+            width: 50%;
+        }
+
+        .col-7 {
+            width: 58.33%;
+        }
+
+        .col-8 {
+            width: 66.66%;
+        }
+
+        .col-9 {
+            width: 75%;
+        }
+
+        .col-10 {
+            width: 83.33%;
+        }
+
+        .col-11 {
+            width: 91.66%;
+        }
+
+        .col-12 {
+            width: 100%;
+        }
+
+    </style>
 
 
 </head>
 <body>
 
 <div class="header">
-	<div class="row">
-    	<div class="col-9">
-    	</div>
+    <div class="row">
+        <div class="col-9">
+        </div>
 
-    	<!-- CHANGE THE LINKS BELOW -->
-   	 	<div class="col-1">
-    	<a href="http://localhost:8080/welcomePage">Home</a>
-   	 	</div>
+        <!-- CHANGE THE LINKS BELOW -->
+        <div class="col-1">
+            <a href="http://localhost:8080/welcomePage">Home</a>
+        </div>
 
-   		<div class="col-2">
-    	<a href="https://www.w3schools.com">Disconnect </a>
-     	</div>
+        <div class="col-2">
+            <a href="https://www.w3schools.com">Disconnect </a>
+        </div>
 
-	</div>
+    </div>
 </div>
 
 <!-- CHANGE GAME NAME -->
 <div class="row">
-	<div class="col-4">
-    	<div class="label_game">
-    	<h1>GUESS WHAT?</h1>
-    	</div>
-	</div>
+    <div class="col-4">
+        <div class="label_game">
+            <h1>GUESS WHAT?</h1>
+        </div>
+    </div>
 
 </div>
 
 
-
 <div class="row">
-		<div class="col-7">
-          <h>INFO: </h>
-          
-        	<div class="label_game">
-					<h2 th:text = "${state}"> Wait for segment</h2>
-					<h2 th:text = "${guessesleft}"></h2>
-    		</div>
-		 </div>
-		 
+    <div class="col-7">
+        <h>INFO:</h>
+
+        <div class="label_game">
+            <h2 th:text="${state}"> Wait for segment</h2>
+            <h2 th:text="${guessesleft}"></h2>
+        </div>
+    </div>
+
 
     <div class="col-3">
-          <h> BEST PLAYER ON THIS IMAGE: </h>
-        	<div class="label_game">
-        	<h2> NAME </h2>
-    		  </div>
-   	</div>
+        <h> BEST PLAYER ON THIS IMAGE:</h>
+        <div class="label_game">
+            <h2> NAME </h2>
+        </div>
+    </div>
 
     <div class="col-2">
-          <h> SCORE: </h>
-        	<div class="label_game">
-        	<h2>SCORE</h2>
-    		  </div>
-   	</div>
+        <h> SCORE:</h>
+        <div class="label_game">
+            <h2>SCORE</h2>
+        </div>
+    </div>
 
 </div>
 
 
 <div class="container">
 
-<div class="row">
-		<div class="col-8">
-			<div style="position: relative;">
-				<div th:each="image,iter : ${listimages}" class="alpha-mask">
-					<img th:id="${iter.index}" 
-						th:attr="src=@{|${image}|}" 
-						onerror="this.style.display='none'" 
-						style="visibility: hidden;"/>
-				</div>			
-			</div>
-		</div>
-		
-		
-		<div class="col-4">
-			<input type="text" id="guess" name="submittedGuess" placeholder="Your guess:"><br>
-			<input type="button" id="submitGuess" value="SUBMIT">
-			<input type="button" id="submitNewSegment" value="NEW SEGMENT"><br>
-		</div>
-		
-</div>
-
-<div class="row">
-	<div class="col-8">
-	</div>
+    <div class="row">
+        <div class="col-8">
+            <div style="position: relative;">
+                <div th:each="image,iter : ${listimages}" class="alpha-mask">
+                    <img th:id="${iter.index}"
+                         th:attr="src=@{|${image}|}"
+                         onerror="this.style.display='none'"
+                         style="visibility: hidden;"/>
+                </div>
+            </div>
+        </div>
 
 
+        <div class="col-4">
+            <input type="text" id="guess" name="submittedGuess" placeholder="Your guess:"><br>
+            <input type="button" id="submitGuess" value="SUBMIT">
+            <input type="button" id="submitNewSegment" value="NEW SEGMENT"><br>
+        </div>
 
-    <div class="col-2">
-          <h> TIME: </h>
-        	<div class="label_game">
-        	<h2 id = "timer"> </h2>
-    		  </div>
-   	</div>
+    </div>
 
-    <div class="col-2">
-          <h> YOUR SCORE: </h>
-        	<div class="label_game">
-        	<h2> SCORE </h2>
-    		</div>
-   	</div>
-</div>
-<script th:inline="javascript">
-/*<![CDATA[*/
-	//Thimeleaf attribute
-    var userId = /*[[${userId}]]*/ 'default';
-    console.log("user id : ");
-    console.log(userId);
+    <div class="row">
+        <div class="col-8">
+        </div>
 
-	var partyId = /*[[${partyId}]]*/ 'default';
-	console.log("partyId : ");
-	console.log(partyId);
-	
-   subscribe(userId, partyId);
 
-/*]]>*/
-</script>
+        <div class="col-2">
+            <h> TIME:</h>
+            <div class="label_game">
+                <h2 id="timer"></h2>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <h> YOUR SCORE:</h>
+            <div class="label_game">
+                <h2> SCORE </h2>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        //Thimeleaf attribute
+        var userId = /*[[${userId}]]*/ 'default';
+        console.log("user id : ");
+        console.log(userId);
+
+        var partyId = /*[[${partyId}]]*/ 'default';
+        console.log("partyId : ");
+        console.log(partyId);
+
+        subscribe(userId, partyId);
+
+        /*]]>*/
+    </script>
 </body>
 </html>

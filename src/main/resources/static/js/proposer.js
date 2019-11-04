@@ -44,8 +44,6 @@ var state = enumState.myTurn;
 
 var score = "0";
 
-var time = "00:00";
-
 updateState();
 
 /**
@@ -94,7 +92,7 @@ function update(msg) {
     console.log(msg);
     state = msg.content.state;
     score = msg.content.score;
-    time = msg.content.time;
+    time = Number(msg.content.time);
     console.log(state);
     updateState();
     updateFeatures();
