@@ -77,10 +77,16 @@ public class ImageController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         guesserContent.put("selectedlabel", hashedLabel);
         msg.setContent(guesserContent);
         party.getGuesser().sendData(msg, messageTemplate);
+        
+        HashMap<String, Object> proposerContent = new HashMap<>();
+        proposerContent.put("role", "Proposer");
+        proposerContent.put("partyId", "" + partyId);
+        proposerContent.put("state", party.getProposer().getPlayerStatus());
+        msg.setContent(proposerContent);
+        party.getProposer().sendData(msg, messageTemplate);
     }
 
     /**
@@ -103,6 +109,7 @@ public class ImageController {
             messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
         }
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        
         messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
     }
 
