@@ -63,9 +63,19 @@ public class ImageController {
         HashMap<String, Object> guesserContent = new HashMap<>();
         guesserContent.put("role", "GUESSER");
         guesserContent.put("partyId", "" + partyId);
+        guesserContent.put("time", party.getGame().getTime());
+
         guesserContent.put("selectedlabel", chatMessage.getContent());
         msg.setContent(guesserContent);
         party.getGuesser().sendData(msg, messageTemplate);
+        
+        HashMap<String, Object> proposerContent = new HashMap<>();
+        proposerContent.put("state", party.getProposer().getPlayerStatus());
+        proposerContent.put("score", party.getGame().getScore());
+        proposerContent.put("time", party.getGame().getTime());
+        proposerContent.put("segments", party.getGame().getGuesserSegments());
+        msg.setContent(proposerContent);
+        party.getProposer().sendData(msg, messageTemplate);
     }
 
     /**
@@ -87,7 +97,26 @@ public class ImageController {
             messageTemplate.convertAndSend(format("/channel/%s", currentRoomId), leaveMessage);
         }
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        
         messageTemplate.convertAndSend(format("/channel/%s", partyId), chatMessage);
+        
+        Party party = PartyManager.getParty(partyId);
+        if (party == null) {
+            return;
+        }
+        SocketMessage msg = new SocketMessage();
+        msg.setSender(party.getProposer().getId());
+        msg.setType("JOIN_PARTY");
+        
+        HashMap<String, Object> guesserContent = new HashMap<>();
+        guesserContent.put("state", party.getGuesser().getPlayerStatus());
+        guesserContent.put("score", party.getGame().getScore());
+        guesserContent.put("time", party.getGame().getTime());
+        guesserContent.put("segments", party.getGame().getGuesserSegments());
+        
+        msg.setContent(guesserContent);
+        party.getGuesser().sendData(msg, messageTemplate);
+        
     }
 
 
@@ -118,12 +147,15 @@ public class ImageController {
         model.addObject("partyId", partyId);
         model.addObject("username", userName);
 
+        int countTotalSegments = party.getGame().getProposerSegments().size();
 
-        // finds number of segments per image
-        int countTotalSegments = -1 + Objects.requireNonNull(new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list()).length;
-        PartyManager.getParty(partyId).getGame().setImage(name, countTotalSegments);
-        ArrayList<String> imageSegments = new ArrayList<>();
+        if (countTotalSegments==0) {
+        	// finds number of segments per image
+        	countTotalSegments = -1 + Objects.requireNonNull(new File("src/main/resources/static/images/scattered_images/" + image_folder_name).list()).length;
+        	PartyManager.getParty(partyId).getGame().setImage(name, countTotalSegments);
+        }
 
+        ArrayList<String> imageSegments = new ArrayList<>();        	
         for (int i = 0; i < countTotalSegments; ++i) {
             imageSegments.add("images/scattered_images/" + image_folder_name + "/" + i + ".png");
         }

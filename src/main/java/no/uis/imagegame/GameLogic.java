@@ -18,8 +18,8 @@ public class GameLogic {
     private static final int POINT_PENALTY = 10;
 
     private String image;
-    private ArrayList<String> proposerSegments;
-    private ArrayList<String> guesserSegments;
+    private ArrayList<String> proposerSegments=new ArrayList<>();
+    private ArrayList<String> guesserSegments=new ArrayList<>();
 
     private Player proposer;
     private Player guesser;
@@ -210,6 +210,11 @@ public class GameLogic {
         return guesserSegments;
     }
 
+    
+    public ArrayList<String> getProposerSegments() {
+        return proposerSegments;
+    }
+    
     /**
      * Retrieve the current state of the game.
      *
