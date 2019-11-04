@@ -118,7 +118,7 @@ public class QueueController {
      * Created a sorted list of five ScoreData objects sorted and return it.
      * Used in the newEntry method to show the top 5 best players of the game.
      *
-     * @author Alan Rostem
+     * @author Alan Rostem & Markus
      */
     public ArrayList<ScoreData> createTop5ScoreList() {
         TreeSet<ScoreData> scoreDataSorted = new TreeSet<>((t0, t1) -> t1.score - t0.score);

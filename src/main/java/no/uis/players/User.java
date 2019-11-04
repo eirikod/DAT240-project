@@ -6,7 +6,7 @@ import java.util.Random;
 /**
  * Data structure for user data storage in the repository (which is then redirected to the database)
  *
- * @author Alan Rostem
+ * @author Alan Rostem & Markus
  */
 @Entity
 @Table(name = "Players")
